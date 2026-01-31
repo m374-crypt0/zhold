@@ -129,6 +129,57 @@ It is not a full RWA framework and does not attempt to replace regulatory proces
 
 ---
 
+## User flows
+
+### User registration
+
+> A user want to register on the platform and prove privately he can hold a RWA
+> from this platform.
+
+- input
+  - Private information for KYC
+  - ethereum address authorized to use a generated secret note (see below)
+- output
+  - on-chain attestation without disclosure
+  - secret note to use as input for proving in another user flow
+- Trust boundary
+  - Occurs here, during registration, where the issuer evaluates compliance
+    off-chain and provides private information.
+
+### Proving eligibility without disclosure
+
+> A user can verify on-chain the eligibility using a secret-note previously
+> obtained from user registration.
+
+- input
+  - The ethereum address of the user that must be the same used in a previous
+    registration process.
+  - A previously generated secret note (from a registration user flow)
+  - Any public policy records
+    - id of the policy
+    - validity time interval
+    - Scope
+    - 󰇘
+- output
+  - eligibility status (user is eligible or not)
+- trust boundary
+  - Those listed in [Trust Assumptions section](#trust-assumptions)
+
+### A word about Revocation
+
+As noted in [What is not Proven section](#what-is-not-proven) Real time
+revocation at scale is not covered.
+However, this system allow easy revocation by two means:
+
+1. by manually invalidating commitment on-chain
+2. automatically as each policy has a time validity
+
+No need to submit a new KYC.
+
+> The platform is entirely optional, the proof is 100% locally generated
+
+---
+
 ## Final Note
 
 This repository demonstrates **how** eligibility can be proven — **not who** is
