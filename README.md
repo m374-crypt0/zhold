@@ -5,7 +5,7 @@
 
 It allows an address to **prove compliance with off-chain rules** and obtain
 on-chain authorization **without revealing identity, jurisdiction, or private
-compliance data**.
+compliance data**. Here, the compliance is all about **holding** a **RWA**.
 
 The design is **asset-agnostic**, focused on **policy enforcement**, not
 tokenization.
@@ -60,7 +60,7 @@ The **asset** itself remains **completely decoupled** from the **compliance logi
 The zero-knowledge proof demonstrates that:
 
 1. The caller owns a valid attestation issued under a specific policy
-2. The attestation matches the policy identifier enforced on-chain
+2. The attestation matches the policy properties enforced on-chain
 3. The attestation is still within its validity window
 4. The proof is cryptographically bound to the on-chain action
 5. No private compliance data is disclosed on-chain
@@ -97,7 +97,7 @@ This design makes the following assumptions explicit:
 - Policy governance
   Policy identifiers enforced on-chain are managed through trusted governance.
 
-These assumptions are unavoidable in real-world RWA systems and are
+These assumptions are **unavoidable** in real-world RWA systems and are
 intentionally surfaced.
 
 ---
@@ -113,7 +113,7 @@ This pattern enables:
 - Clear separation between regulation and execution
 
 It reflects how **production-grade RWA protocols are expected to operate**,
-rather than simplified token demos.
+rather than doing a simplified token demo.
 
 ---
 
@@ -121,9 +121,10 @@ rather than simplified token demos.
 
 This project focuses on:
 
-- ZK policy enforcement patterns
+- ZK policy enforcement patterns (about **holding eligibility**)
 - Solidity ↔ Noir integration
-- Minimal, auditable on-chain logic
+- Minimal, **auditable** on-chain logic
+- Minimal, **auditable** off-chain logic (circuit)
 
 It is not a full RWA framework and does not attempt to replace regulatory processes.
 
@@ -159,9 +160,9 @@ It is not a full RWA framework and does not attempt to replace regulatory proces
     - id of the policy
     - validity time interval
     - Scope
-    - 󰇘
+    - 󰇘 (**extensible** as needed)
 - output
-  - eligibility status (user is eligible or not)
+  - eligibility status (user is **compliant** or not)
 - trust boundary
   - Those listed in [Trust Assumptions section](#trust-assumptions)
 
@@ -182,7 +183,7 @@ No need to submit a new KYC.
 
 ## Final Note
 
-This repository demonstrates **how** eligibility can be proven — **not who** is
+This repository demonstrates **how** compliancy can be proven — **not who** is
 eligible, **nor why**.
 
 That distinction is intentional.
