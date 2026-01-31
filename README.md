@@ -88,32 +88,17 @@ These concerns remain **explicitly off-chain**.
 
 This design makes the following assumptions explicit:
 
-- Issuer honesty
+- **Issuer honesty**
   The issuer correctly evaluates eligibility before issuing attestations.
-- Circuit correctness
+- **Circuit correctness**
   The zero-knowledge circuit correctly enforces the intended rules.
-- Verifier integrity
+- **Verifier integrity**
   The on-chain verifier matches the circuit and is not upgradable without governance.
-- Policy governance
+- **Policy governance**
   Policy identifiers enforced on-chain are managed through trusted governance.
 
 These assumptions are **unavoidable** in real-world RWA systems and are
 intentionally surfaced.
-
----
-
-## Why This Matters
-
-This pattern enables:
-
-- Compliance without disclosure
-- Privacy-preserving authorization
-- Asset-agnostic enforcement
-- Modular policy evolution
-- Clear separation between regulation and execution
-
-It reflects how **production-grade RWA protocols are expected to operate**,
-rather than doing a simplified token demo.
 
 ---
 
@@ -131,6 +116,30 @@ It is not a full RWA framework and does not attempt to replace regulatory proces
 ---
 
 ## User flows
+
+```text
+User
+ │
+ │  KYC / Registration (off-chain)
+ │
+ ▼
+Issuer
+ │
+ │  attestation + secret_note
+ │
+ ▼
+User (local)
+ │
+ │  ZK proof generation
+ │
+ ▼
+Smart Contract
+ │
+ │  verifyProof()
+ │
+ ▼
+Access granted / denied
+```
 
 ### User registration
 
