@@ -19,16 +19,16 @@ They struggle with **compliance without disclosure**.
 
 In practice, RWA teams must enforce rules such as:
 
-- investor eligibility
-- jurisdictional constraints
-- accreditation requirements
-- time-bounded authorizations
+- 💵 investor eligibility
+- 📜 jurisdictional constraints
+- 🔑 accreditation requirements
+- 🕑 time-bounded authorizations
 
 But putting this data on-chain is **unacceptable**:
 
-- privacy violations
-- regulatory exposure
-- irreversible disclosure
+- 🚫 privacy violations
+- 🔒 regulatory exposure
+- ⚰️ irreversible disclosure
 
 The core challenge is:
 
@@ -45,11 +45,11 @@ This project separates concerns into **three layers**:
   - An issuer evaluates eligibility using private data.
   - An attestation is issued to the user.
 - Zero-Knowledge proof
-  - The user proves that the attestation satisfies a given policy.
+  - The user proves locally that the attestation satisfies a given policy.
   - No private data is revealed.
 - On-chain enforcement
   - A smart contract verifies the proof.
-  - Access is granted or denied based solely on the proof.
+  - Access is granted or denied based solely on the proof and public inputs.
 
 The **asset** itself remains **completely decoupled** from the **compliance logic**.
 
