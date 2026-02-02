@@ -88,14 +88,14 @@ These concerns remain **explicitly off-chain**.
 
 This design makes the following assumptions explicit:
 
-- **Issuer honesty**
-  The issuer correctly evaluates eligibility before issuing attestations.
-- **Circuit correctness**
-  The zero-knowledge circuit correctly enforces the intended rules.
-- **Verifier integrity**
-  The on-chain verifier matches the circuit and is not upgradable without governance.
-- **Policy governance**
-  Policy identifiers enforced on-chain are managed through trusted governance.
+- **Issuer honesty**: The issuer correctly evaluates eligibility before issuing
+  attestations.
+- **Circuit correctness**: The zero-knowledge circuit correctly enforces the
+  intended rules.
+- **Verifier integrity**: The on-chain verifier matches the circuit and is not
+  upgradable without governance.
+- **Policy governance**: Policy identifiers enforced on-chain are managed
+  through trusted governance.
 
 These assumptions are **unavoidable** in real-world RWA systems and are
 intentionally surfaced.
