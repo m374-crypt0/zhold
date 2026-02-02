@@ -142,7 +142,7 @@ It is not a full RWA framework and does not attempt to replace regulatory proces
 ## User flows
 
 ```text
-User
+Prospect
  │
  │  KYC / Registration (off-chain)
  │
@@ -152,12 +152,12 @@ Issuer
  │  report customer eligibility
  │
  ▼
-User (local)
+Customer (local)
  │
  │  ZK proof generation
  │
  ▼
-Smart Contract
+Blockchain
  │
  │  ZK proof verification
  │
