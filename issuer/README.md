@@ -1,7 +1,7 @@
 # Issuer - The Organization managing Real World Assets
 
-The **Issuer** represents the *organization* having real world assets and their
-**tokenized** representations.
+> The **Issuer** represents the *organization* having real world assets, minting
+> their **tokenized** representations ob behalf of their **customers**
 
 <!--toc:start-->
 - [Issuer - The Organization managing Real World Assets](#issuer-the-organization-managing-real-world-assets)

@@ -59,15 +59,19 @@ The core challenge is:
 
 This project separates concerns into **three layers**:
 
-- Off-chain compliance
-  - An issuer evaluates eligibility using private data.
-  - An attestation is issued to the user.
+- Off-chain **compliance*
+  - An **issuer** evaluates eligibility using private data.
+  - An attestation built by the **customer** using **policy** properties and a
+    local secret.
 - Zero-Knowledge proof
-  - The user proves locally that the attestation satisfies a given policy.
+  - The eligible **customer** builds a secret note and a commitment. Only the
+    commitment is transmitted to the **issuer**
   - No private data is revealed.
 - On-chain enforcement
+  - The **Issuer** record the commitment on-chain
   - A smart contract verifies the proof.
-  - Access is granted or denied based solely on the proof and public inputs.
+  - Eligibility is granted or denied based solely on the proof and public
+    inputs.
 
 The **asset** itself remains **completely decoupled** from the **compliance logic**.
 
@@ -78,12 +82,14 @@ The **asset** itself remains **completely decoupled** from the **compliance logi
 The zero-knowledge proof demonstrates that:
 
 1. The caller owns a valid attestation issued under a specific policy
-2. The attestation matches the policy properties enforced on-chain
-3. The attestation is still within its validity window
-4. The proof is cryptographically bound to the on-chain action
+2. The attestation matches the policy properties enforced on-chain thanks to
+   the commitment
+3. The attestation is still within its validity window (or any policy property)
+4. The proof is cryptographically bound to the on-chain action (thanks to the
+   commitment and the circuit logic)
 5. No private compliance data is disclosed on-chain
 
-The smart contract learns **only** whether the policy is satisfied - _nothing else_.
+The smart contract learns **only** whether the policy is satisfied - *nothing else*.
 
 ---
 
@@ -91,11 +97,11 @@ The smart contract learns **only** whether the policy is satisfied - _nothing el
 
 This system does not prove:
 
-- The user’s identity
+- The **customer**’s identity
 - Jurisdiction or residency
 - Accreditation details
 - The correctness of the off-chain compliance process
-- The legal validity of the issuer
+- The legal validity of the **issuer**
 - Real-time revocation at scale
 
 These concerns remain **explicitly off-chain**.
@@ -106,8 +112,8 @@ These concerns remain **explicitly off-chain**.
 
 This design makes the following assumptions explicit:
 
-- **Issuer honesty**: The issuer correctly evaluates eligibility before issuing
-  attestations.
+- **Issuer honesty**: The **issuer** correctly evaluates eligibility before
+  issuing attestations.
 - **Circuit correctness**: The zero-knowledge circuit correctly enforces the
   intended rules.
 - **Verifier integrity**: The on-chain verifier matches the circuit and is not
@@ -143,7 +149,7 @@ User
  ▼
 Issuer
  │
- │  attestation + secret_note
+ │  report customer eligibility
  │
  ▼
 User (local)
@@ -153,7 +159,7 @@ User (local)
  ▼
 Smart Contract
  │
- │  verifyProof()
+ │  ZK proof verification
  │
  ▼
 Access granted / denied
@@ -166,28 +172,25 @@ Access granted / denied
 
 - input
   - Private information for KYC
-  - ethereum address authorized to use a generated secret note (see below)
 - output
-  - on-chain attestation without disclosure
-  - secret note to use as input for proving in another user flow
+  - customer id
 - Trust boundary
-  - Occurs here, during registration, where the issuer evaluates compliance
-    off-chain and provides private information.
+  - Occurs here, during registration, where the issuer gathers customer private
+    information
 
 ### Proving eligibility without disclosure
 
-> A user can verify on-chain the eligibility using a secret-note previously
-> obtained from user registration.
+> A user can verify on-chain the eligibility on-chain wihtout any disclosure
 
 - input
-  - The ethereum address of the user that must be the same used in a previous
-    registration process.
-  - A previously generated secret note (from a registration user flow)
+  - a customer id from the registration
+  - The ethereum address the customer will use to verify the ZK proof on-chain
   - Any public policy records
     - id of the policy
     - validity time interval
     - Scope
     - 󰇘 (**extensible** as needed)
+  - A secret value of his choosing
 - output
   - eligibility status (user is **compliant** or not)
 - trust boundary
@@ -208,7 +211,8 @@ No need to submit a new KYC.
 
 ## Final Note
 
-> The platform is entirely optional, the proof is 100% locally generated
+> As soon as the **customer** is registered, the platform is entirely optional,
+> the proof is 100% locally generated
 
 This repository demonstrates **how** compliancy can be proven — **not who** is
 eligible, **nor why**.
