@@ -3,6 +3,24 @@
 > This repository demonstrates a **zero-knowledge eligibility pattern** for
 > Real-World Asset (**RWA**) protocols.
 
+<!--toc:start-->
+- [zhold - Prove you can hold any RWA - Privately](#zhold-prove-you-can-hold-any-rwa-privately)
+  - [Purposes](#purposes)
+  - [The Problem RWA Teams Face](#the-problem-rwa-teams-face)
+  - [High-Level Approach](#high-level-approach)
+  - [What Is Proven](#what-is-proven)
+  - [What Is Not Proven](#what-is-not-proven)
+  - [Trust Assumptions](#trust-assumptions)
+  - [Scope of This Repository](#scope-of-this-repository)
+  - [User flows](#user-flows)
+    - [User registration](#user-registration)
+    - [Proving eligibility without disclosure](#proving-eligibility-without-disclosure)
+    - [A word about Revocation](#a-word-about-revocation)
+  - [Final Note](#final-note)
+<!--toc:end-->
+
+## Purposes
+
 It allows an address to **prove compliance with off-chain rules** and obtain
 on-chain authorization **without revealing identity, jurisdiction, or private
 compliance data**. Here, the compliance is all about **holding** a **RWA**.
@@ -186,11 +204,11 @@ However, this system allow easy revocation by two means:
 
 No need to submit a new KYC.
 
-> The platform is entirely optional, the proof is 100% locally generated
-
 ---
 
 ## Final Note
+
+> The platform is entirely optional, the proof is 100% locally generated
 
 This repository demonstrates **how** compliancy can be proven — **not who** is
 eligible, **nor why**.
