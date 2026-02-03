@@ -2,6 +2,10 @@ CONTRACTS_ROOT_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
 include $(CONTRACTS_ROOT_DIR)/.env
 
+.PHONY: help
+help:
+	@. ${CONTRACTS_ROOT_DIR}.make/scripts/help.sh
+
 $(CONTRACTS_ROOT_DIR)/.env:
 	@cd $(CONTRACTS_ROOT_DIR) && cp .env.sample .env \
 		&& echo .env file created, ready to hold your precious and secret variable values.
