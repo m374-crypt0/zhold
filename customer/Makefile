@@ -8,3 +8,11 @@ CUSTOMER_ROOT_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 .PHONY: help
 help:
 	@. ${CUSTOMER_ROOT_DIR}.make/scripts/help.sh
+
+.PHONY: test
+test:
+	@bun test ${CUSTOMER_ROOT_DIR}test
+
+.PHONY: watch
+watch:
+	@bun --watch test ${CUSTOMER_ROOT_DIR}test
