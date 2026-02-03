@@ -13,8 +13,9 @@
   - [Trust Assumptions](#trust-assumptions)
   - [Scope of This Repository](#scope-of-this-repository)
   - [User flows](#user-flows)
-    - [User registration](#user-registration)
-    - [Proving eligibility without disclosure](#proving-eligibility-without-disclosure)
+    - [Customer registration](#customer-registration)
+    - [Building a ZKP locally](#building-a-zkp-locally)
+    - [Proving eligibility on-chain](#proving-eligibility-on-chain)
     - [A word about Revocation](#a-word-about-revocation)
   - [Final Note](#final-note)
 <!--toc:end-->
@@ -59,17 +60,17 @@ The core challenge is:
 
 This project separates concerns into **three layers**:
 
-- Off-chain **compliance*
+- Off-chain **compliance**
   - An **issuer** evaluates eligibility using private data.
   - An attestation built by the **customer** using **policy** properties and a
     local secret.
 - Zero-Knowledge proof
-  - The eligible **customer** builds a secret note and a commitment. Only the
-    commitment is transmitted to the **issuer**
+  - From the **customer**'s attestation, a commitment is computed.
+  - The commitment is transmitted to the **issuer**
   - No private data is revealed.
 - On-chain enforcement
   - The **Issuer** record the commitment on-chain
-  - A smart contract verifies the proof.
+  - A smart contract verifies the proof provided by the **customer**
   - Eligibility is granted or denied based solely on the proof and public
     inputs.
 
@@ -81,13 +82,11 @@ The **asset** itself remains **completely decoupled** from the **compliance logi
 
 The zero-knowledge proof demonstrates that:
 
-1. The caller owns a valid attestation issued under a specific policy
-2. The attestation matches the policy properties enforced on-chain thanks to
-   the commitment
-3. The attestation is still within its validity window (or any policy property)
-4. The proof is cryptographically bound to the on-chain action (thanks to the
-   commitment and the circuit logic)
-5. No private compliance data is disclosed on-chain
+1. The caller is **eligible** under a specific policy
+2. The **eligibility** is still within its validity window (or any policy property)
+3. The proof is cryptographically bound to the on-chain action and a specific
+   EVM address (thanks to the commitment and the circuit logic)
+4. No private data is disclosed on-chain
 
 The smart contract learns **only** whether the policy is satisfied - *nothing else*.
 
@@ -102,9 +101,7 @@ This system does not prove:
 - Accreditation details
 - The correctness of the off-chain compliance process
 - The legal validity of the **issuer**
-- Real-time revocation at scale
-
-These concerns remain **explicitly off-chain**.
+- Real-time revocation at scale (manual revocation is possible)
 
 ---
 
@@ -113,13 +110,13 @@ These concerns remain **explicitly off-chain**.
 This design makes the following assumptions explicit:
 
 - **Issuer honesty**: The **issuer** correctly evaluates eligibility before
-  issuing attestations.
+  recording **customer**'s commitments on-chain.
 - **Circuit correctness**: The zero-knowledge circuit correctly enforces the
   intended rules.
 - **Verifier integrity**: The on-chain verifier matches the circuit and is not
   upgradable without governance.
-- **Policy governance**: Policy identifiers enforced on-chain are managed
-  through trusted governance.
+- **Policy governance**: Policies  are managed through trusted governance by
+  the **issuer**
 
 These assumptions are **unavoidable** in real-world RWA systems and are
 intentionally surfaced.
@@ -133,7 +130,8 @@ This project focuses on:
 - ZK policy enforcement patterns (about **holding eligibility**)
 - Solidity ↔ Noir integration
 - Minimal, **auditable** on-chain logic
-- Minimal, **auditable** off-chain logic (circuit)
+- Minimal, **auditable** off-chain logic (circuit, proof generation and
+  verification)
 
 It is not a full RWA framework and does not attempt to replace regulatory processes.
 
@@ -165,24 +163,22 @@ Blockchain
 Access granted / denied
 ```
 
-### User registration
+### Customer registration
 
 > A user want to register on the platform and prove privately he can hold a RWA
 > from this platform.
 
-- input
+- **input**
   - Private information for KYC
-- output
+- **output**
   - customer id
-- Trust boundary
+- **Trust boundary**
   - Occurs here, during registration, where the issuer gathers customer private
     information
 
-### Proving eligibility without disclosure
+### Building a ZKP locally
 
-> A user can verify on-chain the eligibility on-chain wihtout any disclosure
-
-- input
+- **input**
   - a customer id from the registration
   - The ethereum address the customer will use to verify the ZK proof on-chain
   - Any public policy records
@@ -193,8 +189,24 @@ Access granted / denied
   - A secret value of his choosing
 - output
   - eligibility status (user is **compliant** or not)
+  - A **ZKP** to be used later on-chain using the provided EVM address
+    beforehand
 - trust boundary
   - Those listed in [Trust Assumptions section](#trust-assumptions)
+
+### Proving eligibility on-chain
+
+> A customer can verify on-chain the eligibility without any disclosure of
+> private data
+
+- **input**
+  - A previously generated **ZKP**
+  - A set of public inputs (**policy** properties, sender EVM address)
+- **output**
+  - **Eligibility** status confirmed on-chain
+- **Trust boundary**
+  - Circuit correctness
+  - Verifier integrity
 
 ### A word about Revocation
 
@@ -211,8 +223,9 @@ No need to submit a new KYC.
 
 ## Final Note
 
-> As soon as the **customer** is registered, the platform is entirely optional,
-> the proof is 100% locally generated
+> As soon as the **customer** is registered and asked for on-chain eligibility
+> **commitment** store, the **issuer** is entirely optional, the proof is 100%
+> locally generated
 
 This repository demonstrates **how** compliancy can be proven — **not who** is
 eligible, **nor why**.
