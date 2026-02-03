@@ -14,12 +14,12 @@
 
 ## Responsibilities of the **Issuer**
 
-1. Expose a way for potential a **Customer** to register
+1. Expose a way for potential a **Customer** (**prospects**) to register
 2. Expose all supported **policies** and their properties regarding managed
    **RWA**
 3. Handles **attestation** demands from **customer** to ensure **compliancy and
    regulation** obligations **without disclosure** of private information about
-   them.
+   them only storing **commitments** on-chain.
 
 ## Trust boundaries
 
@@ -39,6 +39,7 @@ Regarding the [purpose of zhold](../README.md/#purposes), we can see the
 - A registered **customer** for him to :
   - query information about supported **policies**
   - ask for *eligibility* regarding a specific **policy**
+  - submit a **commitment** if eligible regarding a specific **policy**
 - The **blockchain** to persist or **revoke** an **eligibility** commitment
 
 ### Flows
@@ -55,8 +56,10 @@ Regarding the [purpose of zhold](../README.md/#purposes), we can see the
 |       |            (2) Successful               |                   |        |
 |       |            registration in              |                   |        |
 |       |<-----------(1) returns a                |                   |        |
-|       |            customer_id to               |                   |        |
-|       |            the customer                 |                   |        |
+|       |            customer id and              |                   |        |
+|       |            the prospect                 |                   |        |
+|       |            becomes a                    |                   |        |
+|       |            customer                     |                   |        |
 |       |                   |                     |                   |        |
 |       |                   |            (3) ask for                  |        |
 |       |                   |<-----------policy list                  |        |
@@ -72,22 +75,18 @@ Regarding the [purpose of zhold](../README.md/#purposes), we can see the
 |       |            property list in ----------->|                   |        |
 |       |            response of (4)              |                   |        |
 |       |                   |                     |                   |        |
-|       |                   |            (5) Submit an                |        |
-|       |                   |            attestation for              |        |
-|       |                   |<-----------eligibility with             |        |
-|       |                   |            a commitment                 |        |
-|       |                   |            locally computed             |        |
-|       |                   |            and using policy             |        |
-|       |                   |            properties                   |        |
-|       |                   |            previously                   |        |
-|       |                   |            obtained in (4)              |        |
-|       |                   |            response |                   |        |
+|       |                   |            (5) Submit a                 |        |
+|       |                   |<-----------a commitment                 |        |
 |       |                   |                     |                   |        |
-|       |            If the customer              |                   |        |
+|       |            (6) If the                   |                   |        |
+|       |            customer                     |                   |        |
 |       |            is eligible in               |                   |        |
 |       |            (5), ensure it   ------------------------------->|        |
 |       |            can be recorded              |                   |        |
 |       |            on-chain                     |                   |        |
+|       |                   |                     |                   |        |
+|       |            (7) Revoke a     ------------------------------->|        |
+|       |            commitment                   |                   |        |
 |       |                   |                     |                   |        |
 +------------------------------------------------------------------------------+
 ```

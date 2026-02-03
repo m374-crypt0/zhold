@@ -19,8 +19,9 @@
 1. Create a secret attestation from data obtained from the **Issuer** and keep
    it safe
 2. Compute a commitment from aforementioned data and a secret value
-3. Send this commitment to the **Issuer** for on-chain storage
-4. Generate a **ZKP** locally, binding an EVM address of its choice.
+3. Generate a **ZKP** locally, binding an EVM address of its choice then, test
+   it.
+4. Send this commitment to the **Issuer** for on-chain storage
 5. Use this **ZKP** to prove he's compliant without any disclosure of personnal
    information
 
@@ -40,15 +41,46 @@ flow](/issuer/README.md#flows)
 +------------------------------------------------------------------------------+
 |     Customer            Issuer            Blockchain            Circuit      |
 |         |        |         |         |         |         |         |         |
+| (1) asks for     |         |         |         |         |         |         |
+| eligibility     ---------->|         |         |         |         |         |
+| regarding a      |         |         |         |         |         |         |
+| policy  |        |         |         |         |         |         |         |
 |         |        |         |         |         |         |         |         |
+| (2) Creates an   |         |         |         |         |         |         |
+| attestation      |         |         |         |         |         |         |
+| if elegibile in  |         |         |         |         |         |         |
+| (1) using        |         |         |         |         |         |         |
+| customer id,     |         |         |         |         |         |         |
+| Issuer policy    |         |         |         |         |         |         |
+| data, secret     |         |         |         |         |         |         |
+| salt and an      |         |         |         |         |         |         |
+| EVM address      |         |         |         |         |         |         |
 |         |        |         |         |         |         |         |         |
+| (3) compute a    |         |         |         |         |         |         |
+| commitment using |         |         |         |         |         |         |
+| the attestation  |         |         |         |         |         |         |
+| data    |        |         |         |         |         |         |         |
 |         |        |         |         |         |         |         |         |
+| (4) generates a  |         |         |         |         |         |         |
+| ZKP locally and--------------------------------------------------->|         |
+| verifies it      |         |         |         |         |         |         |
 |         |        |         |         |         |         |         |         |
+| (5) Sends the    |         |         |         |         |         |         |
+| commitement to  ---------->|         |         |         |         |         |
+| the Issuer       |         |         |         |         |         |         |
 |         |        |         |         |         |         |         |         |
-|         |        |         |         |         |         |         |         |
-|         |        |         |         |         |         |         |         |
-|         |        |         |         |         |         |         |         |
-|         |        |         |         |         |         |         |         |
+| (6) Using the    |         |         |         |         |         |         |
+| EVM address      |         |         |         |         |         |         |
+| specified in the |         |         |         |         |         |         |
+| attestation,     |         |         |         |         |         |         |
+| proves the       |         |         |         |         |         |         |
+| compliancy of   ------------------------------>|         |         |         |
+| the customer     |         |         |         |         |         |         |
+| without |        |         |         |         |         |         |         |
+| disclosing any   |         |         |         |         |         |         |
+| private data     |         |         |         |         |         |         |
+| whenever the     |         |         |         |         |         |         |
+| customer needs   |         |         |         |         |         |         |
 |         |        |         |         |         |         |         |         |
 +------------------------------------------------------------------------------+
 ```
@@ -56,6 +88,6 @@ flow](/issuer/README.md#flows)
 ## A word about the **Customer**
 
 A lot of work is done **locally** and **never get out** from the **customer**
-machine.
+machine especially elements dealing with private data and proof generation.
 
 > Compliancy without disclosure
