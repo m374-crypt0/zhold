@@ -12,6 +12,7 @@
   - [What Is Not Proven](#what-is-not-proven)
   - [Trust Assumptions](#trust-assumptions)
   - [Scope of This Repository](#scope-of-this-repository)
+  - [Architecture](#architecture)
   - [User flows](#user-flows)
     - [Customer registration](#customer-registration)
     - [Building a ZKP locally](#building-a-zkp-locally)
@@ -134,6 +135,32 @@ This project focuses on:
   verification)
 
 It is not a full RWA framework and does not attempt to replace regulatory processes.
+
+---
+
+## Architecture
+
+Simple, main components are actually sub-directories of this repositories.
+Built with [rake](https://github.com/m374-crypt0/rake), to manipulate each
+components with a dedicated Makefile directly from the root of this repository.
+For instance: `make circuits compile` or `make contracts test`
+
+```text
+circuits/
+   |
+   `- All stuff regarding the circuit, implemented using noir
+   |
+contracts/
+   |
+   `- Both business contract and verifier for ZKP
+   |
+customer/
+   |
+   `- Typescript local scripts to verify eligibility on-chain
+issuer
+   |
+   `- An API to emulate a RWA provider/trader
+```
 
 ---
 
