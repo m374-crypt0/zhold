@@ -5,7 +5,7 @@ Usage:
 
   - help: print this message
   - build: build all contracts and tests
-  - clean: remove coontract compilation artifacts and deinit all forge
+  - clean: remove contract compilation artifacts and deinit all forge
            dependency submodules
   - test: test all contracts and output a gas report
   - testv: test all contracts and output detailed report about failures
