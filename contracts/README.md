@@ -50,23 +50,22 @@
 |  Issuer     CommitmentStore    Verifier     CompliancyProver     Customer    |
 |    |               |              |                 |                |       |
 |    |        (1) Accept a          |                 |                |       |
-|    |<-------trusted issuer        |         (7) Accept a             |       |
+|    |<-------trusted issuer        |         (2) Accept a             |       |
 |    |        when deployed         |<--------trusted Verifier         |       |
 |    |               |              |         contract when            |       |
-|    |               |              |         deployed                 |       |
-|    |               |              |                 |                |       |
-|    |               |              |         (8) Accept a             |       |
-| (2)|               |<-----------------------commitment store         |       |
-| commit   --------->|              |         contract address         |       |
-|    |               |              |                 |                |       |
-|    |               |              |                 |          (4) prove     |
-| (3)|               |              |                 |<-------- eligibility   |
-| revoke   --------->|              |                 |                |       |
+| (4)|               |              |         deployed                 |       |
+| commit   --------->|              |                 |                |       |
+|    |               |              |         (3) Accept a             |       |
+| (5)|               |<-----------------------commitment store         |       |
+| revoke   --------->|              |         contract address         |       |
 |    |               |              |                 |                |       |
 |    |        (6) Emit state        |                 |                |       |
 |    |        change events  ----------------------------------------->|       |
 |    |               |              |                 |                |       |
-|    |               |              |         (5) verify a ZKP         |       |
+|    |               |              |                 |          (7) prove     |
+|    |               |              |                 |<-------- eligibility   |
+|    |               |              |                 |                |       |
+|    |               |              |         (8) verify a ZKP         |       |
 |    |               |              |         parameterized            |       |
 |    |               |              |<--------with public              |       |
 |    |               |              |         inputs  |                |       |
