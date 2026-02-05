@@ -70,3 +70,6 @@ Essentially two-fold:
 ```
 
 ## Final words
+
+**circuits** is a critical part of *zhold*. It must be designed carefully, be
+crystal clear and updated with string governance rules.
