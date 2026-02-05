@@ -16,12 +16,13 @@
 
 ## Responsibilities of the **Customer**
 
-1. Create a secret attestation from data obtained from the **Issuer** and keep
-   it safe
-2. Compute a commitment from aforementioned data and a secret value
-3. Generate a **ZKP** locally, binding an EVM address of its choice then, test
+1. Create a set of inputs from **issuer**'s policy properties and secret values
+   from the **customer** himself and keep them safe.
+2. Compute a commitment from aforementioned data
+3. Send this commitment to the **Issuer** for on-chain storage should the
+   **customer** be eligible regarding the **issuer**'s policy
+4. Generate a **ZKP** locally, binding an EVM address of its choice then, test
    it.
-4. Send this commitment to the **Issuer** for on-chain storage
 5. Use this **ZKP** to prove he's compliant without any disclosure of personnal
    information
 
@@ -29,6 +30,9 @@
 
 This part of *zhold* is essentially assumed **trustless** excepting for the
 **Customer**'s identity that is not proven in the scope of this demonstration.
+
+Of course we assume the **issuer** is legally allowed to report the eligibility
+of a **customer**
 
 ## Interactions in the entire *zhold* system
 
@@ -61,13 +65,13 @@ flow](/issuer/README.md#flows)
 | the attestation  |         |         |         |         |         |         |
 | data    |        |         |         |         |         |         |         |
 |         |        |         |         |         |         |         |         |
-| (4) generates a  |         |         |         |         |         |         |
-| ZKP locally and--------------------------------------------------->|         |
-| verifies it      |         |         |         |         |         |         |
-|         |        |         |         |         |         |         |         |
-| (5) Sends the    |         |         |         |         |         |         |
+| (4) Sends the    |         |         |         |         |         |         |
 | commitement to  ---------->|         |         |         |         |         |
 | the Issuer       |         |         |         |         |         |         |
+|         |        |         |         |         |         |         |         |
+| (5) generates a  |         |         |         |         |         |         |
+| ZKP locally and--------------------------------------------------->|         |
+| verifies it      |         |         |         |         |         |         |
 |         |        |         |         |         |         |         |         |
 | (6) Using the    |         |         |         |         |         |         |
 | EVM address      |         |         |         |         |         |         |
