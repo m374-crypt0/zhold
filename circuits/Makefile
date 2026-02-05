@@ -9,13 +9,13 @@ CIRCUITS_ROOT_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 help:
 	@. ${CIRCUITS_ROOT_DIR}.make/scripts/help.sh
 
-.PHONY: compile
-compile:
-	@cd ${CIRCUITS_ROOT_DIR} && nargo compile
-
 .PHONY: clean
 clean:
 	@rm -rf ${CIRCUITS_ROOT_DIR}target
+
+.PHONY: compile
+compile: clean
+	@cd ${CIRCUITS_ROOT_DIR} && nargo compile
 
 .PHONY: test
 test:

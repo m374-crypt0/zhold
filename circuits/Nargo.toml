@@ -1,9 +1,9 @@
 [package]
-name = "circuits"
+name = "rwa_eligibility_v1_hold_asset"
 type = "bin"
 authors = ["m374-crypt0"]
 compiler_version = "1.0.0"
-description = "evaluates RWA policy eligibility"
+description = "evaluates RWA policy eligibility for asset holding"
 entry = "src/main.nr"
 license = "MIT"
 
