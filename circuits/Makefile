@@ -17,6 +17,10 @@ clean:
 compile: clean
 	@cd ${CIRCUITS_ROOT_DIR} && nargo compile
 
+.PHONY: generate_solidity_verifier
+generate_solidity_verifier: compile
+	@bun run ${CIRCUITS_ROOT_DIR}solidity_verifier_generator/generator.ts ${CIRCUITS_ROOT_DIR}target/Verifier.sol
+
 .PHONY: test
 test:
 	@cd ${CIRCUITS_ROOT_DIR} && nargo test

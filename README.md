@@ -25,7 +25,9 @@
 
 It allows an address to **prove compliance with off-chain rules** and obtain
 on-chain authorization **without revealing identity, jurisdiction, or private
-compliance data**. Here, the compliance is all about **holding** a **RWA**.
+compliance data**.
+
+> Here, the compliance is all about **holding** a **RWA**.
 
 The design is **asset-agnostic**, focused on **policy enforcement**, not
 tokenization.
@@ -149,10 +151,14 @@ For instance: `make circuits compile` or `make contracts test`
 circuits/
    |
    `- All stuff regarding the circuit, implemented using noir
+      The customer generates a ZKP locally
+      This ZKP is passed through a solidity verifier smart contract
    |
 contracts/
    |
    `- Both business contract and verifier for ZKP
+      The customer use them to prove his eligibility regarding holding an RWA
+      The issuer commit or revoke a commitment of a customer
    |
 customer/
    |
@@ -187,7 +193,7 @@ Blockchain
  │  ZK proof verification
  │
  ▼
-Access granted / denied
+Customer is allowed or denied to hold a RWA regarding the proving outcome
 ```
 
 ### Customer registration

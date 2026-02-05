@@ -1,2 +1,3 @@
 target/*
 !target/rwa_eligibility_v1_hold_asset.json
+!target/Verifier.sol
