@@ -20,3 +20,7 @@ clean:
 .PHONY: test
 test:
 	@cd ${CIRCUITS_ROOT_DIR} && nargo test
+
+.PHONY: watch
+watch:
+	@. ${CIRCUITS_ROOT_DIR}.make/scripts/watch.sh
