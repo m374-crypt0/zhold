@@ -10,6 +10,9 @@
   - [Trust boundaries](#trust-boundaries)
     - [noir circuit](#noir-circuit)
     - [Generated solidity verifier smart contract](#generated-solidity-verifier-smart-contract)
+  - [Inputs of the circuit](#inputs-of-the-circuit)
+    - [private inputs](#private-inputs)
+    - [public inputs](#public-inputs)
   - [Interactions in the entire *zhold* system](#interactions-in-the-entire-zhold-system)
     - [Flows](#flows)
   - [Final words](#final-words)
@@ -33,6 +36,28 @@
 
 - The same as for the circuit, the verifier must not be regenerated without
   governance.
+
+## Inputs of the circuit
+
+> They need to be defined perfectly to ensure a sound and privacy preserving
+> logic.
+
+### private inputs
+
+- **customer** identifier
+  - very private, obtained from the **issuer** at registration time
+- secret **customer** salt
+  - A secret value only the **customer** knows
+
+### public inputs
+
+- **policy** properties (specific to this demonstration)
+  - the **policy** identifier (exposed by the **issuer**)
+  - the scope of the policy (here *holding*)
+  - validity time range
+  - the ethereum address used to *prove* eligibility
+  - the *commitment* computed by the **customer** and stored on-chain by the
+    **issuer**
 
 ## Interactions in the entire *zhold* system
 
