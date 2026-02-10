@@ -76,4 +76,25 @@ contract CommitmentStoreTests is Test {
 
     vm.stopPrank();
   }
+
+  function test_revoke_fails_ifNotCalledByOwner() public {
+    vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, address(this)));
+    store.revoke(0);
+  }
+
+  function test_revoke_succeeds_andEmitAtCommitmentRevocation() public {
+    vm.startPrank(issuer);
+
+    store.commit(1);
+    store.commit(2);
+
+    vm.expectEmit();
+    emit CommitmentStore.CommitmentRevoked(2);
+    store.revoke(2);
+
+    assertFalse(store.commitments(2));
+    assertTrue(store.commitments(1));
+
+    vm.stopPrank();
+  }
 }
