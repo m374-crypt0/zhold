@@ -1,21 +1,27 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.33;
 
+import { IPrimeFieldOrderProvider } from "./interfaces/IPrimeFieldOrderProvider.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract CommitmentStore is Ownable {
   error InvalidZeroCommitment();
   error DuplicateCommitment();
+  error CommitmentPrimeFieldOrderOverflow();
 
   mapping(uint256 => bool) public commitments;
+  IPrimeFieldOrderProvider public primeFieldOrderProvider;
 
   event CommitmentStored(uint256 commitment_);
 
-  constructor(address owner_) Ownable(owner_) { }
+  constructor(IPrimeFieldOrderProvider pfop_, address owner_) Ownable(owner_) {
+    primeFieldOrderProvider = pfop_;
+  }
 
   function commit(uint256 commitment_) external onlyOwner {
     require(commitment_ != 0, InvalidZeroCommitment());
     require(commitments[commitment_] == false, DuplicateCommitment());
+    require(commitment_ <= primeFieldOrderProvider.P(), CommitmentPrimeFieldOrderOverflow());
 
     commitments[commitment_] = true;
 
