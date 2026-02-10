@@ -59,13 +59,20 @@
 | (5)|               |<-----------------------commitment store         |       |
 | revoke   --------->|              |         contract address         |       |
 |    |               |              |                 |                |       |
-|    |        (6) Emit state        |                 |                |       |
+|    |        (6) ensures the       |                 |                |       |
+|    |        commitment has        |                 |                |       |
+|    |        a valid value         |                 |                |       |
+|    |        compared to the------>|                 |                |       |
+|    |        prime field of        |                 |                |       |
+|    |        the verifier          |                 |                |       |
+|    |               |              |                 |                |       |
+|    |        (7) Emit state        |                 |                |       |
 |    |        change events  ----------------------------------------->|       |
 |    |               |              |                 |                |       |
-|    |               |              |                 |          (7) prove     |
+|    |               |              |                 |          (9) prove     |
 |    |               |              |                 |<-------- eligibility   |
 |    |               |              |                 |                |       |
-|    |               |              |         (8) verify a ZKP         |       |
+|    |               |              |         (9) verify a ZKP         |       |
 |    |               |              |         parameterized            |       |
 |    |               |              |<--------with public              |       |
 |    |               |              |         inputs  |                |       |
