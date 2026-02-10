@@ -33,7 +33,7 @@
 ### Verifier
 
 1. Expose a verification function taking a **ZKP** and a set of public inputs
-   returning a boolean regardng the **ZKP** is verified or not.
+   returning a boolean regarding the **ZKP** is verified or not.
 
 ## Trust boundaries
 
