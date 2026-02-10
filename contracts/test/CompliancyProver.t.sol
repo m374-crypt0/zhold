@@ -2,7 +2,6 @@
 pragma solidity 0.8.33;
 
 import { IPrimeFieldOrderProvider } from "../src/interfaces/IPrimeFieldOrderProvider.sol";
-import { IVerifier } from "../src/interfaces/IVerifier.sol";
 
 import { CommitmentStore } from "../src/CommitmentStore.sol";
 import { CompliancyProver } from "../src/CompliancyProver.sol";
@@ -16,19 +15,56 @@ contract CompliancyProverTests is Test {
   address public customer;
   address public issuer;
 
-  IPrimeFieldOrderProvider pfop;
-  IVerifier verifier;
+  IPrimeFieldOrderProvider public pfop;
+  Verifier public verifier;
 
-  CommitmentStore store;
-  CompliancyProver prover;
+  CommitmentStore public store;
+  CompliancyProver public prover;
+
+  uint256 constant commitment = 2;
+  bytes public zkpStub;
+  bytes32[] public publicInputsStub;
 
   function setUp() public {
     issuer = makeAddr("issuer");
     customer = makeAddr("customer");
 
+    // NOTE: see ../../circuits/src/main.nr, function main arguments
+    publicInputsStub.push(0);
+    publicInputsStub.push(0);
+    publicInputsStub.push(0);
+    publicInputsStub.push(0);
+    publicInputsStub.push(0);
+    publicInputsStub.push(0);
+    publicInputsStub.push(bytes32(commitment));
+
     pfop = new PrimeFieldOrderProvider();
     store = new CommitmentStore(pfop, issuer);
     verifier = new Verifier();
     prover = new CompliancyProver(verifier, store);
+  }
+
+  function test_prove_fails_ifCommitmentIsNotInTheStore() public {
+    vm.expectRevert(CompliancyProver.InvalidCommitment.selector);
+    prover.prove(zkpStub, publicInputsStub);
+  }
+
+  function test_prove_fails_forInvalidProofs() public {
+    vm.startPrank(issuer);
+    store.commit(commitment);
+    vm.stopPrank();
+
+    verifier.makeVerificationsFail();
+
+    vm.expectRevert(CompliancyProver.InvalidProof.selector);
+    prover.prove(zkpStub, publicInputsStub);
+  }
+
+  function test_prove_succeeds_forValidProofs() public {
+    vm.startPrank(issuer);
+    store.commit(commitment);
+    vm.stopPrank();
+
+    assertTrue(prover.prove(zkpStub, publicInputsStub));
   }
 }
