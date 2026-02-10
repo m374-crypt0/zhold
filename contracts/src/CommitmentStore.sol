@@ -13,6 +13,7 @@ contract CommitmentStore is Ownable {
   IPrimeFieldOrderProvider public primeFieldOrderProvider;
 
   event CommitmentStored(uint256 commitment_);
+  event CommitmentRevoked(uint256 commitment_);
 
   constructor(IPrimeFieldOrderProvider pfop_, address owner_) Ownable(owner_) {
     primeFieldOrderProvider = pfop_;
@@ -26,5 +27,11 @@ contract CommitmentStore is Ownable {
     commitments[commitment_] = true;
 
     emit CommitmentStored(commitment_);
+  }
+
+  function revoke(uint256 commitment_) external onlyOwner {
+    delete commitments[commitment_];
+
+    emit CommitmentRevoked(commitment_);
   }
 }
