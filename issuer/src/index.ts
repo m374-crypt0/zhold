@@ -1,39 +1,35 @@
+import * as z from 'zod'
+
 import { Hono } from 'hono'
+import { zValidator } from '@hono/zod-validator'
+
+const kycDataSchema = z.object({
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  email: z.email()
+})
 
 import { type KYCData, type CustomerRepository } from './customerRepository'
-
-type RecordEligibilityInput = { customerId: number }
 
 type Bindings = {
   customerRepository: CustomerRepository
 }
 
+type RecordEligibilityInput = { customerId: number }
+
 const app = new Hono<{ Bindings: Bindings }>()
-  .post("/register", async (c) => {
-    let args: KYCData
+  .post("/register",
+    zValidator('json', kycDataSchema),
+    async (c) => {
+      const args = await c.req.json() as KYCData
 
-    try {
-      args = await c.req.json() as KYCData
-    } catch (e) {
-      return c.json({
-        error: 'missing properties in json object argument',
-        requiredProperties: ['firstName', 'lastName', 'email']
-      }, 400)
-    }
+      if (c.env.customerRepository.exists(args))
+        return c.json({ error: 'This customer is already registered' }, 409)
 
-    if (!args.firstName || !args.lastName || !args.email) {
-      return c.json({
-        error: 'firstName, lastName and email must not be empty',
-      }, 400)
-    }
+      const customerId = c.env.customerRepository.register(args)
 
-    if (c.env.customerRepository.exists(args))
-      return c.json({ error: 'This customer is already registered' }, 409)
-
-    const customerId = c.env.customerRepository.register(args)
-
-    return c.json({ customerId }, 200)
-  })
+      return c.json({ customerId }, 200)
+    })
   .post("/recordEligibility", async (c) => {
     let args: RecordEligibilityInput
 
