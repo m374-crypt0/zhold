@@ -1,13 +1,12 @@
 import { describe, it, expect } from 'bun:test'
 import { testClient } from 'hono/testing'
 
-import { type KYCData } from '../src/customerRepository'
-import { inMemoryCustomerRepository } from '../src/inMemoryCustomerRepository'
+import { inMemoryCustomerRepository } from '../src/repositories/inMemoryCustomerRepository'
 
-import app from '../src/index'
+import register from '../src/routes/register'
 
 describe('Prospect registration', () => {
-  const client = testClient(app, { customerRepository: inMemoryCustomerRepository })
+  const client = testClient(register, { customerRepository: inMemoryCustomerRepository })
 
   it('should succeed user registration and returns a customer identifier', async () => {
     const res = await client.register.$post({
@@ -58,7 +57,7 @@ describe('Prospect registration', () => {
       }
     })
 
-    const res = await client.register.$post({
+    await client.register.$post({
       json: {
         firstName: 'Bridget',
         lastName: 'Strand',
@@ -66,25 +65,18 @@ describe('Prospect registration', () => {
       }
     })
 
+    const res = await client.register.$post({
+      json: {
+        firstName: 'Louise',
+        lastName: 'Bridges',
+        email: 'louise.bridges@bridges.uca'
+      }
+    })
+
     const status = res.status;
     const data = await res.json() as { customerId: number }
 
     expect(status).toBe(200)
-    expect(data.customerId).toBe(1)
-  })
-})
-
-describe('Customer eligibility record', () => {
-  const client = testClient(app)
-
-  it('should fail for unregistered customers', async () => {
-    const res = await client.recordEligibility.$post({ json: { customerId: 0 } })
-
-    const status = res.status;
-    const data = await res.json() as { error: string }
-
-    expect(status).toBe(404)
-    expect(data).toContainKey('error')
-    expect(data.error).toBe('This customer is not found')
+    expect(data.customerId).toBe(2)
   })
 })
