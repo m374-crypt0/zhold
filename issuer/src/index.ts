@@ -6,6 +6,8 @@ export type RegisterInput = {
   email: string
 }
 
+type RecordEligibilityInput = { customerId: number }
+
 type Customer = RegisterInput & {
   customerId: number
 }
@@ -43,6 +45,17 @@ const app = new Hono()
     customers.push({ ...args, customerId })
     return c.json({ customerId }, 200)
   })
+  .post("/recordEligibility", async (c) => {
+    let args: RecordEligibilityInput
+
+    try {
+      args = await c.req.json() as RecordEligibilityInput
+    } catch (e) {
+      return c.json({ error: 'missing properties in json object argument', requiredProperties: ['customerId'] }, 400)
+    }
+
+    return c.json({ error: 'This customer is not found' }, 404)
+  })
 
 Bun.serve({
   fetch(req) {
@@ -51,5 +64,5 @@ Bun.serve({
   port: 3000
 })
 
-// NOTE: exported for test suites
+export const clearCustomers = () => customers.length = 0
 export default app;

@@ -2,11 +2,11 @@ import { describe, it, expect } from 'bun:test'
 import { testClient } from 'hono/testing'
 
 import { type RegisterInput } from '../src/index'
-import app from '../src/index'
+import app, { clearCustomers } from '../src/index'
 
 describe('Prospect registration', () => {
   const client = testClient(app)
-
+  clearCustomers()
 
   it.each([undefined, null])('should fail if arguments are missing', async (args) => {
     const res = await client.register.$post({ json: args })
@@ -101,5 +101,35 @@ describe('Prospect registration', () => {
 
     expect(status).toBe(200)
     expect(data.customerId).toBe(1)
+  })
+})
+
+describe('Customer eligibility record', () => {
+  const client = testClient(app)
+  clearCustomers()
+
+  it('should fail if arguments are missing', async () => {
+    const res = await client.recordEligibility.$post()
+
+    const status = res.status;
+    const data = await res.json() as { error: string, requiredProperties: [string] }
+
+    expect(status).toBe(400)
+    expect(data).toContainKey('error')
+    expect(data.error).toBe('missing properties in json object argument')
+
+    expect(data).toContainKey('requiredProperties')
+    expect(data.requiredProperties).toContainAllValues(['customerId'])
+  })
+
+  it('should fail for unregistered customers', async () => {
+    const res = await client.recordEligibility.$post({ json: { customerId: 0 } })
+
+    const status = res.status;
+    const data = await res.json() as { error: string }
+
+    expect(status).toBe(404)
+    expect(data).toContainKey('error')
+    expect(data.error).toBe('This customer is not found')
   })
 })
