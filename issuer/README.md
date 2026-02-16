@@ -76,8 +76,9 @@ Regarding the [purpose of zhold](../README.md/#purposes), we can see the
 |       |            property list in ----------->|                   |        |
 |       |            response of (4)              |                   |        |
 |       |                   |                     |                   |        |
-|       |                   |            (5) Submit a                 |        |
-|       |                   |<-----------a commitment                 |        |
+|       |                   |            (5) Submit an                |        |
+|       |                   |<-----------eligibility                  |        |
+|       |                   |            record   |                   |        |
 |       |                   |                     |                   |        |
 |       |            (6) If the                   |                   |        |
 |       |            customer                     |                   |        |
