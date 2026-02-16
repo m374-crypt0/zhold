@@ -15,8 +15,6 @@ type Bindings = {
   customerRepository: CustomerRepository
 }
 
-type RecordEligibilityInput = { customerId: number }
-
 const app = new Hono<{ Bindings: Bindings }>()
   .post("/register",
     zValidator('json', kycDataSchema),
@@ -31,14 +29,6 @@ const app = new Hono<{ Bindings: Bindings }>()
       return c.json({ customerId }, 200)
     })
   .post("/recordEligibility", async (c) => {
-    let args: RecordEligibilityInput
-
-    try {
-      args = await c.req.json() as RecordEligibilityInput
-    } catch (e) {
-      return c.json({ error: 'missing properties in json object argument', requiredProperties: ['customerId'] }, 400)
-    }
-
     return c.json({ error: 'This customer is not found' }, 404)
   })
 

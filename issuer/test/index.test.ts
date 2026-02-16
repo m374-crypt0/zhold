@@ -77,20 +77,6 @@ describe('Prospect registration', () => {
 describe('Customer eligibility record', () => {
   const client = testClient(app)
 
-  it('should fail if arguments are missing', async () => {
-    const res = await client.recordEligibility.$post()
-
-    const status = res.status;
-    const data = await res.json() as { error: string, requiredProperties: [string] }
-
-    expect(status).toBe(400)
-    expect(data).toContainKey('error')
-    expect(data.error).toBe('missing properties in json object argument')
-
-    expect(data).toContainKey('requiredProperties')
-    expect(data.requiredProperties).toContainAllValues(['customerId'])
-  })
-
   it('should fail for unregistered customers', async () => {
     const res = await client.recordEligibility.$post({ json: { customerId: 0 } })
 
