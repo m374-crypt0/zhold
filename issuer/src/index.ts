@@ -64,5 +64,5 @@ Bun.serve({
   port: 3000
 })
 
-export const clearCustomers = () => customers.length = 0
 export default app;
+export const customerCount = () => customers.length
