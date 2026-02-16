@@ -6,6 +6,12 @@ export type RegisterInput = {
   email: string
 }
 
+type Customer = RegisterInput & {
+  customerId: number
+}
+
+const customers: Array<Customer> = []
+
 const app = new Hono()
   .post("/register", async (c) => {
     let args: RegisterInput
@@ -25,6 +31,12 @@ const app = new Hono()
       }, 400)
     }
 
+    if (customers.some(customer => customer.firstName === args.firstName
+      && customer.lastName === args.lastName
+      && customer.email === args.email))
+      return c.json({ error: 'This customer is already registered' }, 409)
+
+    customers.push({ ...args, customerId: 0 })
     return c.json({ customerId: 0 }, 200)
   })
 
