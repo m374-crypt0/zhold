@@ -78,4 +78,28 @@ describe('Prospect registration', () => {
     expect(status).toBe(409)
     expect(data.error).toBe('This customer is already registered')
   })
+
+  it('should succeed multiple user registrations and return different customer identifiers', async () => {
+    await client.register.$post({
+      json: {
+        firstName: 'Sam',
+        lastName: 'Porter',
+        email: 'sam.porter@bridges.uca'
+      }
+    })
+
+    const res = await client.register.$post({
+      json: {
+        firstName: 'Bridget',
+        lastName: 'Strand',
+        email: 'bridget.strand@bridges.uca'
+      }
+    })
+
+    const status = res.status;
+    const data = await res.json() as { customerId: number }
+
+    expect(status).toBe(200)
+    expect(data.customerId).toBe(1)
+  })
 })

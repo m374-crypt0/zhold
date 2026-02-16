@@ -36,8 +36,12 @@ const app = new Hono()
       && customer.email === args.email))
       return c.json({ error: 'This customer is already registered' }, 409)
 
-    customers.push({ ...args, customerId: 0 })
-    return c.json({ customerId: 0 }, 200)
+    const customerId = customers.length === 0 ?
+      0 :
+      customers[customers.length - 1]!.customerId + 1
+
+    customers.push({ ...args, customerId })
+    return c.json({ customerId }, 200)
   })
 
 Bun.serve({
