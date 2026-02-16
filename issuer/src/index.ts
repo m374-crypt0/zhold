@@ -1,25 +1,19 @@
 import { Hono } from 'hono'
 
-export type RegisterInput = {
-  firstName: string,
-  lastName: string,
-  email: string
-}
+import { type KYCData, type CustomerRepository } from './customerRepository'
 
 type RecordEligibilityInput = { customerId: number }
 
-type Customer = RegisterInput & {
-  customerId: number
+type Bindings = {
+  customerRepository: CustomerRepository
 }
 
-const customers: Array<Customer> = []
-
-const app = new Hono()
+const app = new Hono<{ Bindings: Bindings }>()
   .post("/register", async (c) => {
-    let args: RegisterInput
+    let args: KYCData
 
     try {
-      args = await c.req.json() as RegisterInput
+      args = await c.req.json() as KYCData
     } catch (e) {
       return c.json({
         error: 'missing properties in json object argument',
@@ -33,16 +27,11 @@ const app = new Hono()
       }, 400)
     }
 
-    if (customers.some(customer => customer.firstName === args.firstName
-      && customer.lastName === args.lastName
-      && customer.email === args.email))
+    if (c.env.customerRepository.exists(args))
       return c.json({ error: 'This customer is already registered' }, 409)
 
-    const customerId = customers.length === 0 ?
-      0 :
-      customers[customers.length - 1]!.customerId + 1
+    const customerId = c.env.customerRepository.register(args)
 
-    customers.push({ ...args, customerId })
     return c.json({ customerId }, 200)
   })
   .post("/recordEligibility", async (c) => {
@@ -65,4 +54,3 @@ Bun.serve({
 })
 
 export default app;
-export const customerCount = () => customers.length

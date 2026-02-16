@@ -1,11 +1,13 @@
 import { describe, it, expect } from 'bun:test'
 import { testClient } from 'hono/testing'
 
-import { type RegisterInput } from '../src/index'
-import app, { customerCount } from '../src/index'
+import { type KYCData } from '../src/customerRepository'
+import { inMemoryCustomerRepository } from '../src/inMemoryCustomerRepository'
+
+import app from '../src/index'
 
 describe('Prospect registration', () => {
-  const client = testClient(app)
+  const client = testClient(app, { customerRepository: inMemoryCustomerRepository })
 
   it.each([undefined, null])('should fail if arguments are missing', async (args) => {
     const res = await client.register.$post({ json: args })
@@ -27,7 +29,7 @@ describe('Prospect registration', () => {
   { firstName: '', lastName: 'doe', email: '' },
   { firstName: '', lastName: '', email: 'john.doe@unknown.com' },
   ])('should fail if any required property is empty', async (args) => {
-    const res = await client.register.$post({ json: args as RegisterInput })
+    const res = await client.register.$post({ json: args as KYCData })
 
     const status = res.status;
     const data = await res.json() as { error: string }
@@ -52,7 +54,6 @@ describe('Prospect registration', () => {
 
     expect(status).toBe(200)
     expect(data.customerId).toBe(0)
-    expect(customerCount()).toBe(1)
   })
 
   it('should fail at registring the same propsect twice', async () => {
@@ -77,7 +78,6 @@ describe('Prospect registration', () => {
 
     expect(status).toBe(409)
     expect(data.error).toBe('This customer is already registered')
-    expect(customerCount()).toBe(1)
   })
 
   it('should succeed multiple user registrations and return different customer identifiers', async () => {
@@ -102,7 +102,6 @@ describe('Prospect registration', () => {
 
     expect(status).toBe(200)
     expect(data.customerId).toBe(1)
-    expect(customerCount()).toBe(2)
   })
 })
 
