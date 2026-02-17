@@ -2,8 +2,9 @@ import { describe, it, expect } from 'bun:test'
 import { testClient } from 'hono/testing'
 
 import { inMemoryCustomerRepository } from '../src/repositories/inMemoryCustomerRepository'
+import { type Customer } from '../src/repositories/types/customerRepository'
 
-import register from '../src/routes/register'
+import register from '../src/handlers/register'
 
 describe('Prospect registration', () => {
   const client = testClient(register, { customerRepository: inMemoryCustomerRepository })
@@ -18,10 +19,10 @@ describe('Prospect registration', () => {
     })
 
     const status = res.status;
-    const data = await res.json() as { customerId: number }
+    const data = await res.json() as Customer
 
     expect(status).toBe(200)
-    expect(data.customerId).toBe(0)
+    expect(data.id).toBe(0)
   })
 
   it('should fail at registring the same propsect twice', async () => {
@@ -74,9 +75,9 @@ describe('Prospect registration', () => {
     })
 
     const status = res.status;
-    const data = await res.json() as { customerId: number }
+    const data = await res.json() as Customer
 
     expect(status).toBe(200)
-    expect(data.customerId).toBe(2)
+    expect(data.id).toBe(2)
   })
 })

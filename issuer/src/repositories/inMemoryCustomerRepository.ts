@@ -1,4 +1,4 @@
-import { type CustomerRepository, type KYCData, type Customer } from './customerRepository'
+import { type CustomerRepository, type KYCData, type Customer } from './types/customerRepository'
 
 export const inMemoryCustomerRepository: CustomerRepository = {
   register(kycData: KYCData) {

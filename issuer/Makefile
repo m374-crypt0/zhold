@@ -11,7 +11,7 @@ help:
 
 .PHONY: run
 run:
-	@bun ${ISSUER_ROOT_DIR}src/index.ts
+	@bun ${ISSUER_ROOT_DIR}src/
 
 .PHONY: test
 test:

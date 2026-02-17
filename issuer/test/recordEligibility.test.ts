@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'bun:test'
 import { testClient } from 'hono/testing'
-
-import recordEligibility from '../src/routes/recordEligibility'
+import recordEligibility from '../src/handlers/recordEligibility'
 
 describe('Customer eligibility record', () => {
   const client = testClient(recordEligibility)

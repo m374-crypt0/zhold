@@ -1,17 +1,21 @@
-import { Hono } from 'hono'
+import { OpenAPIHono } from '@hono/zod-openapi'
 
-import register from './routes/register'
-import recordEligibility from './routes/recordEligibility'
+import register from './handlers/register'
+import recordEligibility from './handlers/recordEligibility'
 
-const app = new Hono()
+const app = new OpenAPIHono()
   .route('/register', register)
   .route("/recordEligibility", recordEligibility)
+  .doc('doc', {
+    openapi: '3.0.0',
+    info: {
+      version: '0.1.0',
+      title: 'Issuer API',
+      description: 'exposes issuer endpoints for registering, querying policies and record eligibility of customers on-chain'
+    }
+  })
 
-Bun.serve({
-  fetch(req) {
-    return app.fetch(req)
-  },
+export default {
+  fetch: app.fetch,
   port: 3000
-})
-
-export default app;
+}
