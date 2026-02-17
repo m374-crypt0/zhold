@@ -18,4 +18,18 @@ describe('Policy querying', () => {
     expect(res.status).toBe(404)
     expect(await res.json()).toHaveProperty('error')
   })
+
+  it('should return policy properties for existing policy identifier', async () => {
+    const res = await client.policy[':id'].$get({ param: { id: '0' } })
+
+    expect(res.status).toBe(200)
+    expect(await res.json()).toEqual({
+      id: 0,
+      assetName: 'RWA_GOLD_ONE_OUNCE',
+      scope: {
+        name: 'RWA_HOLD',
+        validityMode: 'timestamp'
+      }
+    })
+  })
 })

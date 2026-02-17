@@ -4,8 +4,16 @@ export const inMemoryPolicyRepository: PolicyRepository = {
   listIdentifiers() {
     return repository.map(policy => policy.id)
   },
+  getFromId(id) {
+    return repository.find(p => p.id === id)
+  },
 }
 
 const repository: Array<Policy> = [{
-  id: 0
+  id: 0,
+  assetName: 'RWA_GOLD_ONE_OUNCE',
+  scope: {
+    name: 'RWA_HOLD',
+    validityMode: 'timestamp'
+  }
 }]

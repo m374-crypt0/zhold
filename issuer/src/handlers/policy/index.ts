@@ -24,5 +24,11 @@ export default new OpenAPIHono<PolicyEnv>()
     })
   .openapi(routes['/policy/{id}'](injectPolicyRepository),
     async (c) => {
-      return c.json({ error: 'Policy not found' }, 404)
+      const id = Number.parseInt(c.req.param('id'))
+
+      const policy = c.env.policyRepository.getFromId(id)
+
+      return policy === undefined ?
+        c.json({ error: 'Policy not found' }, 404) :
+        c.json(policy, 200)
     })
