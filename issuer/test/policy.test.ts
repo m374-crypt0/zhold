@@ -11,4 +11,11 @@ describe('Policy querying', () => {
 
     expect(await res.json()).toEqual([0])
   })
+
+  it('should error when querying unexisting policy', async () => {
+    const res = await client.policy[':id'].$get({ param: { id: '1' } })
+
+    expect(res.status).toBe(404)
+    expect(await res.json()).toHaveProperty('error')
+  })
 })

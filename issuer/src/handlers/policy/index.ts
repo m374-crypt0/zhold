@@ -1,7 +1,7 @@
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { createMiddleware } from 'hono/factory'
 
-import { createRouteWithMiddleware } from './routes'
+import routes from './routes'
 import { type PolicyRepository } from '../../repositories/types/policyRepository'
 import { inMemoryPolicyRepository } from '../../repositories/inMemoryPolicyRepository'
 
@@ -11,14 +11,18 @@ type PolicyEnv = {
   }
 }
 
-const route = createRouteWithMiddleware<PolicyEnv>(createMiddleware(async (c, next) => {
+const injectPolicyRepository = createMiddleware<PolicyEnv>(async (c, next) => {
   c.env.policyRepository = inMemoryPolicyRepository
 
   await next()
-}))
+})
 
 export default new OpenAPIHono<PolicyEnv>()
-  .openapi(route,
+  .openapi(routes['/policy'](injectPolicyRepository),
     async (c) => {
       return c.json(c.env.policyRepository.listIdentifiers(), 200)
+    })
+  .openapi(routes['/policy/{id}'](injectPolicyRepository),
+    async (c) => {
+      return c.json({ error: 'Policy not found' }, 404)
     })
