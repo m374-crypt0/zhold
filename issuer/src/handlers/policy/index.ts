@@ -1,12 +1,23 @@
 import { OpenAPIHono } from '@hono/zod-openapi'
-import { type PolicyRepository } from '../../repositories/types/policyRepository'
-import route from './routes'
+import { createMiddleware } from 'hono/factory'
 
-type Bindings = {
-  policyRepository: PolicyRepository
+import { createRouteWithMiddleware } from './routes'
+import { type PolicyRepository } from '../../repositories/types/policyRepository'
+import { inMemoryPolicyRepository } from '../../repositories/inMemoryPolicyRepository'
+
+type PolicyEnv = {
+  Bindings: {
+    policyRepository: PolicyRepository
+  }
 }
 
-export default new OpenAPIHono<{ Bindings: Bindings }>()
+const route = createRouteWithMiddleware<PolicyEnv>(createMiddleware(async (c, next) => {
+  c.env.policyRepository = inMemoryPolicyRepository
+
+  await next()
+}))
+
+export default new OpenAPIHono<PolicyEnv>()
   .openapi(route,
     async (c) => {
       return c.json(c.env.policyRepository.listIdentifiers(), 200)
