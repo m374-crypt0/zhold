@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'bun:test'
 import { testClient } from 'hono/testing'
-
 import { inMemoryCustomerRepository } from '../src/repositories/inMemoryCustomerRepository'
 import { type Customer } from '../src/repositories/types/customerRepository'
 

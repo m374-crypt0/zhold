@@ -2,10 +2,12 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 
 import register from './handlers/register'
 import recordEligibility from './handlers/recordEligibility'
+import policy from './handlers/policy'
 
 const app = new OpenAPIHono()
-  .route('/register', register)
-  .route("/recordEligibility", recordEligibility)
+  .route('/', register)
+  .route('/', recordEligibility)
+  .route('/', policy)
   .doc('doc', {
     openapi: '3.0.0',
     info: {
