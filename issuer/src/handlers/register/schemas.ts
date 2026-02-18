@@ -7,6 +7,7 @@ export const kycDataSchema = z.object({
     .openapi({
       type: 'string',
       minLength: 1,
+      description: 'first name of the prospect',
       example: 'John'
     }),
   lastName: z
@@ -15,14 +16,15 @@ export const kycDataSchema = z.object({
     .openapi({
       type: 'string',
       minLength: 1,
+      description: 'last name of the prospect',
       example: 'Doe'
     }),
   email: z
     .email()
     .openapi({
+      description: 'email address owned by the prospect',
       example: 'john.doe@unknown.ufo'
     })
-    .openapi('KYCData')
 })
 
 export const customerSchema = z.object({
@@ -46,8 +48,7 @@ export const customerSchema = z.object({
     .email()
     .openapi({
       example: 'john.doe@unknown.ufo'
-    })
-    .openapi('KYCData'),
+    }),
   id: z
     .number()
     .min(0)

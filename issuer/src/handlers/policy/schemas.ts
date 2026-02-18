@@ -27,6 +27,9 @@ export const policyNotFoundSchema = z.object({
       description: 'Error message when a policy with this identifier is not found'
     })
 })
+  .openapi({
+    description: 'A simple object embedding an error property'
+  })
 
 export const policySchema = z.object({
   id: z
@@ -56,10 +59,13 @@ export const policySchema = z.object({
         }),
       validityMode: z
         .string()
-        .includes('timestamp')
         .openapi({
+          enum: ['timestamp'],
           description: 'the validity mode of this RWA policy',
           example: 'timestamp'
         })
     })
 })
+  .openapi({
+    description: 'A policy handled by the issuer. Tied to a specific scope.'
+  })
