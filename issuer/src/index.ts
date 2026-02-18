@@ -3,10 +3,12 @@ import { swaggerUI } from '@hono/swagger-ui'
 
 import register from './handlers/register'
 import policy from './handlers/policy'
+import compliance from './handlers/compliance'
 
 const app = new OpenAPIHono()
   .route('/', register)
   .route('/', policy)
+  .route('/', compliance)
   .doc('doc', {
     openapi: '3.1.0',
     info: {
