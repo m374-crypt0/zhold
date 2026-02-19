@@ -3,7 +3,7 @@ export type Policy = {
   assetName: string,
   scope: {
     name: string,
-    validityMode: string
+    parameters: Array<string>
   }
 }
 

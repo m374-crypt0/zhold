@@ -13,7 +13,7 @@ const repository: Array<Policy> = [{
   id: 0,
   assetName: 'RWA_GOLD_ONE_OUNCE',
   scope: {
-    name: 'RWA_HOLD',
-    validityMode: 'timestamp'
+    name: 'HOLD',
+    parameters: ['validUntil']
   }
 }]

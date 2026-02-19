@@ -22,7 +22,7 @@ export default new OpenAPIHono<RegisterEnv>()
 
       const kycData = await c.req.json<KYCData>()
 
-      if (c.env.customerRepository.exists(kycData))
+      if (c.env.customerRepository.isAlreadyRegistered(kycData))
         return c.json({ error: 'This customer is already registered' }, 409)
 
       const id = c.env.customerRepository.register(kycData)

@@ -55,14 +55,20 @@ export const policySchema = z.object({
         .min(1)
         .openapi({
           description: 'The scope name of this policy',
-          example: 'RWA_HOLD'
+          example: 'HOLD'
         }),
-      validityMode: z
-        .string()
+      parameters: z
+        .array(z
+          .string()
+          .trim()
+          .min(1)
+          .openapi({
+            description: 'the name of this parameter, can hold any value required to ensure eligibility',
+            example: 'validUntil'
+          })
+        )
         .openapi({
-          enum: ['timestamp'],
-          description: 'the validity mode of this RWA policy',
-          example: 'timestamp'
+          description: 'parameter set for the scope of this policy'
         })
     })
 })

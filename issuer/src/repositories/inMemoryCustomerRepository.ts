@@ -8,12 +8,18 @@ export const inMemoryCustomerRepository: CustomerRepository = {
 
     return id
   },
-  exists(kycData: KYCData) {
-    return repository.some(customer =>
-      customer.email === kycData.email &&
+  isAlreadyRegistered(kycData: KYCData) {
+    return repository.some(customer => customer.email === kycData.email &&
       customer.firstName === kycData.firstName &&
       customer.lastName === kycData.lastName)
+  },
+  exists: function (id: number): boolean {
+    return repository.some(customer => customer.id === id)
   }
+}
+
+export function clearRepository() {
+  repository.length = 0
 }
 
 const repository: Array<Customer> = []
