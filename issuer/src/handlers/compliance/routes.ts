@@ -10,7 +10,7 @@ export default {
       method: 'get',
       path: '/compliance',
       request: {
-        params: complianceQueryParamsSchema
+        query: complianceQueryParamsSchema
       },
       responses: {
         200: {

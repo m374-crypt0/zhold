@@ -20,7 +20,7 @@ const injectRepositories = createMiddleware<ComplianceEnv>(async (c, next) => {
   await next()
 })
 
-export default new OpenAPIHono()
+export default new OpenAPIHono<ComplianceEnv>()
   .openapi(routes['/compliance'](injectRepositories),
     async (c) => {
       return c.json({ error: 'This customer does not exist' }, 400)

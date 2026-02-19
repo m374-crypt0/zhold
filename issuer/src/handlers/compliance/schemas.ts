@@ -2,26 +2,18 @@ import { z } from '@hono/zod-openapi'
 
 export const complianceQueryParamsSchema = z.object({
   customerId: z
-    .number()
-    .min(0)
+    .string()
+    .regex(/^(0|[1-9]\d*)$/)
     .openapi({
       description: 'The identifier of a registered customer',
-      example: 0,
-      param: {
-        in: 'query',
-        name: 'customerId'
-      }
+      example: 0
     }),
   policyId: z
-    .number()
-    .min(0)
+    .string()
+    .regex(/^(0|[1-9]\d*)$/)
     .openapi({
       description: 'The identifier of an existing policy',
-      example: 0,
-      param: {
-        in: 'query',
-        name: 'policyId'
-      }
+      example: 0
     })
 })
   .openapi({

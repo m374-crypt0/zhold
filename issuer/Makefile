@@ -11,7 +11,11 @@ help:
 
 .PHONY: run
 run:
-	@bun ${ISSUER_ROOT_DIR}src/
+	@bun run ${ISSUER_ROOT_DIR}src/
+
+.PHONY: dev
+dev:
+	@bun run dev ${ISSUER_ROOT_DIR}src/
 
 .PHONY: test
 test:

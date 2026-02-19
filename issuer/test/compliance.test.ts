@@ -12,7 +12,7 @@ describe('Customer compliancy querying', () => {
   })
 
   it('should fail to respond for an unexisting customer', async () => {
-    const res = await client.compliance.$get({ param: { customerId: 0, policyId: 0 } })
+    const res = await client.compliance.$get({ query: { customerId: '0', policyId: '0' } })
 
     expect(res.status).toBe(400)
     expect(await res.json()).toHaveProperty('error')
