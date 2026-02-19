@@ -7,11 +7,11 @@ import type { createMiddleware } from 'hono/factory'
 import type { Env } from 'hono/types'
 
 export default {
-  '/policy': <E extends Env = Env>(middleware: ReturnType<typeof createMiddleware<E>>) =>
+  '/listIdentifiers': <E extends Env = Env>(middleware: ReturnType<typeof createMiddleware<E>>) =>
     createRoute({
       middleware,
       method: 'get',
-      path: '/policy',
+      path: '/listIdentifiers',
       responses: {
         200: {
           content: {
@@ -23,11 +23,11 @@ export default {
         }
       }
     }),
-  '/policy/{id}': <E extends Env = Env>(middleware: ReturnType<typeof createMiddleware<E>>) =>
+  '/{id}': <E extends Env = Env>(middleware: ReturnType<typeof createMiddleware<E>>) =>
     createRoute({
       middleware,
       method: 'get',
-      path: '/policy/{id}',
+      path: '/{id}',
       request: {
         params: policyIdentifierParameterSchema
       },

@@ -3,7 +3,7 @@ import { testClient } from 'hono/testing'
 import { clearRepository, inMemoryCustomerRepository } from '../src/repositories/inMemoryCustomerRepository'
 import { type Customer } from '../src/repositories/types/customerRepository'
 
-import register from '../src/handlers/register'
+import register from '../src/handlers/prospects'
 
 describe('Prospect registration', () => {
   const client = testClient(register, { customerRepository: inMemoryCustomerRepository })

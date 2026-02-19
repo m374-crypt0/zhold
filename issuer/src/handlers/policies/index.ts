@@ -18,11 +18,11 @@ const injectPolicyRepository = createMiddleware<PolicyEnv>(async (c, next) => {
 })
 
 export default new OpenAPIHono<PolicyEnv>()
-  .openapi(routes['/policy'](injectPolicyRepository),
+  .openapi(routes['/listIdentifiers'](injectPolicyRepository),
     async (c) => {
       return c.json(c.env.policyRepository.listIdentifiers(), 200)
     })
-  .openapi(routes['/policy/{id}'](injectPolicyRepository),
+  .openapi(routes['/{id}'](injectPolicyRepository),
     async (c) => {
       const id = Number.parseInt(c.req.param('id'))
 

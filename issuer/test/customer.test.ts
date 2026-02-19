@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'bun:test'
 import { testClient } from 'hono/testing'
 
-import compliance from '../src/handlers/compliance'
+import compliance from '../src/handlers/customers'
 import { clearRepository, inMemoryCustomerRepository } from '../src/repositories/inMemoryCustomerRepository'
 import { inMemoryPolicyRepository } from '../src/repositories/inMemoryPolicyRepository'
 
@@ -14,11 +14,16 @@ describe('Customer compliancy querying', () => {
   beforeEach(() => clearRepository())
 
   it('should fail to respond for an unexisting customer', async () => {
-    const res = await client.compliance.$get({
-      query: {
+    const res = await client.recordCompliancy.$post({
+      json: {
         customerId: '0',
-        policyId: '0',
-        policyParameters: ['0']
+        policy: {
+          id: 0,
+          parameters: [{
+            key: 'validUntil',
+            value: '1770297431'
+          }]
+        }
       }
     })
 
@@ -35,11 +40,17 @@ describe('Customer compliancy querying', () => {
       email: 'a@a.a'
     })
 
-    const res = await client.compliance.$get({
-      query: {
+    const res = await client.recordCompliancy.$post({
+      json: {
         customerId: '0',
-        policyId: '1',
-        policyParameters: ['0']
+        policy: {
+          id: 1,
+          parameters: [{
+            key: 'foo',
+            value: 'bar'
+          }
+          ]
+        }
       }
     })
 
@@ -49,7 +60,7 @@ describe('Customer compliancy querying', () => {
     expect(response.error).toMatch('This policy does not exist')
   })
 
-  it.skip('should respond false to eligibility check for some policy parameters', async () => {
+  it.skip('should respond false to eligibility check for holding more than one month', async () => {
   })
 })
 
