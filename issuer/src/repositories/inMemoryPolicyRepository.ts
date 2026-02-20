@@ -18,6 +18,9 @@ const repository: Array<Policy> = [{
       validUntil: {
         description: 'A UNIX timestamp value with second precision'
       }
-    }
+    },
+  },
+  validateParameters: (parameters) => {
+    return parameters['validUntil'] !== undefined
   }
 }]

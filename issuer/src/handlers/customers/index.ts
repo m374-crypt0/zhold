@@ -23,13 +23,19 @@ const injectRepositories = createMiddleware<CustomerEnv>(async (c, next) => {
 export default new OpenAPIHono<CustomerEnv>()
   .openapi(routes['/recordCompliancy'](injectRepositories),
     async (c) => {
-      const { customerId, policy } = c.req.valid('json')
+      const params = c.req.valid('json')
 
-      if (!c.env.customerRepository.exists(customerId))
+      if (!c.env.customerRepository.exists(params.customerId))
         return c.json({ error: 'This customer does not exist' }, 400)
 
-      if (c.env.policyRepository.getFromId(policy.id) === undefined)
+      const policy = c.env.policyRepository.getFromId(params.policy.id)
+
+      if (policy === undefined)
         return c.json({ error: 'This policy does not exist' }, 400)
 
-      return c.json({ error: 'Bad policy parameters' }, 400)
+      if (!policy.validateParameters(params.policy.parameters))
+        return c.json({ error: 'Bad policy parameters' }, 400)
+
+      return c.json({ error: 'Bad policy parameter values' }, 400)
+
     })

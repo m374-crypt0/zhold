@@ -69,7 +69,25 @@ describe('Customer compliancy querying', () => {
     expect(response.error).toMatch('Bad policy parameters')
   })
 
-  it.skip('should respond false for invalid policy parameter value', async () => {
+  it('should respond false for invalid policy parameter value', async () => {
+    createTestCustomerInRepository()
+
+    const res = await client.recordCompliancy.$post({
+      json: {
+        customerId: 0,
+        policy: {
+          id: 0,
+          parameters: {
+            validUntil: 'foo'
+          }
+        }
+      }
+    })
+
+    const response = await res.json() as { error: string }
+
+    expect(res.status).toBe(400)
+    expect(response.error).toMatch('Bad policy parameter values')
   })
 })
 

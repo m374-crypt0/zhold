@@ -5,6 +5,7 @@ export type Policy = {
     name: string,
     parameters: Record<string, any>
   }
+  validateParameters: (parameters: Record<string, any>) => boolean
 }
 
 export type PolicyRepository = {
