@@ -3,6 +3,7 @@ import { testClient } from 'hono/testing'
 import customers from '../src/handlers/customers'
 import { clearRepository, inMemoryCustomerRepository } from '../src/repositories/inMemoryCustomerRepository'
 import { inMemoryPolicyRepository } from '../src/repositories/inMemoryPolicyRepository'
+import { nowFromEpochInSeconds, thirtyDaysLaterFromEpochInSeconds } from '../src/utility/time'
 
 describe('Customers compliancy recording', () => {
   const client = testClient(customers, {
@@ -20,7 +21,8 @@ describe('Customers compliancy recording', () => {
           id: 0,
           parameters: {
           }
-        }
+        },
+        commitment: 0
       }
     })
 
@@ -39,7 +41,8 @@ describe('Customers compliancy recording', () => {
         policy: {
           id: 1,
           parameters: {}
-        }
+        },
+        commitment: 0
       }
     })
 
@@ -96,15 +99,6 @@ describe('Customers compliancy recording', () => {
     })
 })
 
-
-function nowFromEpochInSeconds() {
-  return Math.floor((Date.now() / 1000))
-}
-
-function thirtyDaysLaterFromEpochInSeconds() {
-  return Math.floor((Date.now() + new Date(0).setHours(24 * 30)) / 1000)
-}
-
 function createExistingPolicyParameters(params: [string | undefined, any][]) {
   return params.map(p => {
     const param = {
@@ -113,7 +107,8 @@ function createExistingPolicyParameters(params: [string | undefined, any][]) {
         policy: {
           id: 0,
           parameters: {} as Record<string, any>
-        }
+        },
+        commitment: 0
       }
     }
 

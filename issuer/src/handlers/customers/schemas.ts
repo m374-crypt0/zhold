@@ -22,6 +22,15 @@ export const recordCompliancyQueryParamsSchema = z.object({
     })
     .openapi({
       description: 'The policy and its parameters'
+    }),
+  commitment: z
+    .number()
+    .min(0)
+    .openapi({
+      description: `A commitment, computed by the client and recorded on-chain
+ given he customer is eligible regarding the policy. The value of this
+ commitment is verified on-chain before store, to ensure it is
+ cryptographically correct`
     })
 })
   .openapi({
