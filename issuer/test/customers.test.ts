@@ -1,12 +1,11 @@
 import { beforeEach, describe, expect, it } from 'bun:test'
 import { testClient } from 'hono/testing'
-
-import compliance from '../src/handlers/customers'
+import customers from '../src/handlers/customers'
 import { clearRepository, inMemoryCustomerRepository } from '../src/repositories/inMemoryCustomerRepository'
 import { inMemoryPolicyRepository } from '../src/repositories/inMemoryPolicyRepository'
 
-describe('Customer compliancy querying', () => {
-  const client = testClient(compliance, {
+describe('Customers compliancy recording', () => {
+  const client = testClient(customers, {
     customerRepository: inMemoryCustomerRepository,
     policyRepository: inMemoryPolicyRepository
   })
@@ -50,27 +49,7 @@ describe('Customer compliancy querying', () => {
     expect(response.error).toMatch('This policy does not exist')
   })
 
-  it.each([{
-    json: {
-      customerId: 0,
-      policy: {
-        id: 0,
-        parameters: {}
-      }
-    }
-  },
-  {
-    json: {
-      customerId: 0,
-      policy: {
-        id: 0,
-        parameters: {
-          foo: 'foo'
-        }
-      }
-    }
-  }
-  ])
+  it.each(createExistingPolicyParameters([[undefined, undefined], ['foo', 'foo']]))
     ('should fail to respond if policy parameters do not exist or are missing', async (payload) => {
       createTestCustomerInRepository()
 
@@ -82,7 +61,7 @@ describe('Customer compliancy querying', () => {
       expect(response.error).toMatch('Bad policy parameters')
     })
 
-  it.each(createPolicyParameters([
+  it.each(createExistingPolicyParameters([
     ['validUntil', 'foo'],
     ['validUntil', 0],
     ['validUntil', null],
@@ -101,7 +80,7 @@ describe('Customer compliancy querying', () => {
       expect(response.error).toMatch('Bad policy parameter values')
     })
 
-  it.each(createPolicyParameters([
+  it.each(createExistingPolicyParameters([
     ['validUntil', nowFromEpochInSeconds() + 1],
     ['validUntil', thirtyDaysLaterFromEpochInSeconds() - 1],
   ]))
@@ -126,7 +105,7 @@ function thirtyDaysLaterFromEpochInSeconds() {
   return Math.floor((Date.now() + new Date(0).setHours(24 * 30)) / 1000)
 }
 
-function createPolicyParameters(params: [string, any][]) {
+function createExistingPolicyParameters(params: [string | undefined, any][]) {
   return params.map(p => {
     const param = {
       json: {
@@ -138,7 +117,8 @@ function createPolicyParameters(params: [string, any][]) {
       }
     }
 
-    param.json.policy.parameters[p[0]] = p[1]
+    if (p[0])
+      param.json.policy.parameters[p[0]] = p[1]
 
     return param
   })
