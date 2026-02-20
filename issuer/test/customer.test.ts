@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'bun:test'
+import { beforeEach, describe, expect, it } from 'bun:test'
 import { testClient } from 'hono/testing'
 
 import compliance from '../src/handlers/customers'
@@ -87,6 +87,8 @@ describe('Customer compliancy querying', () => {
     ['validUntil', 0],
     ['validUntil', null],
     ['validUntil', -3],
+    ['validUntil', thirtyDaysLaterFromEpochInSeconds()],
+    ['validUntil', nowFromEpochInSeconds()],
   ]))
     ('should respond false for invalid policy parameter value', async (body) => {
       createTestCustomerInRepository()
@@ -98,7 +100,31 @@ describe('Customer compliancy querying', () => {
       expect(res.status).toBe(400)
       expect(response.error).toMatch('Bad policy parameter values')
     })
+
+  it.each(createPolicyParameters([
+    ['validUntil', nowFromEpochInSeconds() + 1],
+    ['validUntil', thirtyDaysLaterFromEpochInSeconds() - 1],
+  ]))
+    ('should respond true for valid policy parameter value', async (body) => {
+      createTestCustomerInRepository()
+
+      const res = await client.recordCompliancy.$post(body)
+
+      const response = await res.json() as { result: boolean }
+
+      expect(res.status).toBe(200)
+      expect(response.result).toBe(true)
+    })
 })
+
+
+function nowFromEpochInSeconds() {
+  return Math.floor((Date.now() / 1000))
+}
+
+function thirtyDaysLaterFromEpochInSeconds() {
+  return Math.floor((Date.now() + new Date(0).setHours(24 * 30)) / 1000)
+}
 
 function createPolicyParameters(params: [string, any][]) {
   return params.map(p => {

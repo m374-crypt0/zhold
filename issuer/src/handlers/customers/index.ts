@@ -36,6 +36,9 @@ export default new OpenAPIHono<CustomerEnv>()
       if (!policy.validateParameters(params.policy.parameters))
         return c.json({ error: 'Bad policy parameters' }, 400)
 
-      return c.json({ error: 'Bad policy parameter values' }, 400)
+      if (!policy.validateParameterValues(params.policy.parameters))
+        return c.json({ error: 'Bad policy parameter values' }, 400)
+
+      return c.json({ result: true }, 200)
 
     })
