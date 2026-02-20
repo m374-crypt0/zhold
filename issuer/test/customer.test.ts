@@ -50,24 +50,37 @@ describe('Customer compliancy querying', () => {
     expect(response.error).toMatch('This policy does not exist')
   })
 
-  it('should fail to respond if policy parameters do not exist', async () => {
-    createTestCustomerInRepository()
-
-    const res = await client.recordCompliancy.$post({
-      json: {
-        customerId: 0,
-        policy: {
-          id: 0,
-          parameters: {}
+  it.each([{
+    json: {
+      customerId: 0,
+      policy: {
+        id: 0,
+        parameters: {}
+      }
+    }
+  },
+  {
+    json: {
+      customerId: 0,
+      policy: {
+        id: 0,
+        parameters: {
+          foo: 'foo'
         }
       }
+    }
+  }
+  ])
+    ('should fail to respond if policy parameters do not exist or are missing', async (payload) => {
+      createTestCustomerInRepository()
+
+      const res = await client.recordCompliancy.$post(payload)
+
+      const response = await res.json() as { error: string }
+
+      expect(res.status).toBe(400)
+      expect(response.error).toMatch('Bad policy parameters')
     })
-
-    const response = await res.json() as { error: string }
-
-    expect(res.status).toBe(400)
-    expect(response.error).toMatch('Bad policy parameters')
-  })
 
   it('should respond false for invalid policy parameter value', async () => {
     createTestCustomerInRepository()
