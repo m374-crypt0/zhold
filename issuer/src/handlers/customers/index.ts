@@ -1,5 +1,7 @@
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { createMiddleware } from 'hono/factory'
+import { LocalOnChainSigner } from '../../blockchain/localOnChainSigner'
+import type { OnChainSigner } from '../../blockchain/types/onChainSigner'
 import { inMemoryCustomerRepository } from '../../repositories/inMemoryCustomerRepository'
 import { inMemoryPolicyRepository } from '../../repositories/inMemoryPolicyRepository'
 import type { CustomerRepository } from '../../repositories/types/customerRepository'
@@ -9,13 +11,15 @@ import routes from './routes'
 type CustomerEnv = {
   Bindings: {
     customerRepository: CustomerRepository,
-    policyRepository: PolicyRepository
+    policyRepository: PolicyRepository,
+    onChainSigner: OnChainSigner
   }
 }
 
 const injectRepositories = createMiddleware<CustomerEnv>(async (c, next) => {
   c.env.customerRepository = inMemoryCustomerRepository
   c.env.policyRepository = inMemoryPolicyRepository
+  c.env.onChainSigner = new LocalOnChainSigner()
 
   await next()
 })

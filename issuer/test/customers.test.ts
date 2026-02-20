@@ -1,14 +1,18 @@
-import { beforeEach, describe, expect, it } from 'bun:test'
+import { beforeEach, describe, expect, it, spyOn } from 'bun:test'
 import { testClient } from 'hono/testing'
 import customers from '../src/handlers/customers'
 import { clearRepository, inMemoryCustomerRepository } from '../src/repositories/inMemoryCustomerRepository'
 import { inMemoryPolicyRepository } from '../src/repositories/inMemoryPolicyRepository'
 import { nowFromEpochInSeconds, thirtyDaysLaterFromEpochInSeconds } from '../src/utility/time'
+import { MockedOnChainSigner } from './mock/mockedOnChainSigner'
 
 describe('Customers compliancy recording', () => {
+  const failingOnChainSigner = new MockedOnChainSigner(false)
+
   const client = testClient(customers, {
     customerRepository: inMemoryCustomerRepository,
-    policyRepository: inMemoryPolicyRepository
+    policyRepository: inMemoryPolicyRepository,
+    onChainSigner: failingOnChainSigner
   })
 
   beforeEach(() => clearRepository())
@@ -22,7 +26,7 @@ describe('Customers compliancy recording', () => {
           parameters: {
           }
         },
-        commitment: 0
+        commitment: '0'
       }
     })
 
@@ -42,7 +46,7 @@ describe('Customers compliancy recording', () => {
           id: 1,
           parameters: {}
         },
-        commitment: 0
+        commitment: '0'
       }
     })
 
@@ -97,6 +101,19 @@ describe('Customers compliancy recording', () => {
       expect(res.status).toBe(200)
       expect(response.result).toBe(true)
     })
+
+  it('should fail if on-chain signer fails to store the commitment', async () => {
+    createTestCustomerInRepository()
+
+    const body = createExistingPolicyParameters([['validUntil', nowFromEpochInSeconds() + 3600]])[0]!
+
+    const spy = spyOn(failingOnChainSigner, 'storeCommitment')
+
+    await client.recordCompliancy.$post(body)
+
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy).rejects.toThrow('Error: cannot store the commitment on-chain')
+  })
 })
 
 function createExistingPolicyParameters(params: [string | undefined, any][]) {
@@ -108,7 +125,7 @@ function createExistingPolicyParameters(params: [string | undefined, any][]) {
           id: 0,
           parameters: {} as Record<string, any>
         },
-        commitment: 0
+        commitment: (() => new Bun.CryptoHasher('sha256').update('commitment').digest('hex'))()
       }
     }
 
