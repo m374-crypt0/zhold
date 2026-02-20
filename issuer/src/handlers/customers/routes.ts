@@ -1,7 +1,10 @@
 import { createRoute } from '@hono/zod-openapi'
 import type { createMiddleware } from 'hono/factory'
 import type { Env } from 'hono/types'
-import { recordCompliancyBadQueryParamsSchema, recordCompliancyQueryParamsSchema, recordCompliancyResponseSchema } from './schemas'
+import {
+  recordCompliancyBadQueryParamsSchema,
+  recordCompliancyQueryParamsSchema, recordCompliancyResponseSchema
+} from './schemas'
 
 export default {
   '/recordCompliancy': <E extends Env = Env>(middleware: ReturnType<typeof createMiddleware<E>>) =>

@@ -16,13 +16,11 @@ describe('Customer compliancy querying', () => {
   it('should fail to respond for an unexisting customer', async () => {
     const res = await client.recordCompliancy.$post({
       json: {
-        customerId: '0',
+        customerId: 0,
         policy: {
           id: 0,
-          parameters: [{
-            key: 'validUntil',
-            value: '1770297431'
-          }]
+          parameters: {
+          }
         }
       }
     })
@@ -34,22 +32,14 @@ describe('Customer compliancy querying', () => {
   })
 
   it('should fail to respond for an unexisting policy', async () => {
-    inMemoryCustomerRepository.register({
-      firstName: 'a',
-      lastName: 'a',
-      email: 'a@a.a'
-    })
+    createTestCustomerInRepository();
 
     const res = await client.recordCompliancy.$post({
       json: {
-        customerId: '0',
+        customerId: 0,
         policy: {
           id: 1,
-          parameters: [{
-            key: 'foo',
-            value: 'bar'
-          }
-          ]
+          parameters: {}
         }
       }
     })
@@ -60,7 +50,33 @@ describe('Customer compliancy querying', () => {
     expect(response.error).toMatch('This policy does not exist')
   })
 
-  it.skip('should respond false to eligibility check for holding more than one month', async () => {
+  it('should fail to respond if policy parameters do not exist', async () => {
+    createTestCustomerInRepository()
+
+    const res = await client.recordCompliancy.$post({
+      json: {
+        customerId: 0,
+        policy: {
+          id: 0,
+          parameters: {}
+        }
+      }
+    })
+
+    const response = await res.json() as { error: string }
+
+    expect(res.status).toBe(400)
+    expect(response.error).toMatch('Bad policy parameters')
+  })
+
+  it.skip('should respond false for invalid policy parameter value', async () => {
   })
 })
 
+function createTestCustomerInRepository() {
+  inMemoryCustomerRepository.register({
+    firstName: 'a',
+    lastName: 'a',
+    email: 'a@a.a'
+  })
+}

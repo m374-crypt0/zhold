@@ -14,6 +14,10 @@ const repository: Array<Policy> = [{
   assetName: 'RWA_GOLD_ONE_OUNCE',
   scope: {
     name: 'HOLD',
-    parameters: ['validUntil']
+    parameters: {
+      validUntil: {
+        description: 'A UNIX timestamp value with second precision'
+      }
+    }
   }
 }]

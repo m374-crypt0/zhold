@@ -31,6 +31,25 @@ export const policyNotFoundSchema = z.object({
     description: 'A simple object embedding an error property'
   })
 
+export const policyParametersSchema = z
+  .record(z
+    .string()
+    .nonempty()
+    .openapi({
+      description: 'The name of this policy parameter'
+    }), z
+      .any()
+      .openapi({
+        description: 'The value of this policy parameter'
+      }))
+  .openapi({
+    description: 'An object whose keys are parameter names and values contain useful information regarding this parameter',
+    example: {
+      validUntil: 1771529808
+    }
+  })
+
+
 export const policySchema = z.object({
   id: z
     .number()
@@ -57,19 +76,7 @@ export const policySchema = z.object({
           description: 'The scope name of this policy',
           example: 'HOLD'
         }),
-      parameters: z
-        .array(z
-          .string()
-          .trim()
-          .min(1)
-          .openapi({
-            description: 'the name of this parameter, can hold any value required to ensure eligibility',
-            example: 'validUntil'
-          })
-        )
-        .openapi({
-          description: 'parameter set for the scope of this policy'
-        })
+      parameters: policyParametersSchema
     })
 })
   .openapi({
