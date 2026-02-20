@@ -82,27 +82,41 @@ describe('Customer compliancy querying', () => {
       expect(response.error).toMatch('Bad policy parameters')
     })
 
-  it('should respond false for invalid policy parameter value', async () => {
-    createTestCustomerInRepository()
+  it.each(createPolicyParameters([
+    ['validUntil', 'foo'],
+    ['validUntil', 0],
+    ['validUntil', null],
+    ['validUntil', -3],
+  ]))
+    ('should respond false for invalid policy parameter value', async (body) => {
+      createTestCustomerInRepository()
 
-    const res = await client.recordCompliancy.$post({
+      const res = await client.recordCompliancy.$post(body)
+
+      const response = await res.json() as { error: string }
+
+      expect(res.status).toBe(400)
+      expect(response.error).toMatch('Bad policy parameter values')
+    })
+})
+
+function createPolicyParameters(params: [string, any][]) {
+  return params.map(p => {
+    const param = {
       json: {
         customerId: 0,
         policy: {
           id: 0,
-          parameters: {
-            validUntil: 'foo'
-          }
+          parameters: {} as Record<string, any>
         }
       }
-    })
+    }
 
-    const response = await res.json() as { error: string }
+    param.json.policy.parameters[p[0]] = p[1]
 
-    expect(res.status).toBe(400)
-    expect(response.error).toMatch('Bad policy parameter values')
+    return param
   })
-})
+}
 
 function createTestCustomerInRepository() {
   inMemoryCustomerRepository.register({
