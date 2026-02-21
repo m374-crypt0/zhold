@@ -1,4 +1,5 @@
 import { z } from '@hono/zod-openapi'
+import { nowFromEpochInSeconds } from '../../utility/time'
 
 export const policyIdentifiersSchema = z.array(z.number().min(0))
   .openapi({
@@ -45,7 +46,7 @@ export const policyParametersSchema = z
   .openapi({
     description: 'An object whose keys are parameter names and values contain useful information regarding this parameter',
     example: {
-      validUntil: 1771529808
+      validUntil: nowFromEpochInSeconds() + 3600
     }
   })
 

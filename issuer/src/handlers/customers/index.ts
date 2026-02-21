@@ -44,5 +44,4 @@ export default new OpenAPIHono<CustomerEnv>()
         return c.json({ error: 'Bad policy parameter values' }, 400)
 
       return c.json({ result: true }, 200)
-
     })
