@@ -12,12 +12,27 @@ describe('Issuer manual revocation', () => {
   })
 
   it('should fail if no commitment is given for revocation', async () => {
+    const res = await client.revokeCommitment.$post({ json: { commitment: '' } })
+
+    expect(res.status).toBe(400)
+  })
+
+  it('should fail if on-chain revocation fails', async () => {
+    const failingOnChainSigner = new MockedOnChainSigner(false)
+    const client = testClient(issuer, {
+      onChainSigner: failingOnChainSigner,
+      env: 'test'
+    })
+
     const res = await client.revokeCommitment.$post({
       json: {
-        commitment: ''
+        commitment: '0123456789abcdef'
       }
     })
 
-    expect(res.status).toBe(400)
+    const body = await res.json() as { error: string }
+
+    expect(res.status).toBe(500)
+    expect(body.error).toBe('Cannot revoke commitment')
   })
 })

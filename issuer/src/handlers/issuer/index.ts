@@ -4,14 +4,14 @@ import { LocalOnChainSigner } from '../../blockchain/localOnChainSigner'
 import type { OnChainSigner } from '../../blockchain/types/onChainSigner'
 import routes from './routes'
 
-type CustomerEnv = {
+type IssuerEnv = {
   Bindings: {
     onChainSigner: OnChainSigner,
     env: 'test' | 'prod'
   }
 }
 
-const injectRepositories = createMiddleware<CustomerEnv>(async (c, next) => {
+const injectRepositories = createMiddleware<IssuerEnv>(async (c, next) => {
   // NOTE: 'test' env set up a testing env (see in customers.test.ts)
   if (c.env.env === 'prod') {
     c.env.onChainSigner = new LocalOnChainSigner()
@@ -20,9 +20,11 @@ const injectRepositories = createMiddleware<CustomerEnv>(async (c, next) => {
   await next()
 })
 
-export default new OpenAPIHono<CustomerEnv>()
+export default new OpenAPIHono<IssuerEnv>()
   .openapi(routes['/revokeCommitment'](injectRepositories),
     async (c) => {
-      return c.json({ error: 'not implemented' }, 400)
+      c.req.valid('json')
+
+      return c.json({ error: 'Cannot revoke commitment' }, 500)
     })
 

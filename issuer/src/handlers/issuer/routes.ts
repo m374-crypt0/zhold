@@ -2,7 +2,7 @@ import { createRoute } from '@hono/zod-openapi'
 import type { createMiddleware } from 'hono/factory'
 import type { Env } from 'hono/types'
 import {
-  revokeCommitmentBadQueryParamsSchema,
+  revokeCommitmentErrorParamsSchema,
   revokeCommitmentQueryParamsSchema,
   revokeCommitmentResponseSchema
 } from './schemas'
@@ -34,10 +34,18 @@ export default {
         400: {
           content: {
             "application/json": {
-              schema: revokeCommitmentBadQueryParamsSchema
+              schema: revokeCommitmentErrorParamsSchema
             }
           },
-          description: 'Reports the issuer failed to revoke the commitment on-chain'
+          description: 'Reports the issuer failed to revoke the commitment on-chain because of bad request'
+        },
+        500: {
+          content: {
+            "application/json": {
+              schema: revokeCommitmentErrorParamsSchema
+            }
+          },
+          description: 'Reports the issuer failed to revoke the commitment on-chain because of server error'
         }
       }
     })

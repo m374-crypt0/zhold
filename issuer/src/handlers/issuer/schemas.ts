@@ -25,7 +25,7 @@ export const revokeCommitmentResponseSchema = z.object({
     description: 'The result of commitment revocation by the issuer'
   })
 
-export const revokeCommitmentBadQueryParamsSchema = z.object({
+export const revokeCommitmentErrorParamsSchema = z.object({
   error: z
     .string()
     .min(1)
