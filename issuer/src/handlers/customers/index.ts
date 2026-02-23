@@ -12,14 +12,18 @@ type CustomerEnv = {
   Bindings: {
     customerRepository: CustomerRepository,
     policyRepository: PolicyRepository,
-    onChainSigner: OnChainSigner
+    onChainSigner: OnChainSigner,
+    env: 'test' | 'prod'
   }
 }
 
 const injectRepositories = createMiddleware<CustomerEnv>(async (c, next) => {
-  c.env.customerRepository = inMemoryCustomerRepository
-  c.env.policyRepository = inMemoryPolicyRepository
-  c.env.onChainSigner = new LocalOnChainSigner()
+  // NOTE: 'test' env set up a testing env (see in customers.test.ts)
+  if (c.env.env === 'prod') {
+    c.env.customerRepository = inMemoryCustomerRepository
+    c.env.policyRepository = inMemoryPolicyRepository
+    c.env.onChainSigner = new LocalOnChainSigner()
+  }
 
   await next()
 })
@@ -42,6 +46,13 @@ export default new OpenAPIHono<CustomerEnv>()
 
       if (!policy.validateParameterValues(params.policy.parameters))
         return c.json({ error: 'Bad policy parameter values' }, 400)
+
+      try {
+        await c.env.onChainSigner.storeCommitment(params.commitment)
+      } catch (error) {
+        const e = error as Error
+        return c.json({ error: e.message }, 400)
+      }
 
       return c.json({ result: true }, 200)
     })

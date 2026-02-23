@@ -7,12 +7,13 @@ import { nowFromEpochInSeconds, thirtyDaysLaterFromEpochInSeconds } from '../src
 import { MockedOnChainSigner } from './mock/mockedOnChainSigner'
 
 describe('Customers compliancy recording', () => {
-  const failingOnChainSigner = new MockedOnChainSigner(false)
+  const succeedingOnChainSigner = new MockedOnChainSigner(true)
 
   const client = testClient(customers, {
     customerRepository: inMemoryCustomerRepository,
     policyRepository: inMemoryPolicyRepository,
-    onChainSigner: failingOnChainSigner
+    onChainSigner: succeedingOnChainSigner,
+    env: 'test'
   })
 
   beforeEach(() => clearRepository())
@@ -103,16 +104,25 @@ describe('Customers compliancy recording', () => {
     })
 
   it('should fail if on-chain signer fails to store the commitment', async () => {
+    const failingOnChainSigner = new MockedOnChainSigner(false)
+
+    const client = testClient(customers, {
+      onChainSigner: failingOnChainSigner,
+      customerRepository: inMemoryCustomerRepository,
+      policyRepository: inMemoryPolicyRepository
+    })
     createTestCustomerInRepository()
 
     const body = createExistingPolicyParameters([['validUntil', nowFromEpochInSeconds() + 3600]])[0]!
 
     const spy = spyOn(failingOnChainSigner, 'storeCommitment')
 
-    await client.recordCompliancy.$post(body)
+    const res = await client.recordCompliancy.$post(body)
+    const json = await res.json() as { error: string }
 
     expect(spy).toHaveBeenCalledTimes(1)
-    expect(spy).rejects.toThrow('Error: cannot store the commitment on-chain')
+    expect(res.status).toBe(400)
+    expect(json.error, 'Error: cannot store commitment')
   })
 })
 
