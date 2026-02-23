@@ -4,11 +4,13 @@ import { swaggerUI } from '@hono/swagger-ui'
 import prospects from './handlers/prospects'
 import policies from './handlers/policies'
 import customers from './handlers/customers'
+import issuer from './handlers/issuer'
 
 const app = new OpenAPIHono()
   .route('/prospects', prospects)
   .route('/policies', policies)
   .route('/customers', customers)
+  .route('/issuer', issuer)
   .doc('doc', {
     openapi: '3.1.0',
     info: {
