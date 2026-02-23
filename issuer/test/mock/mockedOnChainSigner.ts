@@ -5,11 +5,18 @@ export class MockedOnChainSigner implements OnChainSigner {
     this.mustSucceed = mustSucceed
   }
 
+  public revokeCommitment(commitment: string) {
+    if (this.mustSucceed)
+      return Promise.resolve(commitment)
+
+    return Promise.reject(new Error('Cannot revoke commitment'))
+  }
+
   public storeCommitment(commitment: string) {
     if (this.mustSucceed)
       return Promise.resolve(commitment)
 
-    return Promise.reject('Error: cannot store commitment')
+    return Promise.reject(new Error('Cannot store commitment'))
   }
 
   private mustSucceed: boolean

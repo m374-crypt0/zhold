@@ -23,8 +23,15 @@ const injectRepositories = createMiddleware<IssuerEnv>(async (c, next) => {
 export default new OpenAPIHono<IssuerEnv>()
   .openapi(routes['/revokeCommitment'](injectRepositories),
     async (c) => {
-      c.req.valid('json')
+      const params = c.req.valid('json')
 
-      return c.json({ error: 'Cannot revoke commitment' }, 500)
+      try {
+        await c.env.onChainSigner.revokeCommitment(params.commitment)
+      } catch (error) {
+        const e = error as Error
+        return c.json({ error: e.message }, 500)
+      }
+
+      return c.json({ result: true }, 200)
     })
 

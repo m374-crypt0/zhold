@@ -24,6 +24,8 @@ describe('Issuer manual revocation', () => {
       env: 'test'
     })
 
+    const spy = spyOn(failingOnChainSigner, 'revokeCommitment')
+
     const res = await client.revokeCommitment.$post({
       json: {
         commitment: '0123456789abcdef'
@@ -32,7 +34,24 @@ describe('Issuer manual revocation', () => {
 
     const body = await res.json() as { error: string }
 
+    expect(spy).toHaveBeenCalledTimes(1)
     expect(res.status).toBe(500)
     expect(body.error).toBe('Cannot revoke commitment')
+  })
+
+  it('should succeed if on-chain revocation succeeds', async () => {
+    const spy = spyOn(succeedingOnChainSigner, 'revokeCommitment')
+
+    const res = await client.revokeCommitment.$post({
+      json: {
+        commitment: '0123456789abcdef'
+      }
+    })
+
+    const body = await res.json() as { result: boolean }
+
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(res.status).toBe(200)
+    expect(body.result).toBe(true)
   })
 })
