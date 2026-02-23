@@ -8,6 +8,9 @@ RAKE_ROOT_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 # TODO: specific dependency setup
 FUNCSHIONAL_ROOT_DIR := ${RAKE_ROOT_DIR}.rake/scripts/lib/funcshional/
 
+# NOTE: zhold root dir. Useful for inner rake projects such as
+# ./run/integration/tests/between/issuer/and/local/
+ZHOLD_ROOT_DIR := ${RAKE_ROOT_DIR}
 export
 
 # simple targets

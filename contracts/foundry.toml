@@ -4,7 +4,10 @@ out = "out"
 libs = ["lib"]
 solc_version = "0.8.33"
 evm_version = "osaka"
-remappings = ["@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/"]
+remappings = [
+  "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+  "@circuits/target/=../circuits/target/",
+]
 gas_reports = []
 optimizer = true
 optimizer_runs = 999999
