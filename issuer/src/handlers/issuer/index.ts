@@ -13,6 +13,7 @@ type IssuerEnv = {
 
 const injectRepositories = createMiddleware<IssuerEnv>(async (c, next) => {
   // NOTE: 'test' env set up a testing env (see in customers.test.ts)
+  // As a result those lines won't be covered
   if (c.env.env === 'prod') {
     c.env.onChainSigner = new LocalOnChainSigner()
   }

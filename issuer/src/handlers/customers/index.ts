@@ -19,6 +19,7 @@ type CustomerEnv = {
 
 const injectRepositories = createMiddleware<CustomerEnv>(async (c, next) => {
   // NOTE: 'test' env set up a testing env (see in customers.test.ts)
+  // As a result those lines won't be covered
   if (c.env.env === 'prod') {
     c.env.customerRepository = inMemoryCustomerRepository
     c.env.policyRepository = inMemoryPolicyRepository
