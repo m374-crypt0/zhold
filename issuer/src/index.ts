@@ -1,10 +1,10 @@
 import { swaggerUI } from '@hono/swagger-ui'
 import { OpenAPIHono } from '@hono/zod-openapi'
 
-import customers from './handlers/customers'
-import issuer from './handlers/issuer'
-import policies from './handlers/policies'
-import prospects from './handlers/prospects'
+import customers from 'src/handlers/customers'
+import issuer from 'src/handlers/issuer'
+import policies from 'src/handlers/policies'
+import prospects from 'src/handlers/prospects'
 
 const app = new OpenAPIHono()
   .route('/prospects', prospects)

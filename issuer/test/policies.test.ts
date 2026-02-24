@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'bun:test'
 import { testClient } from 'hono/testing'
-import { inMemoryPolicyRepository } from '../src/repositories/inMemoryPolicyRepository'
-import policy from '../src/handlers/policies'
+import { inMemoryPolicyRepository } from 'src/repositories/inMemoryPolicyRepository'
+import policy from 'src/handlers/policies'
 
 describe('Policy querying', () => {
   const client = testClient(policy, { policyRepository: inMemoryPolicyRepository })

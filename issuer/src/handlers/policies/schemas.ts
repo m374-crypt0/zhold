@@ -1,5 +1,5 @@
 import { z } from '@hono/zod-openapi'
-import { nowFromEpochInSeconds } from '../../utility/time'
+import { nowFromEpochInSeconds } from 'src/utility/time'
 
 export const policyIdentifiersSchema = z.array(z.number().min(0))
   .openapi({

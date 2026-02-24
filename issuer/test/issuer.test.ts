@@ -1,6 +1,6 @@
 import { describe, expect, it, spyOn } from 'bun:test'
 import { testClient } from 'hono/testing'
-import issuer from '../src/handlers/issuer'
+import issuer from 'src/handlers/issuer'
 import { MockedOnChainSigner } from './mock/mockedOnChainSigner'
 
 describe('Issuer manual revocation', () => {

@@ -1,4 +1,4 @@
-import { nowFromEpochInSeconds, thirtyDaysLaterFromEpochInSeconds } from '../utility/time'
+import { nowFromEpochInSeconds, thirtyDaysLaterFromEpochInSeconds } from 'src/utility/time'
 import { type PolicyRepository, type Policy } from './types/policyRepository'
 
 export const inMemoryPolicyRepository: PolicyRepository = {

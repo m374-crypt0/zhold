@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, spyOn } from 'bun:test'
 import { testClient } from 'hono/testing'
-import customers from '../src/handlers/customers'
-import { clearRepository, inMemoryCustomerRepository } from '../src/repositories/inMemoryCustomerRepository'
-import { inMemoryPolicyRepository } from '../src/repositories/inMemoryPolicyRepository'
-import { nowFromEpochInSeconds, thirtyDaysLaterFromEpochInSeconds } from '../src/utility/time'
+import customers from 'src/handlers/customers'
+import { clearRepository, inMemoryCustomerRepository } from 'src/repositories/inMemoryCustomerRepository'
+import { inMemoryPolicyRepository } from 'src/repositories/inMemoryPolicyRepository'
+import { nowFromEpochInSeconds, thirtyDaysLaterFromEpochInSeconds } from 'src/utility/time'
 import { MockedOnChainSigner } from './mock/mockedOnChainSigner'
 
 describe('Customers compliancy recording', () => {

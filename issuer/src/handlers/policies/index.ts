@@ -2,8 +2,8 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import { createMiddleware } from 'hono/factory'
 
 import routes from './routes'
-import { type PolicyRepository } from '../../repositories/types/policyRepository'
-import { inMemoryPolicyRepository } from '../../repositories/inMemoryPolicyRepository'
+import { type PolicyRepository } from 'src/repositories/types/policyRepository'
+import { inMemoryPolicyRepository } from 'src/repositories/inMemoryPolicyRepository'
 
 type PolicyEnv = {
   Bindings: {

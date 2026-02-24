@@ -1,7 +1,7 @@
 import { OpenAPIHono } from '@hono/zod-openapi'
-import { type KYCData, type CustomerRepository } from '../../repositories/types/customerRepository'
+import { type KYCData, type CustomerRepository } from 'src/repositories/types/customerRepository'
 import { createRouteWithMiddleware } from './routes'
-import { inMemoryCustomerRepository } from '../../repositories/inMemoryCustomerRepository'
+import { inMemoryCustomerRepository } from 'src/repositories/inMemoryCustomerRepository'
 
 type RegisterEnv = {
   Bindings: {

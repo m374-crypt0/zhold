@@ -1,11 +1,11 @@
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { createMiddleware } from 'hono/factory'
-import { LocalOnChainSigner } from '../../blockchain/localOnChainSigner'
-import type { OnChainSigner } from '../../blockchain/types/onChainSigner'
-import { inMemoryCustomerRepository } from '../../repositories/inMemoryCustomerRepository'
-import { inMemoryPolicyRepository } from '../../repositories/inMemoryPolicyRepository'
-import type { CustomerRepository } from '../../repositories/types/customerRepository'
-import type { PolicyRepository } from '../../repositories/types/policyRepository'
+import { LocalOnChainSigner } from 'src/blockchain/localOnChainSigner'
+import type { OnChainSigner } from 'src/blockchain/types/onChainSigner'
+import { inMemoryCustomerRepository } from 'src/repositories/inMemoryCustomerRepository'
+import { inMemoryPolicyRepository } from 'src/repositories/inMemoryPolicyRepository'
+import type { CustomerRepository } from 'src/repositories/types/customerRepository'
+import type { PolicyRepository } from 'src/repositories/types/policyRepository'
 import routes from './routes'
 
 type CustomerEnv = {

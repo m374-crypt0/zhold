@@ -1,7 +1,7 @@
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { createMiddleware } from 'hono/factory'
-import { LocalOnChainSigner } from '../../blockchain/localOnChainSigner'
-import type { OnChainSigner } from '../../blockchain/types/onChainSigner'
+import { LocalOnChainSigner } from 'src/blockchain/localOnChainSigner'
+import type { OnChainSigner } from 'src/blockchain/types/onChainSigner'
 import routes from './routes'
 
 type IssuerEnv = {
