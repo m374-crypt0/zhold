@@ -18,9 +18,12 @@ dev:
 	@bun run dev ${ISSUER_ROOT_DIR}src/
 
 .PHONY: test
-test:
-	@bun test ${ISSUER_ROOT_DIR}test
 
+test: type=unit
+test:
+	@bun test ${ISSUER_ROOT_DIR}test/${type}
+
+test: type=unit
 .PHONY: watch
 watch:
-	@bun --watch test ${ISSUER_ROOT_DIR}test
+	@bun --watch test ${ISSUER_ROOT_DIR}test/${type}
