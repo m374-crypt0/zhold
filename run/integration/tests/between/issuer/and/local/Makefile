@@ -3,5 +3,6 @@ LOCAL_ROOT_DIR := ${ZHOLD_ROOT_DIR}run/integration/tests/between/issuer/and/loca
 export
 
 .PHONY: blockchain
+blockchain: WATCHING=
 blockchain:
 	@. ${LOCAL_ROOT_DIR}main.sh

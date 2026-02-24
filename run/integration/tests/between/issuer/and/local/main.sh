@@ -12,7 +12,11 @@ deploy_contracts_on_local_blockchain() {
 }
 
 run_integration_tests() {
-  make -C "${RAKE_ROOT_DIR}" issuer test type=integration
+  if [ "$WATCHING" = 'true' ]; then
+    make -C "${RAKE_ROOT_DIR}" issuer watch type=integration
+  else
+    make -C "${RAKE_ROOT_DIR}" issuer test type=integration
+  fi
 }
 
 main() {
