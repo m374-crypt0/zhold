@@ -6,9 +6,11 @@ import {
   createPublicClient,
   createWalletClient,
   defineChain,
-  http
+  http,
+  type PublicClient,
+  type WalletClient
 } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
+import { privateKeyToAccount, type PrivateKeyAccount } from "viem/accounts";
 import { anvil } from "viem/chains";
 import type { OnChainSigner } from "./types/onChainSigner";
 
@@ -17,10 +19,6 @@ type Hash = `0x${string}`
 
 export class LocalOnChainSigner implements OnChainSigner {
   constructor(privateKey: PrivateKey) {
-    this.privateKey = privateKey
-  }
-
-  public async revokeCommitment(commitment: string) {
     const clientConfig = {
       chain: defineChain({
         ...anvil,
@@ -28,22 +26,25 @@ export class LocalOnChainSigner implements OnChainSigner {
       }),
       transport: http()
     }
-    const publicClient = createPublicClient(clientConfig)
-    const walletClient = createWalletClient(clientConfig)
-    const account = privateKeyToAccount(this.privateKey)
 
+    this.publicClient = createPublicClient(clientConfig)
+    this.walletClient = createWalletClient(clientConfig)
+    this.account = privateKeyToAccount(privateKey)
+  }
+
+  public async revokeCommitment(commitment: string) {
     let transactionHash: Hash
 
     try {
-      const { request } = await publicClient.simulateContract({
+      const { request } = await this.publicClient.simulateContract({
         address: contractAddresses.CommitmentStore,
         abi,
         functionName: 'revoke',
         args: [BigInt(commitment)],
-        account
+        account: this.account
       })
 
-      transactionHash = await walletClient.writeContract(request)
+      transactionHash = await this.walletClient.writeContract(request)
     } catch (e) {
       const executionError = e as ContractFunctionExecutionError
       const revertedError = executionError.cause as ContractFunctionRevertedError
@@ -55,29 +56,18 @@ export class LocalOnChainSigner implements OnChainSigner {
   }
 
   public async storeCommitment(commitment: string) {
-    const clientConfig = {
-      chain: defineChain({
-        ...anvil,
-        id: 1
-      }),
-      transport: http()
-    }
-    const publicClient = createPublicClient(clientConfig)
-    const walletClient = createWalletClient(clientConfig)
-    const account = privateKeyToAccount(this.privateKey)
-
     let transactionHash: Hash
 
     try {
-      const { request } = await publicClient.simulateContract({
+      const { request } = await this.publicClient.simulateContract({
         address: contractAddresses.CommitmentStore,
         abi,
         functionName: 'commit',
         args: [BigInt(commitment)],
-        account
+        account: this.account
       })
 
-      transactionHash = await walletClient.writeContract(request)
+      transactionHash = await this.walletClient.writeContract(request)
     } catch (e) {
       const executionError = e as ContractFunctionExecutionError
       const revertedError = executionError.cause as ContractFunctionRevertedError
@@ -88,5 +78,7 @@ export class LocalOnChainSigner implements OnChainSigner {
     return transactionHash
   }
 
-  private privateKey: PrivateKey
+  private readonly publicClient: PublicClient
+  private readonly walletClient: WalletClient
+  private readonly account: PrivateKeyAccount
 }
