@@ -15,10 +15,11 @@ export const revokeCommitmentQueryParamsSchema = z.object({
 
 export const revokeCommitmentResponseSchema = z.object({
   result: z
-    .boolean()
+    .string()
+    .nonempty()
     .openapi({
-      description: 'result of the commitment revocation',
-      example: true
+      description: 'the revoked commitment',
+      example: '0x0123456789abcdef'
     })
 })
   .openapi({

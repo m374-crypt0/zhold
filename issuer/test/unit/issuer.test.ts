@@ -50,10 +50,10 @@ describe('Issuer manual revocation', () => {
       }
     })
 
-    const body = await res.json() as { result: boolean }
+    const body = await res.json() as { result: string }
 
     expect(spy).toHaveBeenCalledTimes(1)
     expect(res.status).toBe(200)
-    expect(body.result).toBe(true)
+    expect(body.result).toBe('0123456789abcdef')
   })
 })

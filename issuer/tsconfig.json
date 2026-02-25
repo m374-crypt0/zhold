@@ -8,6 +8,11 @@
     "module": "Preserve",
     "moduleDetection": "force",
     "baseUrl": ".",
+    "paths": {
+      "contracts/*": [
+        "../contracts/*"
+      ]
+    },
     "jsx": "react-jsx",
     "allowJs": true,
     // Bundler mode
