@@ -3,23 +3,25 @@ import { testClient } from 'hono/testing'
 import { inMemoryPolicyRepository } from 'src/repositories/inMemoryPolicyRepository'
 import policy from 'src/handlers/policies'
 
+const should = '<unit> should'
+
 describe('Policy querying', () => {
   const client = testClient(policy, { policyRepository: inMemoryPolicyRepository })
 
-  it('should return a list of policy identifiers', async () => {
+  it(`${should} return a list of policy identifiers`, async () => {
     const res = await client.listIdentifiers.$get()
 
     expect(await res.json()).toEqual([0])
   })
 
-  it('should error when querying unexisting policy', async () => {
+  it(`${should} error when querying unexisting policy`, async () => {
     const res = await client[':id'].$get({ param: { id: '1' } })
 
     expect(res.status).toBe(404)
     expect(await res.json()).toHaveProperty('error')
   })
 
-  it('should return policy properties for existing policy identifier', async () => {
+  it(`${should} return policy properties for existing policy identifier`, async () => {
     const res = await client[':id'].$get({ param: { id: '0' } })
 
     expect(res.status).toBe(200)

@@ -13,9 +13,9 @@ deploy_contracts_on_local_blockchain() {
 
 run_integration_tests() {
   if [ "$WATCHING" = 'true' ]; then
-    make -C "${RAKE_ROOT_DIR}" issuer watch type=integration
+    make -C "${RAKE_ROOT_DIR}" issuer pattern=integration watch
   else
-    make -C "${RAKE_ROOT_DIR}" issuer test type=integration
+    make -C "${RAKE_ROOT_DIR}" issuer pattern=integration test
   fi
 }
 

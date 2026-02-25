@@ -5,12 +5,14 @@ import { type Customer } from 'src/repositories/types/customerRepository'
 
 import register from 'src/handlers/prospects'
 
+const should = '<unit> should'
+
 describe('Prospect registration', () => {
   const client = testClient(register, { customerRepository: inMemoryCustomerRepository })
 
   beforeEach(() => clearRepository())
 
-  it('should succeed user registration and returns a customer identifier', async () => {
+  it(`${should} succeed user registration and returns a customer identifier`, async () => {
     const res = await client.register.$post({
       json: {
         firstName: 'Sam',
@@ -26,7 +28,7 @@ describe('Prospect registration', () => {
     expect(data.id).toBe(0)
   })
 
-  it('should fail at registring the same propsect twice', async () => {
+  it(`${should} fail at registring the same propsect twice`, async () => {
     await client.register.$post({
       json: {
         firstName: 'Sam',
@@ -50,7 +52,7 @@ describe('Prospect registration', () => {
     expect(data.error).toBe('This customer is already registered')
   })
 
-  it('should succeed multiple user registrations and return different customer identifiers', async () => {
+  it(`${should} succeed multiple user registrations and return different customer identifiers`, async () => {
     await client.register.$post({
       json: {
         firstName: 'Sam',

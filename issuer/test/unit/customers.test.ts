@@ -6,6 +6,8 @@ import { inMemoryPolicyRepository } from 'src/repositories/inMemoryPolicyReposit
 import { nowFromEpochInSeconds, thirtyDaysLaterFromEpochInSeconds } from 'src/utility/time'
 import { MockedOnChainSigner } from './mock/mockedOnChainSigner'
 
+const should = '<unit> should'
+
 describe('Customers compliancy recording', () => {
   const succeedingOnChainSigner = new MockedOnChainSigner(true)
 
@@ -18,7 +20,7 @@ describe('Customers compliancy recording', () => {
 
   beforeEach(() => clearRepository())
 
-  it('should fail to respond for an unexisting customer', async () => {
+  it(`${should} fail to respond for an unexisting customer`, async () => {
     const res = await client.recordCompliancy.$post({
       json: {
         customerId: 0,
@@ -37,7 +39,7 @@ describe('Customers compliancy recording', () => {
     expect(response.error).toMatch('This customer does not exist')
   })
 
-  it('should fail to respond for an unexisting policy', async () => {
+  it(`${should} fail to respond for an unexisting policy`, async () => {
     createTestCustomerInRepository();
 
     const res = await client.recordCompliancy.$post({
@@ -58,7 +60,7 @@ describe('Customers compliancy recording', () => {
   })
 
   it.each(createExistingPolicyParameters([[undefined, undefined], ['foo', 'foo']]))
-    ('should fail to respond if policy parameters do not exist or are missing', async (payload) => {
+    (`${should} fail to respond if policy parameters do not exist or are missing`, async (payload) => {
       createTestCustomerInRepository()
 
       const res = await client.recordCompliancy.$post(payload)
@@ -77,7 +79,7 @@ describe('Customers compliancy recording', () => {
     ['validUntil', thirtyDaysLaterFromEpochInSeconds()],
     ['validUntil', nowFromEpochInSeconds()],
   ]))
-    ('should respond false for invalid policy parameter value', async (body) => {
+    (`${should} respond false for invalid policy parameter value`, async (body) => {
       createTestCustomerInRepository()
 
       const res = await client.recordCompliancy.$post(body)
@@ -92,7 +94,7 @@ describe('Customers compliancy recording', () => {
     ['validUntil', nowFromEpochInSeconds() + 1],
     ['validUntil', thirtyDaysLaterFromEpochInSeconds() - 1],
   ]))
-    ('should respond true for valid policy parameter value', async (body) => {
+    (`${should} respond true for valid policy parameter value`, async (body) => {
       createTestCustomerInRepository()
 
       const res = await client.recordCompliancy.$post(body)
@@ -103,7 +105,7 @@ describe('Customers compliancy recording', () => {
       expect(response.result).toBe(true)
     })
 
-  it('should fail if on-chain signer fails to store the commitment', async () => {
+  it(`${should} fail if on-chain signer fails to store the commitment`, async () => {
     const failingOnChainSigner = new MockedOnChainSigner(false)
 
     const client = testClient(customers, {

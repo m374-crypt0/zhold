@@ -19,11 +19,11 @@ dev:
 
 .PHONY: test
 
-test: type=unit
+test: pattern='<unit>'
 test:
-	@bun test ${ISSUER_ROOT_DIR}test/${type}
+	@bun test --test-name-pattern=${pattern}
 
-test: type=unit
 .PHONY: watch
+watch: pattern='<unit>'
 watch:
-	@bun --watch test ${ISSUER_ROOT_DIR}test/${type}
+	@bun --watch --test-name-pattern=${pattern} test

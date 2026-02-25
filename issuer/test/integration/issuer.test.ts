@@ -3,6 +3,8 @@ import { testClient } from 'hono/testing'
 import { LocalOnChainSigner } from 'src/blockchain/localOnChainSigner'
 import issuer from 'src/handlers/issuer'
 
+const should = '<integration> should'
+
 describe('Issuer manual revocation', () => {
   const localChainSigner = new LocalOnChainSigner
 
@@ -11,7 +13,7 @@ describe('Issuer manual revocation', () => {
     env: 'prod'
   })
 
-  it('should fail if the signer is not the issuer', async () => {
+  it(`${should} fail if the signer is not the issuer`, async () => {
     const res = await client.revokeCommitment.$post({
       json: {
         commitment: '0x0123456789abcdef'

@@ -3,6 +3,8 @@ import { testClient } from 'hono/testing'
 import issuer from 'src/handlers/issuer'
 import { MockedOnChainSigner } from './mock/mockedOnChainSigner'
 
+const should = '<unit> should'
+
 describe('Issuer manual revocation', () => {
   const succeedingOnChainSigner = new MockedOnChainSigner(true)
 
@@ -11,13 +13,13 @@ describe('Issuer manual revocation', () => {
     env: 'test'
   })
 
-  it('should fail if no commitment is given for revocation', async () => {
+  it(`${should} fail if no commitment is given for revocation`, async () => {
     const res = await client.revokeCommitment.$post({ json: { commitment: '' } })
 
     expect(res.status).toBe(400)
   })
 
-  it('should fail if on-chain revocation fails', async () => {
+  it(`${should} fail if on-chain revocation fails`, async () => {
     const failingOnChainSigner = new MockedOnChainSigner(false)
     const client = testClient(issuer, {
       onChainSigner: failingOnChainSigner,
@@ -39,7 +41,7 @@ describe('Issuer manual revocation', () => {
     expect(body.error).toBe('Cannot revoke commitment')
   })
 
-  it('should succeed if on-chain revocation succeeds', async () => {
+  it(`${should} succeed if on-chain revocation succeeds`, async () => {
     const spy = spyOn(succeedingOnChainSigner, 'revokeCommitment')
 
     const res = await client.revokeCommitment.$post({
