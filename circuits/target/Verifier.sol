@@ -4,125 +4,125 @@ pragma solidity >=0.8.21;
 
 uint256 constant N = 256;
 uint256 constant LOG_N = 8;
-uint256 constant NUMBER_OF_PUBLIC_INPUTS = 21;
-uint256 constant VK_HASH = 0x0612ec197bdacfc89525175b5d71d98ce02f533c56c563ed24f4dd3f1917ab84;
+uint256 constant NUMBER_OF_PUBLIC_INPUTS = 20;
+uint256 constant VK_HASH = 0x1d2f148e81dab13e5cdc9afef8750a8f4263c22b8377ef15489716c8584e2cf0;
 library HonkVerificationKey {
     function loadVerificationKey() internal pure returns (Honk.VerificationKey memory) {
         Honk.VerificationKey memory vk = Honk.VerificationKey({
             circuitSize: uint256(256),
             logCircuitSize: uint256(8),
-            publicInputsSize: uint256(21),
+            publicInputsSize: uint256(20),
             ql: Honk.G1Point({ 
-               x: uint256(0x24d01922981e6c7a0f359b7700a63e79d1c43177479d36cdfb6beca5ecfd3ff2),
-               y: uint256(0x265d07e9ec171546f838e22fdb9ffd8124b43a2ebefc6ac7e8bd9732993c7715)
+               x: uint256(0x23cc330ea9fa216ecb5cbf6d61e086cece830575249c93bbd2696faac01a86b7),
+               y: uint256(0x0fc726e5068cbd8ca6dfe47e56adcef2426e97ccf183fc7bd248f03aabbe8f36)
             }),
             qr: Honk.G1Point({ 
-               x: uint256(0x2b7c9dc6ac9bd48868836f52abe827933c9da4a2b245b710779b2d324cbd166e),
-               y: uint256(0x0f253b9f4de9d0000e22f7de6ff6aa0b4dff00baddbe69d5224a034eb92dd4d7)
+               x: uint256(0x25286bc97198d0c304205ddf3347635e7728c59c752d28ca391dfd9c6a0fa64e),
+               y: uint256(0x01ed12a23737c7bf30e35e84aa9c592f92afc117362b42cb585f85791e271824)
             }),
             qo: Honk.G1Point({ 
-               x: uint256(0x05796c641e3fdbf02ba0614cbfacfde8a80d1c8d8669e8151ddd9df2017b3cef),
-               y: uint256(0x02832300ca1a88dadd0907f865d9eb8dd5a1e48156a6b03c18842bb0f1ca8182)
+               x: uint256(0x2f29f15640a9f86b6f437e854a6a9910ad43a8376387a155606f51c73d6e9760),
+               y: uint256(0x12dbe04df26fa1c4845aa5ec9e22093a16cb02ea528855d2a87ab7fe4d1a497d)
             }),
             q4: Honk.G1Point({ 
-               x: uint256(0x1130afde1808ab6a630507399dadb588419a9c40e0bc6101709a4617c35ccfdf),
-               y: uint256(0x01e78a771ec4315c1a00833a2662b704cd299ea24f85d5a61e175e60bb69c978)
+               x: uint256(0x2f5b7f5030c571e963c8e4aca17a3252856a27a3ae150b318783bfc4879dcb5c),
+               y: uint256(0x2d167c035b35562c8e5567b64ce6dab560b8e84c79cf68357700f014e1db1075)
             }),
             qm: Honk.G1Point({ 
-               x: uint256(0x1e179c1517ad75138ef4ac25e51a620cbbde943b79a59164bd16bd9f26ecbbaf),
-               y: uint256(0x1dc31bf56ff5952113e7172a689af66db5222e6c2365924f2f90304b3398493a)
+               x: uint256(0x1c2252279ff9d5edf1a2a691209181b4f51ed7bafeca7451b0258d2a2d7a7196),
+               y: uint256(0x271f4f208003ae4b921c41a7aaf19d44d37817c4dd8790fff7518a4df818666c)
             }),
             qc: Honk.G1Point({ 
-               x: uint256(0x0377a13a1220d6b962eab784f095d41c2ec77789cce90caf05385e24787ba041),
-               y: uint256(0x0248fae43c5b82786a26d0c3485bd82f99a93cae69fd0bdc5ed4a2bb85d03fc3)
+               x: uint256(0x017f34ddb81d8ad251b97e7249c29590a5779335f9372eb7238fb1c4c37f3208),
+               y: uint256(0x03f8c839c065b911cdb297a5759132c1a8bca80e1b26f6389f7fe60022607d7d)
             }),
             qLookup: Honk.G1Point({ 
-               x: uint256(0x17901a5df32166594b3e7945c24ae9b96c09c27ca328c08dd3e4d940d8184e58),
-               y: uint256(0x1a0871ddfc99e108eb0e1735956790da52e2b7832015c0a07d894e2367764803)
+               x: uint256(0x038147f7985ab2a8d179a7a764ee622afc5cac5dabeb8f74a2f89ad33f068fe4),
+               y: uint256(0x24095afc77887b20f8293c4a2602c55c7f68b34721dbdaa9d8f2cfc9f432da95)
             }),
             qArith: Honk.G1Point({ 
-               x: uint256(0x1c7a1dd2144a085a6638e5fd3e1e11e23bef4db5a673ae92dd4cc2c46ce7983a),
-               y: uint256(0x22f857b81fb647aa8fee5971245f2e0e59a0836fbfc5bbac0d41ace6f8dbb4a4)
+               x: uint256(0x0bac117e328adfb27edd22d9a77ae8f353b58fe746fdf33dbfed14d7ad21e9d4),
+               y: uint256(0x225e661609c009ad26124664605842acba3780d523f34d624c0d276bff529c67)
             }),
             qDeltaRange: Honk.G1Point({ 
-               x: uint256(0x20cb38b987790363a999af2b598a76d46ee506247d9bc795c308335e1cb146a9),
-               y: uint256(0x2b58f55d6118557ad4b776990201c508c694784c064a39c1e3594698f6499e4c)
+               x: uint256(0x13d47bff8c630e847b70e2732fd3f09b624fa65d1a24b7f14a8f25f3789622af),
+               y: uint256(0x1a74ca4e118fb480b9b999902989a361d21663e93132f32921075f4c936a84df)
             }),
             qElliptic: Honk.G1Point({ 
-               x: uint256(0x2ad6f77a7f7c14780d95de8bd1f5b2146fe71fb1b7e6d55016734664f10d653b),
-               y: uint256(0x131ac1fc680fbc2584b74e5aece1f0d50afe030adf4289613e54935339829496)
+               x: uint256(0x0c3d7ecface5a1c775e7c0aac5827ed5ca60cfb8ea743d2399d4921cbaf6be88),
+               y: uint256(0x1dd7b73d84b8793468fb7c25e20de7cc4b20c1aac4c922dde28711401174d7aa)
             }),
             qMemory: Honk.G1Point({ 
-               x: uint256(0x153308eea8f78ce074c90a27e83e5d8a7955b2008eb1b292f52af6799ddd43e0),
-               y: uint256(0x1d43103f7bb8ec33a941bcbcd7e4680a35448e72b51b04e339c58837a31c5f54)
+               x: uint256(0x1242f67a5ff392e2e7f4a1be3df41a4d2cf6f7f05bbaead1adee08b86f1d1f79),
+               y: uint256(0x05c55febcb9a66d697b5a491dba3a195a65158cdaaa92f724b5da912b53e7cd9)
             }),
             qNnf: Honk.G1Point({ 
-               x: uint256(0x1411c2f5de0d3d0f64b46a56e75d199e0b8c412281f48848b6feee2be5d7f9a3),
-               y: uint256(0x007265c02520e542039f6fba0e7eaeb98ee627aaaa156e890b0cfd0f4b75c958)
+               x: uint256(0x0edd305c4ff31babafc77395cf1efea5f9df4da9dd7bdc1cfa08f5c3fd3b4d18),
+               y: uint256(0x2b2fa1c02a237348679d55dbf7df2e655547d51ca96f63a10332e6f04c2435da)
             }),
             qPoseidon2External: Honk.G1Point({ 
-               x: uint256(0x2c50f3118d06aa2d7a4f8727299e08c95ad4882b8b5ed65c5ee2c97a230c6053),
-               y: uint256(0x16fa0b564eb95def664b29d287cda862190544d39a1f15f2981e80848d2d4278)
+               x: uint256(0x1325c4639b2c865738ac390d82ed1668f7d3af1628c275a56613a35470907801),
+               y: uint256(0x2ae430264994330d9743912555f1b2e29820670a3974df2005e9a89814b4b815)
             }),
             qPoseidon2Internal: Honk.G1Point({ 
-               x: uint256(0x09c2c8a609058e5d19b2213065e9ab39c1bb6d4a0daf2ca09046e8c7656f69ab),
-               y: uint256(0x0a3d6cd82033bbbe3da2bba64ae78a55717e28915e5ce6d98d3558905c146309)
+               x: uint256(0x1fe8625b4ab753edb8dcc63b9513ef6b45bcc81ccd7e72586e02764291701a18),
+               y: uint256(0x11620b537c18199ce676fc3c5392cd7029223474bd04e572c771091e43f26516)
             }),
             s1: Honk.G1Point({ 
-               x: uint256(0x2fa7646131e6e49db85afc82aec8b102fae3e436f01498cd34a6be895dd3bed8),
-               y: uint256(0x2179bf7b6a257d1020323c8b17e6d0dac5b7186ee7a769fd1ae6ce842377e685)
+               x: uint256(0x15a6a5aa3f989e1031e5159ecc680cc763764c10a4fc03d79e2d5379b129bdb6),
+               y: uint256(0x13cd69c58987ac3b2fdbde2717b8cde27d138c4f09433ece69ab9463b5ba5672)
             }),
             s2: Honk.G1Point({ 
-               x: uint256(0x2e301f13fc69bc6c677bc31d38514296d59ebeb1614d03d081d81680889c6aa1),
-               y: uint256(0x16afc438473eec7f2d2c270a058eca41a178df8f7975491a9cdab52f8bd6b396)
+               x: uint256(0x1eda659bb5f99e9489b48114ba586aa710ef0068735caf6af72a8f5a97891a14),
+               y: uint256(0x0cbbf900aa6c3cc2711b0661369ae9b40632693c61aa237f9e97e86b895d2c29)
             }),
             s3: Honk.G1Point({ 
-               x: uint256(0x07b69413df14771ce2c63a3d2a9a46eca92d2397fbaed2087ecfac22f13ac8fb),
-               y: uint256(0x0da557fe4effffcd29b56b3af00e2ffd8fcfe40c17fd428aa711b13de2681731)
+               x: uint256(0x2806e893b814e0e2c906545993cbcf761aee4e85701711005f556760b167a20c),
+               y: uint256(0x06b8b68e8a8101a90029c6ae44d58281fae996e74b5264c2384179bb89748973)
             }),
             s4: Honk.G1Point({ 
-               x: uint256(0x04e7f4ee3b749ea8455c46edb21e0cb8f38328ed7d8c4911d89528ae2d4e7307),
-               y: uint256(0x0dccfbbd4eb1ac93f66987f9335bde40632f80cd05f105882bead0869690d535)
+               x: uint256(0x21d0cd39874a86256ae21368300cc1c0649148246769e391ecb8c815f64ed8ab),
+               y: uint256(0x06df748d96ddfd8fbaff7ce2969afbd98d577397e897efb4e856113c4fe0e34e)
             }),
             t1: Honk.G1Point({ 
-               x: uint256(0x10b46142e7f947b7a21fd32677fffb0b12a1013d0cc7fdc84baa557d5b1afa99),
-               y: uint256(0x11c4a4881584171cb0e76816f9c6da062528dc18828ae67ad8e8cfda5c2da406)
+               x: uint256(0x0cb15289361c0a0e1b78f25efb7e6f3cee056cd8653f11fe91bec67f9a1ba501),
+               y: uint256(0x29664df9e7f07b4aec2f396f6cde12443f54f12a87c2cf5182f3620fc1944c6d)
             }),
             t2: Honk.G1Point({ 
-               x: uint256(0x268512ad9304329ec436e6c09ba70903f1e3ae87df417a381658bcb601feabc9),
-               y: uint256(0x299218495f42c0ec475069b877610fce3a681f73e68277ffe55186950f8cd19a)
+               x: uint256(0x070b433d46367e191b9bf40eef28b673875103abf917a76019cf7bba4da77621),
+               y: uint256(0x26eccd7100479fc88688e129589197a0af4c7b9ef86fe2480692f5f6dc52534a)
             }),
             t3: Honk.G1Point({ 
-               x: uint256(0x0ddc2edeb12b1c38ef84db69ad1e4a3143e8418f47623d334716174596841e78),
-               y: uint256(0x234aee0751ea5760531c2ff50e1de425723c2e6c7a45d74664cc57a32d095834)
+               x: uint256(0x1405e19e273c5580bad70f8aa520fe829fc0f335a16c7395a41df3e3f2082479),
+               y: uint256(0x0c993922fcb992ff09e1fe7e4987cd12df79fa6af70aafb066b791292b5c56bf)
             }),
             t4: Honk.G1Point({ 
-               x: uint256(0x0fab145308f37f342d1b08e3689194faf00bf4c268d8a2737430b8a61f60b40b),
-               y: uint256(0x2fd041b125adfad0f02c99b7e7c5298141d1fe8648f2bba9042648a387fd002d)
+               x: uint256(0x0082e0b52e8df94612b14bc2afb9f76f575a60d3c9d50fc277988d94997a5ddb),
+               y: uint256(0x26a696f75adf15d5934d9edad81c9bfe073ff12f2bad78b10ae4a1629516a075)
             }),
             id1: Honk.G1Point({ 
-               x: uint256(0x18d2421db9fc2766ed1f073f9d3ed231fead11170b060c30029a10d26a970f08),
-               y: uint256(0x280408f2113bb14116fd9b1f305ca74b47c2e437414aa5f4de48de940e2aae2d)
+               x: uint256(0x1d62da3f0fcf042ee16fec59a5e70fda29f1128a561031e59e37fd3ce0c3fe25),
+               y: uint256(0x062f68c9ad343639000b33793c8e736b637b3060fab9378896c318d3926aea5b)
             }),
             id2: Honk.G1Point({ 
-               x: uint256(0x1e81ae8382c9d657acf72353fc70050cbab9e90a879f75c2b98c3b8e6aebafe0),
-               y: uint256(0x1c285f40eb7d9b0a113aa176ea1404d2390b9211572b4733bd90a1c5e5daddac)
+               x: uint256(0x18c3f9aa533022fe7f5d038058289eddb333016fda3921234b1a1bb4a5c964fb),
+               y: uint256(0x105a7c51157cab3e7f0dc850f894769ef69c17658fd595c0cf3bf3c62935d841)
             }),
             id3: Honk.G1Point({ 
-               x: uint256(0x2692d165477127013101c37a18c658c00075ca534358a9eb9dd604340a186f50),
-               y: uint256(0x1371a755b7ca08c7f0f3edf2b1f0e29ae842a2a060905a9213665f4049a77e74)
+               x: uint256(0x1a3e0db3db6265a5f33049c5c48914a5e23bc4cdae6d2037fb9d737ef7d4c6f9),
+               y: uint256(0x2a3ef90a647ede1f16839cbac42b3a1f191df4a5d936a36516670946d9c3d758)
             }),
             id4: Honk.G1Point({ 
-               x: uint256(0x0f796b484626adfbda24f1012618ed43912eb16937c811bb81fc1d76303afec4),
-               y: uint256(0x115b560c79a6ccba6bc650a6ed3630df6c897b457d029da8fbf9ca093e7ec71e)
+               x: uint256(0x1688fec6a9fd0448a7b2d6a3fed91b27013209d98f96cdea2d69db0187299533),
+               y: uint256(0x2365b7ae7f9d008b41be4aeaa2d51b47eb71a83f02ab4ffd34e8a8ae2d20bcdf)
             }),
             lagrangeFirst: Honk.G1Point({ 
                x: uint256(0x0000000000000000000000000000000000000000000000000000000000000001),
                y: uint256(0x0000000000000000000000000000000000000000000000000000000000000002)
             }),
             lagrangeLast: Honk.G1Point({ 
-               x: uint256(0x2fd1723613e841dab8a0a3c5b4b5f240ddc56e9875fd2c61846dab6e9fe09f67),
-               y: uint256(0x2a68797a5dc044abcbf6bff4ab7051eabde08c4387797fa156e8eee119a260c9)
+               x: uint256(0x2edcd4658a8cf6620358ec0ec54fc69972c0d3a277e59f0768d242877839b54a),
+               y: uint256(0x0abf1c6634b2488ce52e35780f9595df73e7af840cc1169d476a98738c70d438)
             })
         });
         return vk;

@@ -5,10 +5,10 @@ type Poseidon2 = poseidon2::Poseidon2;
 fn main(
     customer_id: Field,
     customer_salt: Field,
+    customer_address: Field,
     policy_id: pub Field,
     policy_scope: pub Field,
     validity_time_range: pub Field,
-    customer_address: pub Field,
     commitment: pub Field,
 ) {
     let computed_commitment: Field = Poseidon2::hash(
@@ -39,10 +39,10 @@ fn test_main_fails_with_unmatched_commitment_and_input_hashes() {
     main(
         customer_id,
         customer_salt,
+        customer_address,
         policy_id,
         policy_scope,
         validity_time_range,
-        customer_address,
         commitment,
     );
 }
@@ -70,10 +70,10 @@ fn test_main_succeeds_with_matching_commitment_and_input_hashes() {
     main(
         customer_id,
         customer_salt,
+        customer_address,
         policy_id,
         policy_scope,
         validity_time_range,
-        customer_address,
         commitment,
     );
 }
