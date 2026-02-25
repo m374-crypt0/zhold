@@ -38,7 +38,8 @@ describe('Issuer manual revocation', () => {
       }
     })
 
+    const json = await res.json()
     expect(res.status).toBe(200)
-    expect(await res.json()).toHaveProperty('result')
+    expect(json).toHaveProperty('result')
   })
 })

@@ -12,9 +12,7 @@ $(CONTRACTS_ROOT_DIR)/.env:
 
 .PHONY: build
 build:
-	@cd $(CONTRACTS_ROOT_DIR) \
-		&& git submodule update --init --recursive \
-		&& forge build
+	@. ${CONTRACTS_ROOT_DIR}.make/scripts/build.sh
 
 .PHONY: clean
 clean:

@@ -26,13 +26,14 @@ export default new OpenAPIHono<IssuerEnv>()
     async (c) => {
       const params = c.req.valid('json')
 
+      let result: string
       try {
-        await c.env.onChainSigner.revokeCommitment(params.commitment)
+        result = await c.env.onChainSigner.revokeCommitment(params.commitment)
       } catch (error) {
         const e = error as Error
         return c.json({ error: e.message }, 500)
       }
 
-      return c.json({ result: params.commitment }, 200)
+      return c.json({ result }, 200)
     })
 
