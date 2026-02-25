@@ -1,5 +1,5 @@
 reset_local_blockchain() {
-  make -C "${RAKE_ROOT_DIR}" contracts kill_local_blockchain 1>/dev/null
+  make -C "${RAKE_ROOT_DIR}" contracts kill_local_blockchain 1>/dev/null 2>&1
 }
 
 deploy_contracts() {
