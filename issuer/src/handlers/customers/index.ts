@@ -52,7 +52,7 @@ export default new OpenAPIHono<CustomerEnv>()
         await c.env.onChainSigner.storeCommitment(params.commitment)
       } catch (error) {
         const e = error as Error
-        return c.json({ error: e.message }, 400)
+        return c.json({ error: e.message }, 500)
       }
 
       return c.json({ result: true }, 200)

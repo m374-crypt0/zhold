@@ -2,7 +2,7 @@ import { createRoute } from '@hono/zod-openapi'
 import type { createMiddleware } from 'hono/factory'
 import type { Env } from 'hono/types'
 import {
-  recordCompliancyBadQueryParamsSchema,
+  recordCompliancyResponseErrorSchema,
   recordCompliancyQueryParamsSchema, recordCompliancyResponseSchema
 } from './schemas'
 
@@ -33,10 +33,18 @@ export default {
         400: {
           content: {
             "application/json": {
-              schema: recordCompliancyBadQueryParamsSchema
+              schema: recordCompliancyResponseErrorSchema
             }
           },
-          description: 'Reports if a customer is compliant or not regarding a policy'
+          description: 'Reports if a customer is compliant or not regarding a policy due to bad client request'
+        },
+        500: {
+          content: {
+            "application/json": {
+              schema: recordCompliancyResponseErrorSchema
+            }
+          },
+          description: 'Reports if a customer is compliant or not regarding a policy due to server error'
         }
       }
     })

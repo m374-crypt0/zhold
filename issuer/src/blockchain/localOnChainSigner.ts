@@ -54,8 +54,38 @@ export class LocalOnChainSigner implements OnChainSigner {
     return transactionHash
   }
 
-  public storeCommitment(commitment: string) {
-    return Promise.reject('not implemented')
+  public async storeCommitment(commitment: string) {
+    const clientConfig = {
+      chain: defineChain({
+        ...anvil,
+        id: 1
+      }),
+      transport: http()
+    }
+    const publicClient = createPublicClient(clientConfig)
+    const walletClient = createWalletClient(clientConfig)
+    const account = privateKeyToAccount(this.privateKey)
+
+    let transactionHash: Hash
+
+    try {
+      const { request } = await publicClient.simulateContract({
+        address: contractAddresses.CommitmentStore,
+        abi,
+        functionName: 'commit',
+        args: [BigInt(commitment)],
+        account
+      })
+
+      transactionHash = await walletClient.writeContract(request)
+    } catch (e) {
+      const executionError = e as ContractFunctionExecutionError
+      const revertedError = executionError.cause as ContractFunctionRevertedError
+
+      throw new Error(revertedError.data?.errorName)
+    }
+
+    return transactionHash
   }
 
   private privateKey: PrivateKey

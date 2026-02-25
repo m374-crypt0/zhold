@@ -50,11 +50,11 @@ export const recordCompliancyResponseSchema = z.object({
     description: 'The result of compliancy between a customer and a specific policy. If true, the commitment is stored on-chain'
   })
 
-export const recordCompliancyBadQueryParamsSchema = z.object({
+export const recordCompliancyResponseErrorSchema = z.object({
   error: z
     .string()
     .min(1)
 })
   .openapi({
-    description: 'Explains why this compliance request is a bad request'
+    description: 'Explains the cause of error'
   })

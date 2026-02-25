@@ -123,8 +123,8 @@ describe('Customers compliancy recording', () => {
     const json = await res.json() as { error: string }
 
     expect(spy).toHaveBeenCalledTimes(1)
-    expect(res.status).toBe(400)
-    expect(json.error, 'Error: cannot store commitment')
+    expect(res.status).toBe(500)
+    expect(json.error, 'Cannot store commitment')
   })
 })
 
