@@ -12,6 +12,15 @@ describe('Issuer manual revocation', () => {
   })
 
   it('should fail if the signer is not the issuer', async () => {
-    expect(true, 'test not implemented').toBe(false)
+    const res = await client.revokeCommitment.$post({
+      json: {
+        commitment: '0x0123456789abcdef'
+      }
+    })
+
+    expect(res.status).toBe(500)
+    expect(await res.json()).toEqual({
+      error: 'Failed to revoke commitment'
+    })
   })
 })
