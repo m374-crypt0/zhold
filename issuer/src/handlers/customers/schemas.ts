@@ -40,7 +40,8 @@ export const recordCompliancyQueryParamsSchema = z.object({
 
 export const recordCompliancyResponseSchema = z.object({
   result: z
-    .boolean()
+    .string()
+    .nonempty()
     .openapi({
       description: 'result of the compliancy check',
       example: true

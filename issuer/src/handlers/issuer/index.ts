@@ -7,14 +7,14 @@ import routes from './routes'
 type IssuerEnv = {
   Bindings: {
     onChainSigner: OnChainSigner,
-    env: 'test' | 'prod'
+    isTesting: boolean | undefined
   }
 }
 
 const injectRepositories = createMiddleware<IssuerEnv>(async (c, next) => {
   // NOTE: 'test' env set up a testing env (see in customers.test.ts)
   // As a result those lines won't be covered
-  if (c.env.env === 'prod') {
+  if (!c.env.isTesting) {
     c.env.onChainSigner = new LocalOnChainSigner(process.env['TEST_PRIVATE_KEY_01'] as PrivateKey)
   }
 

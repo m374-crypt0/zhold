@@ -22,7 +22,7 @@ contract LocalDeployScript is Script {
   }
 
   function run() public {
-    vm.startBroadcast();
+    vm.startBroadcast(sender);
 
     pfop = new PrimeFieldOrderProvider();
     commitmentStore = new CommitmentStore(pfop, commitmentStoreOwner);

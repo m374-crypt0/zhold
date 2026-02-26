@@ -15,7 +15,7 @@ describe('Customers compliancy recording', () => {
     customerRepository: inMemoryCustomerRepository,
     policyRepository: inMemoryPolicyRepository,
     onChainSigner: succeedingOnChainSigner,
-    env: 'test'
+    isTesting: true
   })
 
   beforeEach(() => clearRepository())
@@ -99,10 +99,10 @@ describe('Customers compliancy recording', () => {
 
       const res = await client.recordCompliancy.$post(body)
 
-      const response = await res.json() as { result: boolean }
+      const response = await res.json() as { result: string }
 
       expect(res.status).toBe(200)
-      expect(response.result).toBe(true)
+      expect(response.result).not.toBeEmpty()
     })
 
   it(`${should} fail if on-chain signer fails to store the commitment`, async () => {
@@ -111,7 +111,8 @@ describe('Customers compliancy recording', () => {
     const client = testClient(customers, {
       onChainSigner: failingOnChainSigner,
       customerRepository: inMemoryCustomerRepository,
-      policyRepository: inMemoryPolicyRepository
+      policyRepository: inMemoryPolicyRepository,
+      isTesting: true
     })
     createTestCustomerInRepository()
 

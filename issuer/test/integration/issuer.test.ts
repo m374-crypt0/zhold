@@ -10,7 +10,7 @@ describe('Issuer manual revocation', () => {
     const wrongLocalChainSigner = new LocalOnChainSigner(process.env['TEST_PRIVATE_KEY_02'] as PrivateKey)
     const client = testClient(issuer, {
       onChainSigner: wrongLocalChainSigner,
-      env: 'test'
+      isTesting: true
     })
 
     const res = await client.revokeCommitment.$post({
@@ -26,11 +26,7 @@ describe('Issuer manual revocation', () => {
   })
 
   it(`${should} succeed in revoking any commitment if issuer is the signer`, async () => {
-    const goodLocalChainSigner = new LocalOnChainSigner(process.env['TEST_PRIVATE_KEY_01'] as PrivateKey)
-    const client = testClient(issuer, {
-      onChainSigner: goodLocalChainSigner,
-      env: 'test'
-    })
+    const client = testClient(issuer, {})
 
     const res = await client.revokeCommitment.$post({
       json: {

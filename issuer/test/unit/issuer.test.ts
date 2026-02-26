@@ -10,7 +10,7 @@ describe('Issuer manual revocation', () => {
 
   const client = testClient(issuer, {
     onChainSigner: succeedingOnChainSigner,
-    env: 'test'
+    isTesting: true
   })
 
   it(`${should} fail if no commitment is given for revocation`, async () => {
@@ -23,7 +23,7 @@ describe('Issuer manual revocation', () => {
     const failingOnChainSigner = new MockedOnChainSigner(false)
     const client = testClient(issuer, {
       onChainSigner: failingOnChainSigner,
-      env: 'test'
+      isTesting: true
     })
 
     const spy = spyOn(failingOnChainSigner, 'revokeCommitment')
