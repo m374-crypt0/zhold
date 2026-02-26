@@ -1,4 +1,5 @@
 .anvil.pid
+.anvil.out
 .env
 out/
 cache/

@@ -98,13 +98,13 @@ kill_local_blockchain:
 	@cd $(CONTRACTS_ROOT_DIR) \
 		&& [ -z "$$(pidof anvil)" ] \
 		&& anvil \
-		  --quiet \
 		  --accounts 10 \
 		  --mnemonic ${TEST_MNEMONIC} \
 			--fork-url mainnet \
 			--fork-block-number "${MAINNET_FORK_BLOCK}" \
 			--host "${ANVIL_HOST}" --port "${ANVIL_PORT}" \
 			--hardfork "${ANVIL_EVM_VERSION}" \
+			> .anvil.out \
 			& echo $$!>.anvil.pid \
 		|| echo $$(pidof anvil) > .anvil.pid
 

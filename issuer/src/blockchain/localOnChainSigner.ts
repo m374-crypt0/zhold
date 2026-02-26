@@ -10,6 +10,7 @@ import {
   type PublicClient,
   type WalletClient
 } from "viem";
+import { waitForTransactionReceipt } from "viem/actions"
 import { privateKeyToAccount, type PrivateKeyAccount } from "viem/accounts";
 import { anvil } from "viem/chains";
 import type { OnChainSigner } from "./types/onChainSigner";
@@ -24,12 +25,12 @@ export class LocalOnChainSigner implements OnChainSigner {
         ...anvil,
         id: 1
       }),
-      transport: http()
+      transport: http(`http://${process.env['ANVIL_HOST']}:${process.env['ANVIL_PORT']}`)
     }
 
+    this.account = privateKeyToAccount(privateKey)
     this.publicClient = createPublicClient(clientConfig)
     this.walletClient = createWalletClient(clientConfig)
-    this.account = privateKeyToAccount(privateKey)
   }
 
   public async revokeCommitment(commitment: string) {
@@ -45,6 +46,7 @@ export class LocalOnChainSigner implements OnChainSigner {
       })
 
       transactionHash = await this.walletClient.writeContract(request)
+      await waitForTransactionReceipt(this.walletClient, { hash: transactionHash })
     } catch (e) {
       const executionError = e as ContractFunctionExecutionError
       const revertedError = executionError.cause as ContractFunctionRevertedError
@@ -68,6 +70,7 @@ export class LocalOnChainSigner implements OnChainSigner {
       })
 
       transactionHash = await this.walletClient.writeContract(request)
+      await waitForTransactionReceipt(this.walletClient, { hash: transactionHash })
     } catch (e) {
       const executionError = e as ContractFunctionExecutionError
       const revertedError = executionError.cause as ContractFunctionRevertedError
