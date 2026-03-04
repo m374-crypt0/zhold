@@ -2,6 +2,8 @@ import customer, { type CreateCommitmentOptions } from "src"
 
 import { Barretenberg } from "@aztec/bb.js"
 
+import { bytesToHex } from "viem"
+
 import { expect, describe, it, beforeEach, } from "bun:test";
 
 describe('Commitment creation', () => {
@@ -40,6 +42,6 @@ describe('Commitment creation', () => {
 
     const commitment = await customer.createCommitment(data)
 
-    expect(commitment).toBe(expectedCommitment.toString())
+    expect(commitment).toBe(bytesToHex(expectedCommitment))
   })
 })

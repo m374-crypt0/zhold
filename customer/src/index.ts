@@ -1,5 +1,7 @@
 import { Barretenberg } from "@aztec/bb.js"
 
+import { bytesToHex } from "viem"
+
 export type CreateCommitmentOptions = {
   customerId: number,
   policy: {
@@ -30,6 +32,6 @@ export default {
       ]
     })).hash
 
-    return hash.toString()
+    return bytesToHex(hash)
   }
 }
