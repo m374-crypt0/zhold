@@ -1,6 +1,4 @@
-use dep::poseidon::poseidon2;
-
-type Poseidon2 = poseidon2::Poseidon2;
+type Poseidon2 = ::poseidon::poseidon2::Poseidon2;
 
 fn main(
     customer_id: Field,
