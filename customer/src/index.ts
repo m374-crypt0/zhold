@@ -1,4 +1,4 @@
-import { Barretenberg, Fr } from "@aztec/bb.js"
+import { Barretenberg } from "@aztec/bb.js"
 
 export type CreateCommitmentOptions = {
   customerId: number,
@@ -19,15 +19,17 @@ export default {
   async createCommitment(options: CreateCommitmentOptions) {
     const bb = await Barretenberg.new()
 
-    const hash = await bb.poseidon2Hash([
-      new Fr(BigInt(options.customerId)),
-      new Fr(options.secret),
-      new Fr(options.evmAddress),
-      new Fr(BigInt(options.policy.id)),
-      new Fr(BigInt(options.policy.scope.id)),
-      new Fr(options.policy.scope.parameters.validUntil as bigint)
-    ])
+    const hash = (await bb.poseidon2Hash({
+      inputs: [
+        (await bb.blake2sToField({ data: Buffer.from([options.customerId]) })).field,
+        (await bb.blake2sToField({ data: Buffer.from(options.secret.toString()) })).field,
+        (await bb.blake2sToField({ data: Buffer.from(options.evmAddress.toString()) })).field,
+        (await bb.blake2sToField({ data: Buffer.from([options.policy.id]) })).field,
+        (await bb.blake2sToField({ data: Buffer.from([options.policy.scope.id]) })).field,
+        (await bb.blake2sToField({ data: Buffer.from((options.policy.scope.parameters.validUntil as bigint).toString()) })).field
+      ]
+    })).hash
 
-    return BigInt(hash.toString())
+    return hash.toString()
   }
 }

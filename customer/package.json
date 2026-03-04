@@ -9,7 +9,8 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@aztec/bb.js": "^2",
-    "@noir-lang/noir_js": "^1.0.0-beta.19"
+    "@aztec/bb.js": "^4.0.4",
+    "@noir-lang/noir_js": "^1.0.0-beta.19",
+    "viem": "^2.46.3"
   }
 }

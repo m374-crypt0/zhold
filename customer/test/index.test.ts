@@ -1,6 +1,6 @@
 import customer, { type CreateCommitmentOptions } from "src"
 
-import { Barretenberg, Fr } from "@aztec/bb.js"
+import { Barretenberg } from "@aztec/bb.js"
 
 import { expect, describe, it, beforeEach, } from "bun:test";
 
@@ -27,17 +27,19 @@ describe('Commitment creation', () => {
       secret: 0n
     }
 
-    const expectedCommitment = await bb.poseidon2Hash([
-      new Fr(BigInt(data.customerId)),
-      new Fr(data.secret),
-      new Fr(data.evmAddress),
-      new Fr(BigInt(data.policy.id)),
-      new Fr(BigInt(data.policy.scope.id)),
-      new Fr(data.policy.scope.parameters.validUntil as bigint)
-    ])
+    const expectedCommitment = (await bb.poseidon2Hash({
+      inputs: [
+        (await bb.blake2sToField({ data: Buffer.from([data.customerId]) })).field,
+        (await bb.blake2sToField({ data: Buffer.from(data.secret.toString()) })).field,
+        (await bb.blake2sToField({ data: Buffer.from(data.evmAddress.toString()) })).field,
+        (await bb.blake2sToField({ data: Buffer.from([data.policy.id]) })).field,
+        (await bb.blake2sToField({ data: Buffer.from([data.policy.scope.id]) })).field,
+        (await bb.blake2sToField({ data: Buffer.from((data.policy.scope.parameters.validUntil as bigint).toString()) })).field,
+      ]
+    })).hash
 
     const commitment = await customer.createCommitment(data)
 
-    expect(commitment).toBe(BigInt(expectedCommitment.toString()))
+    expect(commitment).toBe(expectedCommitment.toString())
   })
 })
