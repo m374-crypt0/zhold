@@ -12,6 +12,10 @@ fn main(
     current_timestamp: pub Field,
 ) {
     assert_eq(sender, authorized_sender, "Unauthorized sender");
+    assert(
+        current_timestamp as u32 <= policy_scope_parameter_valid_until as u32,
+        "Time limit exceeded",
+    );
 
     let computed_commitment: Field = Poseidon2::hash(
         [
@@ -39,6 +43,31 @@ fn test_main_fails_with_unmatched_sender_addresses() {
     let commitment: Field = 0;
     let sender: Field = 1;
     let current_timestamp: Field = 0;
+
+    main(
+        customer_id,
+        customer_secret,
+        authorized_sender,
+        policy_id,
+        policy_scope_id,
+        policy_scope_parameter_valid_until,
+        commitment,
+        sender,
+        current_timestamp,
+    );
+}
+
+#[test(should_fail_with = "Time limit exceeded")]
+fn test_main_fails_with_current_timestamp_exceeding_valid_until() {
+    let customer_id: Field = 0;
+    let customer_secret: Field = 0;
+    let policy_id: Field = 0;
+    let policy_scope_id: Field = 0;
+    let policy_scope_parameter_valid_until: Field = 1;
+    let authorized_sender: Field = 0;
+    let commitment: Field = 0;
+    let sender: Field = 0;
+    let current_timestamp: Field = 2;
 
     main(
         customer_id,
