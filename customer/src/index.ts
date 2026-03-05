@@ -1,21 +1,7 @@
 import { Barretenberg } from "@aztec/bb.js"
 
 import { bytesToHex } from "viem"
-
-export type CreateCommitmentOptions = {
-  customerId: number,
-  customerSecret: bigint
-  authorizedSender: bigint,
-  policy: {
-    id: number,
-    scope: {
-      id: number,
-      parameters: {
-        [name: string]: unknown
-      }
-    }
-  }
-}
+import type { CreateCommitmentOptions, PrivateInputs, Proof, PublicInputs } from "./types"
 
 export default {
   async createCommitment(options: CreateCommitmentOptions) {
@@ -33,5 +19,7 @@ export default {
     })).hash
 
     return bytesToHex(hash)
-  }
+  },
+  async generateProof(options: PrivateInputs) { return {} },
+  async verifyProof(proof: Proof, publicInputs: PublicInputs) { return false }
 }
