@@ -1,12 +1,19 @@
+type PolicyParameterTypes = 'number'
+type PolicyParameters = Record<string, {
+  type: PolicyParameterTypes,
+  description: string
+}>
+
 export type Policy = {
   id: number,
   assetName: string,
   scope: {
+    id: number,
     name: string,
-    parameters: Record<string, any>
+    parameters: PolicyParameters
   }
-  validateParameters: (parameters: Record<string, any>) => boolean,
-  validateParameterValues: (parameters: Record<string, any>) => boolean
+  validateParameters: (parameters: PolicyParameters) => boolean,
+  validateParameterValues: (parameters: PolicyParameters) => boolean
 }
 
 export type PolicyRepository = {

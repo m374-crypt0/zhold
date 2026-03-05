@@ -17,16 +17,16 @@ describe('Commitment creation', () => {
     const data: CreateCommitmentOptions = {
       customerId: 0,
       authorizedSender: 0n,
+      customerSecret: 0n,
       policy: {
         id: 0,
         scope: {
           id: 0,
           parameters: {
-            validUntil: 0n
+            validUntil: 0
           }
         }
-      },
-      customerSecret: 0n
+      }
     }
 
     const expectedCommitment = (await bb.poseidon2Hash({

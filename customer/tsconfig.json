@@ -8,6 +8,9 @@
     "module": "Preserve",
     "moduleDetection": "force",
     "baseUrl": ".",
+    "rootDirs": [
+      "../issuer/"
+    ],
     "jsx": "react-jsx",
     "allowJs": true,
     // Bundler mode

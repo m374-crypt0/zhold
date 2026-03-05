@@ -28,7 +28,7 @@ export default {
         (await bb.blake2sToField({ data: Buffer.from(options.authorizedSender.toString()) })).field,
         (await bb.blake2sToField({ data: Buffer.from([options.policy.id]) })).field,
         (await bb.blake2sToField({ data: Buffer.from([options.policy.scope.id]) })).field,
-        (await bb.blake2sToField({ data: Buffer.from((options.policy.scope.parameters.validUntil as bigint).toString()) })).field
+        (await bb.blake2sToField({ data: Buffer.from((options.policy.scope.parameters.validUntil as number).toString()) })).field
       ]
     })).hash
 
