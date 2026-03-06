@@ -1,5 +1,4 @@
 import {
-  type CreateCommitmentOptions,
   type PrivateInputs,
   type PublicInputs
 } from "src/types";
@@ -8,7 +7,7 @@ import customer from "src"
 
 import { Barretenberg } from "@aztec/bb.js";
 
-import { bytesToHex } from "viem";
+import { poseidon2HashAsync } from "@zkpassport/poseidon2"
 
 import { beforeEach, describe, expect, it, } from "bun:test";
 
@@ -35,20 +34,18 @@ describe('Commitment creation', () => {
   })
 
   it('should be able to create a poseidon2 commitment from input', async () => {
-    const expectedCommitment = (await bb.poseidon2Hash({
-      inputs: [
-        (await bb.blake2sToField({ data: Buffer.from([ZERO_COMMITMENT_OPTIONS.customerId]) })).field,
-        (await bb.blake2sToField({ data: Buffer.from(ZERO_COMMITMENT_OPTIONS.customerSecret.toString()) })).field,
-        (await bb.blake2sToField({ data: Buffer.from(ZERO_COMMITMENT_OPTIONS.authorizedSender.toString()) })).field,
-        (await bb.blake2sToField({ data: Buffer.from([ZERO_COMMITMENT_OPTIONS.policy.id]) })).field,
-        (await bb.blake2sToField({ data: Buffer.from([ZERO_COMMITMENT_OPTIONS.policy.scope.id]) })).field,
-        (await bb.blake2sToField({ data: Buffer.from((ZERO_COMMITMENT_OPTIONS.policy.scope.parameters.validUntil as number).toString()) })).field,
-      ]
-    })).hash
+    const expectedCommitment = await poseidon2HashAsync([
+      BigInt(ZERO_COMMITMENT_OPTIONS.customerId),
+      ZERO_COMMITMENT_OPTIONS.customerSecret,
+      ZERO_COMMITMENT_OPTIONS.authorizedSender,
+      BigInt(ZERO_COMMITMENT_OPTIONS.policy.id),
+      BigInt(ZERO_COMMITMENT_OPTIONS.policy.scope.id),
+      BigInt(ZERO_COMMITMENT_OPTIONS.policy.scope.parameters.validUntil as number)
+    ])
 
     const commitment = await customer.createCommitment(ZERO_COMMITMENT_OPTIONS)
 
-    expect(commitment).toBe(bytesToHex(expectedCommitment))
+    expect(commitment).toBe(expectedCommitment)
   })
 
   it('should be able to create a proof and verify it against wrong inputs', async () => {

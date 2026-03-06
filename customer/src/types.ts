@@ -21,7 +21,7 @@ export type CreateCommitmentOptions = PrivateInputs & PolicyInputs
 type DynamicInputs = {
   sender: bigint,
   currentTimestamp: number,
-  commitment: `0x${string}`
+  commitment: bigint
 }
 
 export type PublicInputs = PolicyInputs & DynamicInputs;
