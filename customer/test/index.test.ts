@@ -35,7 +35,6 @@ describe('Commitment creation', () => {
   })
 
   it('should be able to create a poseidon2 commitment from input', async () => {
-
     const expectedCommitment = (await bb.poseidon2Hash({
       inputs: [
         (await bb.blake2sToField({ data: Buffer.from([ZERO_COMMITMENT_OPTIONS.customerId]) })).field,

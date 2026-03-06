@@ -5,6 +5,8 @@ MAKEFLAGS += --no-print-directory
 SHELL := /bin/bash
 CIRCUITS_ROOT_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
+export
+
 .PHONY: help
 help:
 	@. ${CIRCUITS_ROOT_DIR}.make/scripts/help.sh
@@ -23,7 +25,7 @@ generate_solidity_verifier: compile
 
 .PHONY: test
 test:
-	@cd ${CIRCUITS_ROOT_DIR} && nargo test
+	@cd ${CIRCUITS_ROOT_DIR} && nargo test --show-output
 
 .PHONY: watch
 watch:

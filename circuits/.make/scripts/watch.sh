@@ -1,8 +1,7 @@
 #!/bin/env bash
 
 function run_test() {
-  cd "${CIRCUITS_ROOT_DIR}" &&
-    nargo test
+  make -C "${CIRCUITS_ROOT_DIR}" test
 }
 
 run_test
