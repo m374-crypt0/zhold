@@ -1,29 +1,31 @@
-export type PrivateInputs = {
-  customerId: number,
-  customerSecret: bigint
-  authorizedSender: bigint,
+export type PrivateInputsForBackend = {
+  private_inputs: {
+    customer_id: string,
+    customer_secret: string
+    authorized_sender: string,
+  }
 }
 
-export type PolicyInputs = {
+export type PolicyInputsForBackend = {
   policy: {
-    id: number,
+    id: string,
     scope: {
-      id: number,
-      parameters: {
-        [name: string]: unknown
-      }
+      id: string,
+      parameters: Record<string, string | number | boolean>
     }
   }
 }
 
-export type CreateCommitmentOptions = PrivateInputs & PolicyInputs
+export type CommitmentInputForBackend = PrivateInputsForBackend & PolicyInputsForBackend
 
-type DynamicInputs = {
-  sender: bigint,
-  currentTimestamp: number,
-  commitment: bigint
+type RequestInputs = {
+  request: {
+    sender: string,
+    current_timestamp: string,
+    commitment: string
+  }
 }
 
-export type PublicInputs = PolicyInputs & DynamicInputs;
+export type PublicInputsForBackend = PolicyInputsForBackend & RequestInputs;
 
-export type Inputs = PrivateInputs & PublicInputs
+export type InputsForBackend = PrivateInputsForBackend & PublicInputsForBackend

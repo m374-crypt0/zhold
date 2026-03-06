@@ -1,6 +1,8 @@
 import {
-  type PrivateInputs,
-  type PublicInputs
+  type CommitmentInputForBackend,
+  type PolicyInputsForBackend,
+  type PrivateInputsForBackend,
+  type PublicInputsForBackend
 } from "src/types";
 
 import customer from "src";
@@ -15,29 +17,31 @@ import { describe, expect, it, } from "bun:test";
 
 describe('Commitment creation', () => {
 
-  const ZERO_COMMITMENT_OPTIONS = {
-    customerId: 0,
-    authorizedSender: 0n,
-    customerSecret: 0n,
+  const ZERO_COMMITMENT_OPTIONS: CommitmentInputForBackend = {
+    private_inputs: {
+      customer_id: 0n.toString(),
+      authorized_sender: 0n.toString(),
+      customer_secret: 0n.toString(),
+    },
     policy: {
-      id: 0,
+      id: 0n.toString(),
       scope: {
-        id: 0,
+        id: 0n.toString(),
         parameters: {
-          validUntil: 0
+          valid_until: 0n.toString()
         }
       }
     }
-  } as const
+  }
 
   it('should be able to create a poseidon2 commitment from input', async () => {
     const expectedCommitment = await poseidon2HashAsync([
-      BigInt(ZERO_COMMITMENT_OPTIONS.customerId),
-      ZERO_COMMITMENT_OPTIONS.customerSecret,
-      ZERO_COMMITMENT_OPTIONS.authorizedSender,
+      BigInt(ZERO_COMMITMENT_OPTIONS.private_inputs.customer_id),
+      BigInt(ZERO_COMMITMENT_OPTIONS.private_inputs.customer_secret),
+      BigInt(ZERO_COMMITMENT_OPTIONS.private_inputs.authorized_sender),
       BigInt(ZERO_COMMITMENT_OPTIONS.policy.id),
       BigInt(ZERO_COMMITMENT_OPTIONS.policy.scope.id),
-      BigInt(ZERO_COMMITMENT_OPTIONS.policy.scope.parameters.validUntil as number)
+      BigInt(ZERO_COMMITMENT_OPTIONS.policy.scope.parameters.valid_until as string)
     ])
 
     const commitment = await customer.createCommitment(ZERO_COMMITMENT_OPTIONS)
@@ -46,17 +50,21 @@ describe('Commitment creation', () => {
   })
 
   it('should not be able to create a proof with wrong inputs', async () => {
-    const privateInputs: PrivateInputs = {
-      customerId: ZERO_COMMITMENT_OPTIONS.customerId,
-      authorizedSender: ZERO_COMMITMENT_OPTIONS.authorizedSender,
-      customerSecret: ZERO_COMMITMENT_OPTIONS.customerSecret
+    const privateInputs: PrivateInputsForBackend = {
+      private_inputs: {
+        customer_id: ZERO_COMMITMENT_OPTIONS.private_inputs.customer_id,
+        authorized_sender: ZERO_COMMITMENT_OPTIONS.private_inputs.authorized_sender,
+        customer_secret: ZERO_COMMITMENT_OPTIONS.private_inputs.customer_secret
+      }
     }
 
-    const publicInputs: PublicInputs = {
+    const publicInputs: PublicInputsForBackend = {
       policy: { ...ZERO_COMMITMENT_OPTIONS.policy },
-      sender: 0n,
-      currentTimestamp: 0,
-      commitment: 1n
+      request: {
+        sender: 0n.toString(),
+        current_timestamp: 0n.toString(),
+        commitment: 1n.toString()
+      }
     }
 
     expect(async () => await customer.generateProof({ ...privateInputs, ...publicInputs }))
@@ -66,32 +74,38 @@ describe('Commitment creation', () => {
   it('should be able to create a proof and verify it against correct inputs', async () => {
     const customerSecret = BigInt(`0x${randomBytes(32).toString('hex')}`) % BN254_FR_MODULUS
 
-    const privateInputs: PrivateInputs = {
-      customerId: ZERO_COMMITMENT_OPTIONS.customerId,
-      authorizedSender: 0x1B77B138c7706407ad86438b75D8bA9F9c838A49n,
-      customerSecret
+    const privateInputs: PrivateInputsForBackend = {
+      private_inputs: {
+        customer_id: ZERO_COMMITMENT_OPTIONS.private_inputs.customer_id,
+        authorized_sender: 0x1B77B138c7706407ad86438b75D8bA9F9c838A49n.toString(),
+        customer_secret: customerSecret.toString()
+      }
     }
 
-    const policy = {
-      id: 0,
-      scope: {
-        id: 0,
-        parameters: {
-          validUntil: 1770380983
+    const policy: PolicyInputsForBackend = {
+      policy: {
+        id: 0n.toString(),
+        scope: {
+          id: 0n.toString(),
+          parameters: {
+            valid_until: 1770380983n.toString()
+          }
         }
       }
     }
 
     const commitment = await customer.createCommitment({
       ...privateInputs,
-      policy
+      ...policy
     })
 
-    const publicInputs: PublicInputs = {
-      policy,
-      sender: privateInputs.authorizedSender,
-      currentTimestamp: policy.scope.parameters.validUntil - 1,
-      commitment
+    const publicInputs: PublicInputsForBackend = {
+      ...policy,
+      request: {
+        sender: privateInputs.private_inputs.authorized_sender,
+        current_timestamp: (BigInt(policy.policy.scope.parameters.valid_until as string) - 1n).toString(),
+        commitment: commitment.toString()
+      }
     }
 
     const proof = await customer.generateProof({ ...privateInputs, ...publicInputs })

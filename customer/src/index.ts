@@ -6,48 +6,28 @@ import { Barretenberg, UltraHonkBackend } from "@aztec/bb.js"
 
 import { cpus } from "node:os"
 
-import type { CreateCommitmentOptions, Inputs, PublicInputs } from "./types"
+import type { CommitmentInputForBackend, InputsForBackend, PublicInputsForBackend } from "./types"
 
 import circuit from "../../circuits/target/rwa_eligibility_v1.json"
 
 export default {
-  async createCommitment(options: CreateCommitmentOptions) {
+  async createCommitment(options: CommitmentInputForBackend) {
     const hash = await poseidon2HashAsync([
-      BigInt(options.customerId),
-      options.customerSecret,
-      options.authorizedSender,
+      BigInt(options.private_inputs.customer_id),
+      BigInt(options.private_inputs.customer_secret),
+      BigInt(options.private_inputs.authorized_sender),
       BigInt(options.policy.id),
       BigInt(options.policy.scope.id),
-      BigInt(options.policy.scope.parameters.validUntil as number)
+      BigInt(options.policy.scope.parameters.valid_until as string)
     ])
 
     return hash
   },
-  async generateProof(inputs: Inputs) {
+  async generateProof(inputs: InputsForBackend) {
     const noir = new Noir(circuit as CompiledCircuit)
     await noir.init()
 
-    const { witness } = await noir.execute({
-      policy: {
-        id: inputs.policy.id,
-        scope: {
-          id: inputs.policy.scope.id,
-          parameters: {
-            valid_until: inputs.policy.scope.parameters.validUntil as number
-          }
-        }
-      },
-      private_inputs: {
-        customer_id: inputs.customerId,
-        customer_secret: inputs.customerSecret.toString(),
-        authorized_sender: inputs.authorizedSender.toString()
-      },
-      request: {
-        sender: inputs.sender.toString(),
-        current_timestamp: inputs.currentTimestamp,
-        commitment: inputs.commitment.toString()
-      }
-    })
+    const { witness } = await noir.execute(inputs)
 
     const bb = await Barretenberg.new({ threads: cpus().length })
     const backend = new UltraHonkBackend(circuit.bytecode, bb)
@@ -57,20 +37,17 @@ export default {
 
     return proof
   },
-  async verifyProof(proof: Uint8Array<ArrayBufferLike>, publicInputs: PublicInputs) {
-    const bb = await Barretenberg.new({
-      threads: cpus().length,
-      // logger: (msg) => console.error(`>>> bb log: ${msg}`)
-    })
+  async verifyProof(proof: Uint8Array<ArrayBufferLike>, publicInputs: PublicInputsForBackend) {
+    const bb = await Barretenberg.new({ threads: cpus().length })
     const backend = new UltraHonkBackend(circuit.bytecode, bb)
 
     const backendInputs = [
-      publicInputs.policy.id.toString(),
-      publicInputs.policy.scope.id.toString(),
-      (publicInputs.policy.scope.parameters.validUntil as number).toString(),
-      publicInputs.sender.toString(),
-      publicInputs.currentTimestamp.toString(),
-      publicInputs.commitment.toString(),
+      publicInputs.policy.id,
+      publicInputs.policy.scope.id,
+      publicInputs.policy.scope.parameters.valid_until as string,
+      publicInputs.request.sender,
+      publicInputs.request.current_timestamp,
+      publicInputs.request.commitment,
     ]
 
     const result = await backend.verifyProof({ publicInputs: backendInputs, proof }, { verifierTarget: 'evm' })
