@@ -26,4 +26,4 @@ type DynamicInputs = {
 
 export type PublicInputs = PolicyInputs & DynamicInputs;
 
-export type Proof = {};
+export type Inputs = PrivateInputs & PublicInputs
