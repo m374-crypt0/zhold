@@ -1,12 +1,12 @@
 import { describe, expect, it, spyOn } from 'bun:test'
 import { testClient } from 'hono/testing'
 import issuer from 'src/handlers/issuer'
-import { MockedOnChainSigner } from './mock/mockedOnChainSigner'
+import { MockedOnChainCommitmentStore } from './mock/mockedOnChainCommitmentStore'
 
 const should = '<unit> should'
 
 describe('Issuer manual revocation', () => {
-  const succeedingOnChainSigner = new MockedOnChainSigner(true)
+  const succeedingOnChainSigner = new MockedOnChainCommitmentStore(true)
 
   const client = testClient(issuer, {
     onChainSigner: succeedingOnChainSigner,
@@ -20,7 +20,7 @@ describe('Issuer manual revocation', () => {
   })
 
   it(`${should} fail if on-chain revocation fails`, async () => {
-    const failingOnChainSigner = new MockedOnChainSigner(false)
+    const failingOnChainSigner = new MockedOnChainCommitmentStore(false)
     const client = testClient(issuer, {
       onChainSigner: failingOnChainSigner,
       isTesting: true

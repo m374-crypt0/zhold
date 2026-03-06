@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'bun:test'
 import { testClient } from 'hono/testing'
-import { LocalOnChainSigner, type PrivateKey } from 'src/blockchain/localOnChainSigner'
+import { LocalOnChainCommitmentStore, type PrivateKey } from 'src/blockchain/localOnChainCommitmentStore'
 import issuer from 'src/handlers/issuer'
 
 const should = '<integration> should'
 
 describe('Issuer manual revocation', () => {
   it(`${should} fail if the signer is not the issuer`, async () => {
-    const wrongLocalChainSigner = new LocalOnChainSigner(process.env['TEST_PRIVATE_KEY_02'] as PrivateKey)
+    const wrongLocalChainSigner = new LocalOnChainCommitmentStore(process.env['TEST_PRIVATE_KEY_02'] as PrivateKey)
     const client = testClient(issuer, {
       onChainSigner: wrongLocalChainSigner,
       isTesting: true

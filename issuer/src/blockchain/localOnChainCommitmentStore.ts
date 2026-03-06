@@ -13,12 +13,12 @@ import {
 import { waitForTransactionReceipt } from "viem/actions"
 import { privateKeyToAccount, type PrivateKeyAccount } from "viem/accounts";
 import { anvil } from "viem/chains";
-import type { OnChainSigner } from "./types/onChainSigner";
+import type { OnChainCommitmentStore } from "./types/onChainCommitmentStore";
 
 export type PrivateKey = `0x${string}`
 type Hash = `0x${string}`
 
-export class LocalOnChainSigner implements OnChainSigner {
+export class LocalOnChainCommitmentStore implements OnChainCommitmentStore {
   constructor(privateKey: PrivateKey) {
     const clientConfig = {
       chain: defineChain({

@@ -1,6 +1,6 @@
-import type { OnChainSigner } from "src/blockchain/types/onChainSigner";
+import type { OnChainCommitmentStore } from "src/blockchain/types/onChainCommitmentStore";
 
-export class MockedOnChainSigner implements OnChainSigner {
+export class MockedOnChainCommitmentStore implements OnChainCommitmentStore {
   constructor(mustSucceed: boolean) {
     this.mustSucceed = mustSucceed
   }

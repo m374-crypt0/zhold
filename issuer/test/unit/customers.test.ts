@@ -4,14 +4,14 @@ import customers from 'src/handlers/customers'
 import { clearRepository, inMemoryCustomerRepository } from 'src/repositories/inMemoryCustomerRepository'
 import { inMemoryPolicyRepository } from 'src/repositories/inMemoryPolicyRepository'
 import { nowFromEpochInSeconds, thirtyDaysLaterFromEpochInSeconds } from 'src/utility/time'
-import { MockedOnChainSigner } from './mock/mockedOnChainSigner'
+import { MockedOnChainCommitmentStore } from './mock/mockedOnChainCommitmentStore'
 
 const should = '<unit> should'
 
 const ZERO_COMMITMENT = '0x0000000000000000000000000000000000000000000000000000000000000000'
 
 describe('Customers compliancy recording', () => {
-  const succeedingOnChainSigner = new MockedOnChainSigner(true)
+  const succeedingOnChainSigner = new MockedOnChainCommitmentStore(true)
 
   const client = testClient(customers, {
     customerRepository: inMemoryCustomerRepository,
@@ -113,7 +113,7 @@ describe('Customers compliancy recording', () => {
     })
 
   it(`${should} fail if on-chain signer fails to store the commitment`, async () => {
-    const failingOnChainSigner = new MockedOnChainSigner(false)
+    const failingOnChainSigner = new MockedOnChainCommitmentStore(false)
 
     const client = testClient(customers, {
       onChainSigner: failingOnChainSigner,

@@ -1,7 +1,7 @@
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { createMiddleware } from 'hono/factory'
-import { LocalOnChainSigner, type PrivateKey } from 'src/blockchain/localOnChainSigner'
-import type { OnChainSigner } from 'src/blockchain/types/onChainSigner'
+import { LocalOnChainCommitmentStore, type PrivateKey } from 'src/blockchain/localOnChainCommitmentStore'
+import type { OnChainCommitmentStore } from 'src/blockchain/types/onChainCommitmentStore'
 import { inMemoryCustomerRepository } from 'src/repositories/inMemoryCustomerRepository'
 import { inMemoryPolicyRepository } from 'src/repositories/inMemoryPolicyRepository'
 import type { CustomerRepository } from 'src/repositories/types/customerRepository'
@@ -12,7 +12,7 @@ type CustomerEnv = {
   Bindings: {
     customerRepository: CustomerRepository,
     policyRepository: PolicyRepository,
-    onChainSigner: OnChainSigner,
+    onChainSigner: OnChainCommitmentStore,
     isTesting: boolean | undefined
   }
 }
@@ -23,7 +23,7 @@ const injectRepositories = createMiddleware<CustomerEnv>(async (c, next) => {
   if (!c.env.isTesting) {
     c.env.customerRepository = inMemoryCustomerRepository
     c.env.policyRepository = inMemoryPolicyRepository
-    c.env.onChainSigner = new LocalOnChainSigner(process.env['TEST_PRIVATE_KEY_01'] as PrivateKey)
+    c.env.onChainSigner = new LocalOnChainCommitmentStore(process.env['TEST_PRIVATE_KEY_01'] as PrivateKey)
   }
 
   await next()

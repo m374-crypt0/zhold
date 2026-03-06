@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'bun:test'
 import { testClient } from 'hono/testing'
-import { LocalOnChainSigner, type PrivateKey } from 'src/blockchain/localOnChainSigner'
+import { LocalOnChainCommitmentStore, type PrivateKey } from 'src/blockchain/localOnChainCommitmentStore'
 import customers from 'src/handlers/customers'
 import { clearRepository, inMemoryCustomerRepository } from 'src/repositories/inMemoryCustomerRepository'
 import { inMemoryPolicyRepository } from 'src/repositories/inMemoryPolicyRepository'
@@ -18,7 +18,7 @@ describe('Customer compliancy recording', () => {
   })
 
   it(`${should} fail if the signer is not the issuer`, async () => {
-    const wrongLocalChainSigner = new LocalOnChainSigner(process.env['TEST_PRIVATE_KEY_02'] as PrivateKey)
+    const wrongLocalChainSigner = new LocalOnChainCommitmentStore(process.env['TEST_PRIVATE_KEY_02'] as PrivateKey)
     const client = testClient(customers, {
       customerRepository: inMemoryCustomerRepository,
       policyRepository: inMemoryPolicyRepository,
