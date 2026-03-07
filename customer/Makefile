@@ -10,9 +10,11 @@ help:
 	@. ${CUSTOMER_ROOT_DIR}.make/scripts/help.sh
 
 .PHONY: test
+test: pattern='<unit>'
 test:
-	@bun test ${CUSTOMER_ROOT_DIR}test
+	@bun test --test-name-pattern=${pattern}
 
 .PHONY: watch
+watch: pattern='<unit>'
 watch:
-	@bun --watch test ${CUSTOMER_ROOT_DIR}test
+	@bun --watch test --test-name-pattern=${pattern}

@@ -15,8 +15,10 @@ import { describe, expect, it } from "bun:test";
 
 import { getValidProofAndPublicInputs, ZERO_COMMITMENT_OPTIONS } from "test/utility";
 
+const should = '<unit> should'
+
 describe('Commitment creation', () => {
-  it('should be able to create a poseidon2 commitment from input', async () => {
+  it(`${should} be able to create a poseidon2 commitment from input`, async () => {
     const expectedCommitment = await poseidon2HashAsync([
       BigInt(ZERO_COMMITMENT_OPTIONS.private_inputs.customer_id),
       BigInt(ZERO_COMMITMENT_OPTIONS.private_inputs.customer_secret),
@@ -33,7 +35,7 @@ describe('Commitment creation', () => {
 })
 
 describe('Proof creation and local verification', () => {
-  it('should not be able to create a proof with wrong inputs', async () => {
+  it(`${should} not be able to create a proof with wrong inputs`, async () => {
     const privateInputs: PrivateInputsForBackend = {
       private_inputs: {
         customer_id: ZERO_COMMITMENT_OPTIONS.private_inputs.customer_id,
@@ -55,7 +57,7 @@ describe('Proof creation and local verification', () => {
       .toThrowError('Circuit execution failed: Invalid commitment value')
   })
 
-  it('should be able to create a proof and verify it against correct inputs', async () => {
+  it(`${should} be able to create a proof and verify it against correct inputs`, async () => {
     const { proof, publicInputs } = await getValidProofAndPublicInputs();
 
     expect(await customer.verifyProofLocally({ proof, publicInputs })).toBeTrue()
@@ -63,7 +65,7 @@ describe('Proof creation and local verification', () => {
 })
 
 describe('Proof submission to blokchain', () => {
-  it('should fail to verify a proof with wrong commitment value', async () => {
+  it(`${should} fail to verify a proof with wrong commitment value`, async () => {
     const { proof, publicInputs } = await getValidProofAndPublicInputs();
     expect(await customer.verifyProofLocally({ proof, publicInputs })).toBeTrue()
 
@@ -77,7 +79,7 @@ describe('Proof submission to blokchain', () => {
     })).toThrow('Failed to prove on-chain: invalid commitment')
   })
 
-  it('should fail to verify a proof with correct commitment but with wrong input', async () => {
+  it(`${should} fail to verify a proof with correct commitment but with wrong input`, async () => {
     const { proof, publicInputs } = await getValidProofAndPublicInputs();
     expect(await customer.verifyProofLocally({ proof, publicInputs })).toBeTrue()
 
@@ -91,7 +93,7 @@ describe('Proof submission to blokchain', () => {
     })).toThrow('Failed to prove on-chain: invalid proof')
   })
 
-  it('should succeed to verify a proof with correct public inputs', async () => {
+  it(`${should} succeed to verify a proof with correct public inputs`, async () => {
     const { proof, publicInputs } = await getValidProofAndPublicInputs();
     expect(await customer.verifyProofLocally({ proof, publicInputs })).toBeTrue()
 
