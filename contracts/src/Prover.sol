@@ -19,7 +19,7 @@ contract Prover {
 
   function prove(bytes calldata zkp_, bytes32[] calldata publicInputs_) external view returns (bool) {
     // NOTE: see ../../circuits/src/main.nr, function main arguments
-    uint256 commitment = uint256(publicInputs_[6]);
+    uint256 commitment = uint256(publicInputs_[5]);
 
     require(store.commitments(commitment), InvalidCommitment());
     require(verifier.verify(zkp_, publicInputs_), InvalidProof());

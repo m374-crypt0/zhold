@@ -64,7 +64,7 @@ describe('Proof creation and local verification', () => {
   })
 })
 
-describe('Proof submission to blokchain', () => {
+describe('Proof submission to blockchain', () => {
   it(`${should} fail to verify a proof with wrong commitment value`, async () => {
     const { proof, publicInputs } = await getValidProofAndPublicInputs();
     expect(await customer.verifyProofLocally({ proof, publicInputs })).toBeTrue()

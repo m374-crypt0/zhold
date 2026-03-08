@@ -2,7 +2,6 @@
 pragma solidity 0.8.33;
 
 import { Script } from "forge-std/Script.sol";
-import { Vm } from "forge-std/Vm.sol";
 
 contract LocalDeployScript is Script {
   address private sender;

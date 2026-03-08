@@ -21,7 +21,7 @@ contract ProverTests is Test {
   CommitmentStore public store;
   Prover public prover;
 
-  uint256 constant commitment = 2;
+  uint256 constant COMMITMENT = 2;
   bytes public zkpStub;
   bytes32[] public publicInputsStub;
 
@@ -35,8 +35,7 @@ contract ProverTests is Test {
     publicInputsStub.push(0);
     publicInputsStub.push(0);
     publicInputsStub.push(0);
-    publicInputsStub.push(0);
-    publicInputsStub.push(bytes32(commitment));
+    publicInputsStub.push(bytes32(COMMITMENT));
 
     pfop = new PrimeFieldOrderProvider();
     store = new CommitmentStore(pfop, issuer);
@@ -51,7 +50,7 @@ contract ProverTests is Test {
 
   function test_prove_fails_forInvalidProofs() public {
     vm.startPrank(issuer);
-    store.commit(commitment);
+    store.commit(COMMITMENT);
     vm.stopPrank();
 
     verifier.makeVerificationsFail();
@@ -62,7 +61,7 @@ contract ProverTests is Test {
 
   function test_prove_succeeds_forValidProofs() public {
     vm.startPrank(issuer);
-    store.commit(commitment);
+    store.commit(COMMITMENT);
     vm.stopPrank();
 
     assertTrue(prover.prove(zkpStub, publicInputsStub));

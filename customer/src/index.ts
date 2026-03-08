@@ -8,7 +8,7 @@ import { cpus } from "node:os"
 
 import type { CommitmentInputForBackend, InputsForBackend, PublicInputsForBackend } from "./types"
 
-import circuit from "../../circuits/target/rwa_eligibility_v1.json"
+import circuit from "circuits/target/rwa_eligibility_v1.json"
 
 import { type OnChainProver } from "./blockchain/types/onChainProver"
 

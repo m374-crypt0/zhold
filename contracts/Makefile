@@ -2,6 +2,8 @@ CONTRACTS_ROOT_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
 include $(CONTRACTS_ROOT_DIR)/.env
 
+export
+
 .PHONY: help
 help:
 	@. ${CONTRACTS_ROOT_DIR}.make/scripts/help.sh
