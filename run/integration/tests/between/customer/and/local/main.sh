@@ -11,6 +11,10 @@ deploy_contracts_on_local_blockchain() {
     deploy_contracts
 }
 
+start_issuer_api() {
+  :
+}
+
 run_integration_tests() {
   if [ "$WATCHING" = 'true' ]; then
     make -C "${RAKE_ROOT_DIR}" customer pattern=integration watch
@@ -21,6 +25,7 @@ run_integration_tests() {
 
 main() {
   deploy_contracts_on_local_blockchain &&
+    start_issuer_api &&
     run_integration_tests
 }
 

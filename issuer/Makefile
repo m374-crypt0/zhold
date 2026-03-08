@@ -21,6 +21,10 @@ run: build
 dev: build
 	@bun run dev ${ISSUER_ROOT_DIR}src/
 
+.PHONY: dev_background
+dev_background: build
+	@. ${ISSUER_ROOT_DIR}.make/scripts/dev_background.sh
+
 .PHONY: test
 
 test: pattern='<unit>'
