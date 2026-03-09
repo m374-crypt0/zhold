@@ -1,4 +1,4 @@
-type PolicyParameterTypes = 'number'
+type PolicyParameterTypes = 'number' | 'string' | 'boolean'
 type PolicyParameters = Record<string, {
   type: PolicyParameterTypes,
   description: string

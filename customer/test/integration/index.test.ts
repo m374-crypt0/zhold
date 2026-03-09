@@ -29,30 +29,11 @@ describe('Proof submission to blockchain', () => {
   })
 
   it(`${should} fail to prove on-chain with an invalid public input set`, async () => {
-    const privateInputs: Parameters<typeof getValidProofAndPublicInputs>[0] = {
-      customer_id: (await registerUserUsingIssuerApi()).toString(),
-      customer_secret: createCustomerSecret(),
-      authorized_sender: privateKeyToAccount(process.env['TEST_PRIVATE_KEY_03']! as `0x${string}`).address
-    }
+    const { proof, publicInputs } = await registerThenCreateProofThenRecordCompliancy()
 
-    const { proof, publicInputs } = await getValidProofAndPublicInputs(privateInputs);
-    expect(await customer.verifyProofLocally({ proof, publicInputs })).toBeTrue()
-
-    await recordCompliancyUsingIssuerApi({
-      customerId: Number(privateInputs.customer_id),
-      policy: {
-        id: Number(publicInputs.policy.id),
-        scope: {
-          id: Number(publicInputs.policy.scope.id),
-          parameters: {
-            validUntil: Number(publicInputs.policy.scope.parameters.valid_until)
-          }
-        }
-      },
-      commitment: `0x${BigInt(publicInputs.request.commitment).toString(16)}`
-    })
-
+    // NOTE: below is not the authorized_sender
     publicInputs.request.sender = '0xb27542cc8c84c215fa2e4932cfc61245cd1a1514'
+
     const onChainProver: OnChainProver = new LocalOnChainProver()
 
     expect(async () => customer.verifyProofOnChain({
@@ -63,29 +44,7 @@ describe('Proof submission to blockchain', () => {
   })
 
   it(`${should} succeeds to prove on-chain with a valid public input set`, async () => {
-    const privateInputs: Parameters<typeof getValidProofAndPublicInputs>[0] = {
-      customer_id: (await registerUserUsingIssuerApi()).toString(),
-      customer_secret: createCustomerSecret(),
-      authorized_sender: privateKeyToAccount(process.env['TEST_PRIVATE_KEY_03']! as `0x${string}`).address
-    }
-
-    const { proof, publicInputs } = await getValidProofAndPublicInputs(privateInputs);
-    expect(await customer.verifyProofLocally({ proof, publicInputs })).toBeTrue()
-
-    await recordCompliancyUsingIssuerApi({
-      customerId: Number(privateInputs.customer_id),
-      policy: {
-        id: Number(publicInputs.policy.id),
-        scope: {
-          id: Number(publicInputs.policy.scope.id),
-          parameters: {
-            validUntil: Number(publicInputs.policy.scope.parameters.valid_until)
-          }
-        }
-      },
-      commitment: `0x${BigInt(publicInputs.request.commitment).toString(16)}`
-    })
-
+    const { proof, publicInputs } = await registerThenCreateProofThenRecordCompliancy()
     const onChainProver: OnChainProver = new LocalOnChainProver()
 
     const result = await customer.verifyProofOnChain({
@@ -97,6 +56,33 @@ describe('Proof submission to blockchain', () => {
     expect(result).toBeTrue()
   })
 
+  async function registerThenCreateProofThenRecordCompliancy() {
+    const privateInputs: Parameters<typeof getValidProofAndPublicInputs>[0] = {
+      customer_id: (await registerUserUsingIssuerApi()).toString(),
+      customer_secret: createCustomerSecret(),
+      authorized_sender: privateKeyToAccount(process.env['TEST_PRIVATE_KEY_03']! as `0x${string}`).address
+    }
+
+    const { proof, publicInputs } = await getValidProofAndPublicInputs(privateInputs);
+    expect(await customer.verifyProofLocally({ proof, publicInputs })).toBeTrue()
+
+    await recordCompliancyUsingIssuerApi({
+      customerId: Number(privateInputs.customer_id),
+      policy: {
+        id: Number(publicInputs.policy.id),
+        scope: {
+          id: Number(publicInputs.policy.scope.id),
+          parameters: {
+            validUntil: Number(publicInputs.policy.scope.parameters.valid_until)
+          }
+        }
+      },
+      commitment: `0x${BigInt(publicInputs.request.commitment).toString(16)}`
+    })
+
+    return { proof, publicInputs }
+  }
+
   async function registerUserUsingIssuerApi() {
     const headers = new Headers()
     headers.append('Content-Type', 'application/json')
@@ -104,6 +90,7 @@ describe('Proof submission to blockchain', () => {
     const body = JSON.stringify({
       firstName: 'John',
       lastName: 'Doe',
+      // NOTE: Ensuring registration with different yet similar users
       email: `john.doe+${emailSuffix++}@unknown.ufo`
     })
 
@@ -115,13 +102,12 @@ describe('Proof submission to blockchain', () => {
     })
 
     const response = await fetch(request)
-
     const { id } = await response.json() as { id: number }
 
     return id
   }
 
-  async function recordCompliancyUsingIssuerApi(options: {
+  async function recordCompliancyUsingIssuerApi(body: {
     customerId: number,
     policy: {
       id: number,
@@ -135,17 +121,11 @@ describe('Proof submission to blockchain', () => {
     const headers = new Headers()
     headers.append('Content-Type', 'application/json')
 
-    const body = JSON.stringify({
-      customerId: options.customerId,
-      policy: options.policy,
-      commitment: options.commitment
-    })
-
     const request = new Request({
       url: 'http://localhost:3000/customers/recordCompliancy',
       method: 'POST',
       headers,
-      body
+      body: JSON.stringify(body)
     })
 
     const response = await fetch(request)
