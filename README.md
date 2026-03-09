@@ -27,10 +27,10 @@ It allows an address to **prove compliance with off-chain rules** and obtain
 on-chain authorization **without revealing identity, jurisdiction, or private
 compliance data**.
 
-> Here, the compliance is all about **holding** a **RWA**.
+> In this demonstration, the *compliance* is all about **holding** a **RWA**.
 
 The design is **asset-agnostic**, focused on **policy enforcement**, not
-tokenization.
+tokenization. It can be extended with a reasonable amount of efforts.
 
 ---
 
@@ -48,6 +48,7 @@ In practice, RWA teams must enforce rules such as:
 
 But putting this data on-chain is **unacceptable**:
 
+- 💵 high gas costs
 - 🚫 privacy violations
 - 🔒 regulatory exposure
 - ⚰️ irreversible disclosure
@@ -64,7 +65,7 @@ The core challenge is:
 This project separates concerns into **three layers**:
 
 - Off-chain **compliance**
-  - An **issuer** evaluates eligibility using private data.
+  - A *RWA* **issuer** evaluates eligibility using private data.
   - An attestation built by the **customer** using **policy** properties and a
     local secret.
 - Zero-Knowledge proof
@@ -73,7 +74,8 @@ This project separates concerns into **three layers**:
   - No private data is revealed.
 - On-chain enforcement
   - The **Issuer** record the commitment on-chain
-  - A smart contract verifies the proof provided by the **customer**
+  - A smart contract verifies the proof provided by the **customer** at any
+    time
   - Eligibility is granted or denied based solely on the proof and public
     inputs.
 
@@ -85,8 +87,9 @@ The **asset** itself remains **completely decoupled** from the **compliance logi
 
 The zero-knowledge proof demonstrates that:
 
-1. The caller is **eligible** under a specific policy
-2. The **eligibility** is still within its validity window (or any policy property)
+1. The caller (**customer**) is **eligible** under a specific **policy**
+2. The **eligibility** is still within its validity window (or any **policy**
+   property)
 3. The proof is cryptographically bound to the on-chain action and a specific
    EVM address (thanks to the commitment and the circuit logic)
 4. No private data is disclosed on-chain
@@ -104,7 +107,7 @@ This system does not prove:
 - Accreditation details
 - The correctness of the off-chain compliance process
 - The legal validity of the **issuer**
-- Real-time revocation at scale (manual revocation is possible)
+- Real-time revocation at scale (manual revocation is possible though)
 
 ---
 
