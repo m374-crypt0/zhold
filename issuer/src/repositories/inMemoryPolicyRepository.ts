@@ -12,7 +12,7 @@ export const inMemoryPolicyRepository: PolicyRepository = {
 
 const repository: Array<Policy> = [{
   id: 0,
-  assetName: 'rwa_gold_one_ounce',
+  assetName: 'rwa_1',
   scope: {
     id: 0,
     name: 'hold',

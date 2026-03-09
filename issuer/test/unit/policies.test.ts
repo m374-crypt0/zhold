@@ -27,7 +27,7 @@ describe('Policy querying', () => {
     expect(res.status).toBe(200)
     expect(await res.json()).toEqual({
       id: 0,
-      assetName: 'rwa_gold_one_ounce',
+      assetName: 'rwa_1',
       scope: {
         id: 0,
         name: 'hold',
