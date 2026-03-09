@@ -1,100 +1,83 @@
-# circuits - where zero knowledge magic operates
+# circuits — Where zero-knowledge magic operates
 
-> The **circuits** component contains the underlying logic allowing a
-> **customer** to prove its **eligibility** regarding an **issuer**'s
-> **policy** by providing only public inputs.
+> **circuits** defines the eligibility rules as a zero-knowledge circuit. It
+> allows a customer to prove compliance with an issuer's policy using only
+> public inputs — no private data is ever disclosed.
 
 <!--toc:start-->
-- [circuits - where zero knowledge magic operates](#circuits-where-zero-knowledge-magic-operates)
+- [circuits — Where zero-knowledge magic operates](#circuits-where-zero-knowledge-magic-operates)
   - [Responsibilities](#responsibilities)
   - [Trust boundaries](#trust-boundaries)
-    - [noir circuit](#noir-circuit)
-    - [Generated solidity verifier smart contract](#generated-solidity-verifier-smart-contract)
-  - [Inputs of the circuit](#inputs-of-the-circuit)
-    - [private inputs](#private-inputs)
-    - [public inputs](#public-inputs)
+  - [Circuit inputs](#circuit-inputs)
+    - [Private inputs](#private-inputs)
+    - [Public inputs](#public-inputs)
   - [Interactions in the entire *zhold* system](#interactions-in-the-entire-zhold-system)
-    - [Flows](#flows)
+    - [Flow](#flow)
   - [Final words](#final-words)
 <!--toc:end-->
 
 ## Responsibilities
 
-1. Define a sound logic for proving a **customer** eligibility without any ambiguity
-2. Do not disclose any private information when verifying the proof
-3. Generate a solidity verifier contract to be used by other solidity contract
-   functions.
+1. Define a sound, unambiguous logic for proving customer eligibility.
+2. Ensure no private information is disclosed when verifying a proof.
+3. Generate a Solidity verifier contract deployable by the contracts component.
 
 ## Trust boundaries
 
-### noir circuit
+- **Circuit logic** — the circuit is the ground truth for what "eligible" means.
+  Any update must go through governance; a changed circuit invalidates all
+  existing proofs.
+- **Generated Solidity verifier** — must not be regenerated or replaced without
+  governance. It is tightly coupled to the circuit version in use.
 
-- The circuit is upgraded with governance, preventing wild update and
-  invalidation of the proving system.
+## Circuit inputs
 
-### Generated solidity verifier smart contract
+### Private inputs
 
-- The same as for the circuit, the verifier must not be regenerated without
-  governance.
+| Input | Description |
+|---|---|
+| `customer_id` | Assigned by the issuer at registration; highly sensitive |
+| `customer_secret` | A secret value chosen by the customer; never shared |
+| `authorized_sender` | The EVM address the proof will be bound to |
 
-## Inputs of the circuit
+### Public inputs
 
-> They need to be defined perfectly to ensure a sound and privacy preserving
-> logic.
-
-### private inputs
-
-- **customer** identifier
-  - very private, obtained from the **issuer** at registration time
-- secret **customer** salt
-  - A secret value only the **customer** knows
-
-### public inputs
-
-- **policy** properties (specific to this demonstration)
-  - the **policy** identifier (exposed by the **issuer**)
-  - the scope of the policy (here *holding*)
-  - validity time range
-  - the ethereum address used to *prove* eligibility
-  - the *commitment* computed by the **customer** and stored on-chain by the
-    **issuer**
+| Input | Description |
+|---|---|
+| `policy.id` | Identifier of the policy being proven |
+| `policy.scope.id` | Scope identifier (e.g. *holding*) |
+| `policy.scope.parameters.valid_until` | Expiry timestamp of the policy |
+| `request.sender` | EVM address submitting the proof on-chain |
+| `request.current_timestamp` | Block timestamp at proof submission |
+| `request.commitment` | Poseidon2 hash of private inputs + policy; stored on-chain by the issuer |
 
 ## Interactions in the entire *zhold* system
 
-Essentially two-fold:
+### Flow
 
-1. generate the solidity verifier smart contract
-2. compile the circuit to *ACIR* byte code usable by the *barretenberg* proving
-   backend at **customer** side.
-
-### Flows
-
-```text
-+------------------------------------------------------------------------------+
-|        contracts        |        circuits         |         customer         |
-|            |            | (1) compile circuit to  |            |             |
-|            |            | ACIR      |             |            |             |
-|            |            |           |             |            |             |
-|            |            | (2) proving backend     |            |             |
-|            |<-------------generates solidity      |            |             |
-|            |            | verifier smart contract |            |             |
-|            |            |           |             |            |             |
-|            |            |           |             | (3) executes the circuit |
-|            |            |           |             | with public and private  |
-|            |            |           |             | inputs using ACIR to get |
-|            |            |           |             | the witness|             |
-|            |            |           |             |            |             |
-|            |            |           |             | (4) generates the proof  |
-|            |            |           |             | using the proving        |
-|            |            |           |             | backend and the witness  |
-|            |            |           |             |            |             |
-|            |            |           |             | (5) submit the generated |
-|            |<---------------------------------------proof for verification   |
-|            |            |           |             |            |             |
-+------------------------------------------------------------------------------+
+```
+    contracts            circuits                     customer
+        │                    │                            │
+        │   (1) compile to   │                            │
+        │   ACIR bytecode    │                            │
+        │                    │                            │
+        │◀── (2) generate ───│                            │
+        │    Solidity        │                            │
+        │    verifier        │                            │
+        │                    │                            │
+        │                    │  (3) execute circuit with  │
+        │                    │  private + public inputs   │
+        │                    │  to produce witness ──────▶│
+        │                    │                            │
+        │                    │  (4) generate proof        │
+        │                    │  from witness ────────────▶│
+        │                    │                            │
+        │◀──────────────────────────────(5) submit proof──│
+        │                               on-chain          │
 ```
 
 ## Final words
 
-**circuits** is a critical part of *zhold*. It must be designed carefully, be
-crystal clear and updated with string governance rules.
+**circuits** is the most critical component of *zhold*. Its logic determines
+what "proven" means for the entire system. It must be clear, correct, and
+governed with the same rigour as a smart contract.

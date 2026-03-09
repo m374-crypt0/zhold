@@ -1,97 +1,83 @@
-# Customer - The user who proves compliance without disclosure
+# customer — Prove compliance without disclosure
 
-> The **customer** represents a registered user in the **Issuer** organization.
-> He is able to prove he's compliant regarding an **Issuer**'s policy for a
-> specific **RWA** without any disclosure of personal information both on-chain
-> and off-chain
+> The **customer** is a registered user who can prove eligibility regarding an
+> issuer's policy for a specific RWA — without disclosing any personal
+> information, on-chain or off-chain.
 
 <!--toc:start-->
-- [Customer - The user who proves compliance without disclosure](#customer-the-user-who-proves-compliance-without-disclosure)
-  - [Responsibilities of the **Customer**](#responsibilities-of-the-customer)
+- [customer — Prove compliance without disclosure](#customer-prove-compliance-without-disclosure)
+  - [Responsibilities](#responsibilities)
   - [Trust boundaries](#trust-boundaries)
   - [Interactions in the entire *zhold* system](#interactions-in-the-entire-zhold-system)
-    - [Flows](#flows)
-  - [A word about the **Customer**](#a-word-about-the-customer)
+    - [Flow](#flow)
+  - [A word about the customer](#a-word-about-the-customer)
 <!--toc:end-->
 
-## Responsibilities of the **Customer**
+## Responsibilities
 
-1. Create a set of inputs from **issuer**'s policy properties and secret values
-   from the **customer** himself and keep them safe.
-2. Compute a commitment from aforementioned data
-3. Send this commitment to the **Issuer** for on-chain storage should the
-   **customer** be eligible regarding the **issuer**'s policy
-4. Generate a **ZKP** locally, binding an EVM address of its choice then, test
-   it.
-5. Use this **ZKP** to prove he's compliant without any disclosure of personnal
-   information
+1. Create a set of inputs from the issuer's policy properties combined with
+   secret values known only to the customer, and keep them safe.
+2. Compute a **commitment** from those inputs.
+3. Send the commitment to the issuer for on-chain storage, conditional on
+   eligibility.
+4. Generate a **ZKP** locally, bound to a chosen EVM address, and verify it
+   locally before submitting.
+5. Submit the ZKP on-chain to prove compliance without disclosing any personal
+   information.
 
 ## Trust boundaries
 
-This part of *zhold* is essentially assumed **trustless** excepting for the
-**Customer**'s identity that is not proven in the scope of this demonstration.
+The customer component is essentially **trustless** — all sensitive operations
+happen locally and no private data leaves the machine. The only external trust
+assumptions are:
 
-Of course we assume the **issuer** is legally allowed to report the eligibility
-of a **customer**
+- The **issuer** is assumed to have correctly evaluated eligibility.
+- The **circuit** correctly enforces the intended rules.
+
+The customer's identity is not proven on-chain; this is intentional and
+explicit in the system design.
 
 ## Interactions in the entire *zhold* system
 
-### Flows
+### Flow
 
-Flow described here will amend the one defined in [Issuer
-flow](/issuer/README.md#flows)
-
-```text
-+------------------------------------------------------------------------------+
-|     Customer            Issuer            Blockchain            Circuit      |
-|         |        |         |         |         |         |         |         |
-| (1) asks for     |         |         |         |         |         |         |
-| eligibility     ---------->|         |         |         |         |         |
-| regarding a      |         |         |         |         |         |         |
-| policy  |        |         |         |         |         |         |         |
-|         |        |         |         |         |         |         |         |
-| (2) Creates an   |         |         |         |         |         |         |
-| attestation      |         |         |         |         |         |         |
-| if elegibile in  |         |         |         |         |         |         |
-| (1) using        |         |         |         |         |         |         |
-| customer id,     |         |         |         |         |         |         |
-| Issuer policy    |         |         |         |         |         |         |
-| data, secret     |         |         |         |         |         |         |
-| salt and an      |         |         |         |         |         |         |
-| EVM address      |         |         |         |         |         |         |
-|         |        |         |         |         |         |         |         |
-| (3) compute a    |         |         |         |         |         |         |
-| commitment using |         |         |         |         |         |         |
-| the attestation  |         |         |         |         |         |         |
-| data    |        |         |         |         |         |         |         |
-|         |        |         |         |         |         |         |         |
-| (4) Sends the    |         |         |         |         |         |         |
-| commitement to  ---------->|         |         |         |         |         |
-| the Issuer       |         |         |         |         |         |         |
-|         |        |         |         |         |         |         |         |
-| (5) generates a  |         |         |         |         |         |         |
-| ZKP locally and--------------------------------------------------->|         |
-| verifies it      |         |         |         |         |         |         |
-|         |        |         |         |         |         |         |         |
-| (6) Using the    |         |         |         |         |         |         |
-| EVM address      |         |         |         |         |         |         |
-| specified in the |         |         |         |         |         |         |
-| attestation,     |         |         |         |         |         |         |
-| proves the       |         |         |         |         |         |         |
-| compliancy of   ------------------------------>|         |         |         |
-| the customer     |         |         |         |         |         |         |
-| without |        |         |         |         |         |         |         |
-| disclosing any   |         |         |         |         |         |         |
-| private data     |         |         |         |         |         |         |
-| whenever the     |         |         |         |         |         |         |
-| customer needs   |         |         |         |         |         |         |
-|         |        |         |         |         |         |         |         |
-+------------------------------------------------------------------------------+
+```
+  Customer (local)          Issuer API              Blockchain
+       │                         │                        │
+  (3) build attestation locally  │                        │
+      customer_id + secret +     │                        │
+      EVM address + policy       │                        │
+      properties                 │                        │
+       │                         │                        │
+  (4) compute commitment         │                        │
+      (Poseidon2 hash)           │                        │
+       │                         │                        │
+  (5) send commitment            │                        │
+  ──────────────────────────────▶│                        │
+       │                         │  (6) store commitment  │
+       │                         │  if customer is        │
+       │                         │  eligible              │
+       │                         │ ──────────────────────▶│
+       │                         │                        │
+  (7) generate ZK proof locally  │                        │
+      using circuit bytecode     │                        │
+      (proof never leaves device)│                        │
+       │                         │                        │
+  (8) submit proof + public inputs                        │
+  ────────────────────────────────────────────────────── ▶│
+       │                         │                        │
+  (9) eligibility confirmed      │                        │
+  ◀───────────────────────────────────────────────────────│
 ```
 
-## A word about the **Customer**
+## A word about the customer
 
-A lot of work is done **locally** and **never get out** from the **customer**
-machine especially elements dealing with private data and proof generation.
+All work involving private data — building the attestation, computing the
+commitment, generating the proof — happens **locally** and **never leaves the
+customer's machine**.
 
-> Compliancy without disclosure
+After the commitment is recorded on-chain (step 6), the issuer is no longer
+involved. The customer can generate and submit new proofs at any time,
+autonomously.
+
+> Compliance without disclosure.

@@ -1,98 +1,77 @@
-# Issuer - The Organization managing Real World Assets
+# issuer — The organization managing Real World Assets
 
-> The **Issuer** represents the *organization* having real world assets, minting
-> their **tokenized** representations for their **customers** if they are
-> eligible to *hodl* them
+> The **issuer** represents the RWA organization: it evaluates customer
+> eligibility, exposes policies, and records eligibility commitments on-chain.
+> It is the only component that handles private customer data.
 
 <!--toc:start-->
-- [Issuer - The Organization managing Real World Assets](#issuer-the-organization-managing-real-world-assets)
-  - [Responsibilities of the **Issuer**](#responsibilities-of-the-issuer)
+- [issuer — The organization managing Real World Assets](#issuer-the-organization-managing-real-world-assets)
+  - [Responsibilities](#responsibilities)
   - [Trust boundaries](#trust-boundaries)
   - [Interactions in the entire *zhold* system](#interactions-in-the-entire-zhold-system)
-    - [Flows](#flows)
-  - [A word about the **Issuer** platform](#a-word-about-the-issuer-platform)
+    - [Flow](#flow)
+  - [A word about the issuer platform](#a-word-about-the-issuer-platform)
 <!--toc:end-->
 
-## Responsibilities of the **Issuer**
+## Responsibilities
 
-1. Expose a way for potential a **Customer** (**prospects**) to register
-2. Expose all supported **policies** and their properties regarding managed
-   **RWA**
-3. Handles **attestation** demands from **customer** to ensure **compliancy and
-   regulation** obligations **without disclosure** of private information about
-   them only storing **commitments** on-chain.
+1. Expose a registration endpoint for prospects (KYC intake).
+2. Expose all supported policies and their properties.
+3. Handle eligibility attestation requests from customers — recording
+   commitments on-chain when the customer is eligible, without storing or
+   publishing private customer data.
 
 ## Trust boundaries
 
-The **Issuer** is assumed *trustful* for:
+The issuer is the **sole trust boundary** in the *zhold* system where private
+data is handled. It is assumed trustworthy for:
 
-- Managing **RWA** regarding *laws, regulation and compliancy* disposals that
-are currently in application in its *jurisdiction*.
-- Ability to **protect it's customer private information**.
-- Ensuring **customer** compliancy **without disclosure**
+- Managing RWA access in compliance with applicable laws, regulations, and
+  jurisdictional requirements.
+- Protecting customer private information.
+- Correctly evaluating customer eligibility before recording any commitment
+  on-chain.
 
 ## Interactions in the entire *zhold* system
 
-Regarding the [purpose of zhold](../README.md/#purposes), we can see the
-**Issuer** sub system must interact with:
+### Flow
 
-- A potential **prospect** that is not yet registered in the platform
-- A registered **customer** for him to :
-  - query information about supported **policies**
-  - ask for *eligibility* regarding a specific **policy**
-  - submit a **commitment** if eligible regarding a specific **policy**
-- The **blockchain** to persist or **revoke** an **eligibility** commitment
-
-### Flows
-
-```text
-+------------------------------------------------------------------------------+
-|    Prospect             Issuer              Customer           Blockchain    |
-|       |                   |                     |                   |        |
-| (1) Register on           |                     |                   |        |
-| the Issuer's    --------->|                     |                   |        |
-| platform giving           |                     |                   |        |
-| private info              |                     |                   |        |
-|       |                   |                     |                   |        |
-|       |            (2) Successful               |                   |        |
-|       |            registration in              |                   |        |
-|       |<-----------(1) returns a                |                   |        |
-|       |            customer id and              |                   |        |
-|       |            the prospect                 |                   |        |
-|       |            becomes a                    |                   |        |
-|       |            customer                     |                   |        |
-|       |                   |                     |                   |        |
-|       |                   |            (3) ask for                  |        |
-|       |                   |<-----------policy list                  |        |
-|       |                   |                     |                   |        |
-|       |            Returns a list of            |                   |        |
-|       |            policy id in     ----------->|                   |        |
-|       |            response of (3)              |                   |        |
-|       |                   |                     |                   |        |
-|       |                   |            (4) ask for                  |        |
-|       |                   |<-----------policy properties            |        |
-|       |                   |                     |                   |        |
-|       |            Returns a policy             |                   |        |
-|       |            property list in ----------->|                   |        |
-|       |            response of (4)              |                   |        |
-|       |                   |                     |                   |        |
-|       |                   |            (5) Submit an                |        |
-|       |                   |<-----------eligibility                  |        |
-|       |                   |            record   |                   |        |
-|       |                   |                     |                   |        |
-|       |            (6) If the                   |                   |        |
-|       |            customer                     |                   |        |
-|       |            is eligible in               |                   |        |
-|       |            (5), ensure it   ------------------------------->|        |
-|       |            can be recorded              |                   |        |
-|       |            on-chain                     |                   |        |
-|       |                   |                     |                   |        |
-|       |            (7) Revoke a     ------------------------------->|        |
-|       |            commitment                   |                   |        |
-|       |                   |                     |                   |        |
-+------------------------------------------------------------------------------+
+```
+  Prospect / Customer          Issuer API              Blockchain
+         │                         │                        │
+  (1) register with KYC data       │                        │
+  ───────────────────────────────▶ │                        │
+         │                         │                        │
+  (2) receive customer_id          │                        │
+  ◀─────────────────────────────── │                        │
+         │                         │                        │
+  (3) request policy list          │                        │
+  ───────────────────────────────▶ │                        │
+         │                         │                        │
+  (4) receive policy identifiers   │                        │
+  ◀─────────────────────────────── │                        │
+         │                         │                        │
+  (5) request policy properties    │                        │
+  ───────────────────────────────▶ │                        │
+         │                         │                        │
+  (6) receive policy properties    │                        │
+  ◀─────────────────────────────── │                        │
+         │                         │                        │
+  (7) submit eligibility record    │                        │
+      (commitment + customer_id    │                        │
+       + policy properties)        │                        │
+  ───────────────────────────────▶ │                        │
+         │                         │  (8) if eligible,      │
+         │                         │  store commitment      │
+         │                         │ ──────────────────────▶│
+         │                         │                        │
+         │                         │  (9) revoke commitment │
+         │                         │  (when needed)         │
+         │                         │ ──────────────────────▶│
 ```
 
-## A word about the **Issuer** platform
+## A word about the issuer platform
 
-Only useful within its [Trust boundaries](#trust-boundaries).
+The issuer API is only useful within its [trust boundaries](#trust-boundaries).
+Once a customer's commitment is recorded on-chain, the issuer is no longer
+required for the customer to generate and submit proofs. Its role is complete.

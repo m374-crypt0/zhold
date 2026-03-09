@@ -1,91 +1,95 @@
-# contracts - The on-chain commitment storage layer
+# contracts — The on-chain commitment and verification layer
 
-> **contracts** is a collection of solidity smart contracts to store
-> commitments, revoke them and verify ZKP submitted by a **customer** to ensure
-> they are eligible regarding a specific **policy** maintained by an **issuer**
+> **contracts** is a Foundry project containing the Solidity smart contracts
+> that store eligibility commitments, revoke them, and verify ZK proofs
+> submitted by customers.
 
 <!--toc:start-->
-- [contracts - The on-chain commitment storage layer](#contracts-the-on-chain-commitment-storage-layer)
-  - [Responsibilities of contracts](#responsibilities-of-contracts)
-    - [Commitment store contract](#commitment-store-contract)
-    - [Compliancy prover](#compliancy-prover)
+- [contracts — The on-chain commitment and verification layer](#contracts-the-on-chain-commitment-and-verification-layer)
+  - [Contracts](#contracts)
+    - [CommitmentStore](#commitmentstore)
+    - [Prover](#prover)
     - [Verifier](#verifier)
   - [Trust boundaries](#trust-boundaries)
   - [Interactions in the entire *zhold* system](#interactions-in-the-entire-zhold-system)
-    - [Flows](#flows)
+    - [Flow](#flow)
   - [Final words](#final-words)
-    - [scaling](#scaling)
 <!--toc:end-->
 
-## Responsibilities of contracts
+## Contracts
 
-### Commitment store contract
+### CommitmentStore
 
-1. Expose functions to commit or revoke commitments
-2. Ensure those functions are accessible only by the **issuer**
-3. Emit events for each state change
+- Exposes `commit` and `revoke` functions restricted to the issuer (owner).
+- Validates each commitment value against the circuit's prime field order.
+- Emits events on every state change.
 
-### Compliancy prover
+### Prover
 
-1. Expose a function to prove a caller is eligible regarding a policy without
-   disclosure of private data
+- Exposes a single `prove` function that the customer calls on-chain.
+- Verifies that the commitment in the public inputs exists in `CommitmentStore`.
+- Delegates proof verification to the `Verifier` contract.
 
 ### Verifier
 
-1. Expose a verification function taking a **ZKP** and a set of public inputs
-   returning a boolean regarding the **ZKP** is verified or not.
+- Generated from the Noir circuit using the Barretenberg backend.
+- Exposes a `verify(bytes proof, bytes32[] publicInputs)` function.
+- Must not be replaced without governance — it is coupled to a specific circuit
+  version.
+
+> **Note on optimizer runs:** the Solidity optimizer is set to exactly 112
+> runs. This is the maximum value that keeps the generated UltraHonk verifier
+> contract within the EIP-170 bytecode size limit.
 
 ## Trust boundaries
 
-- A trustful **issuer** specified for the commitment store contract deployment
-- The compliancy prover contract should not be upgraded without governance
-- The verifier contract is dependant of underlying circuit correctness
+- The **issuer** address specified at `CommitmentStore` deployment is the only
+  account authorised to write or revoke commitments.
+- The **Prover** contract must not be upgraded without governance.
+- The **Verifier** contract is only as correct as the circuit it was generated
+  from.
 
 ## Interactions in the entire *zhold* system
 
-### Flows
+### Flow
 
-```text
-+------------------------------------------------------------------------------+
-|  Issuer     CommitmentStore    Verifier     CompliancyProver     Customer    |
-|    |               |              |                 |                |       |
-|    |        (1) Accept a          |                 |                |       |
-|    |<-------trusted issuer        |         (2) Accept a             |       |
-|    |        when deployed         |<--------trusted Verifier         |       |
-|    |               |              |         contract when            |       |
-| (4)|               |              |         deployed                 |       |
-| commit   --------->|              |                 |                |       |
-|    |               |              |         (3) Accept a             |       |
-| (5)|               |<-----------------------commitment store         |       |
-| revoke   --------->|              |         contract address         |       |
-|    |               |              |                 |                |       |
-|    |        (6) ensures the       |                 |                |       |
-|    |        commitment has        |                 |                |       |
-|    |        a valid value         |                 |                |       |
-|    |        compared to the------>|                 |                |       |
-|    |        prime field of        |                 |                |       |
-|    |        the verifier          |                 |                |       |
-|    |               |              |                 |                |       |
-|    |        (7) Emit state        |                 |                |       |
-|    |        change events  ----------------------------------------->|       |
-|    |               |              |                 |                |       |
-|    |               |              |                 |          (9) prove     |
-|    |               |              |                 |<-------- eligibility   |
-|    |               |              |                 |                |       |
-|    |               |              |         (9) verify a ZKP         |       |
-|    |               |              |         parameterized            |       |
-|    |               |              |<--------with public              |       |
-|    |               |              |         inputs  |                |       |
-|    |               |              |                 |                |       |
-+------------------------------------------------------------------------------+
+```
+  Issuer    CommitmentStore    Verifier      Prover       Customer
+    │                │             │            │             │
+    │  (1) deploy with             │            │             │
+    │  trusted issuer              │            │             │
+    │  address       │             │            │             │
+    │                │  (2) deploy with         │             │
+    │                │  trusted Verifier        │             │
+    │                │  address     │           │             │
+    │                │              │  (3) deploy with        │
+    │                │              │  CommitmentStore        │
+    │                │              │  address  │             │
+    │                │              │           │             │
+    │  (4) commit ──▶│              │           │             │
+    │                │  validates   │           │             │
+    │                │  against     │           │             │
+    │                │  prime field ─▶          │             │
+    │                │  order       │           │             │
+    │                │  (5) emit    │           │             │
+    │                │  event ───────────────────────────────▶│
+    │                │              │           │             │
+    │  (6) revoke ──▶│              │           │             │
+    │                │  (7) emit    │           │             │
+    │                │  event ───────────────────────────────▶│
+    │                │              │           │             │
+    │                │              │           │◀── (8) prove│
+    │                │              │           │    eligibility
+    │                │              │           │             │
+    │                │◀─────────────────────────│─ check commitment
+    │                │              │◀──────────│─ verify proof
+    │                │              │           │             │
 ```
 
 ## Final words
 
-The **contracts** set contains both developed contracts (*commitment store*,
-*compliancy prover*) and contracts generated by **ZKP** tooling (*Verifier*).
+This contract set contains both hand-written contracts (`CommitmentStore`,
+`Prover`) and the contract generated by ZKP tooling (`Verifier`).
 
-### scaling
-
-If needed, this system could scale by creating a pair of *CompliancyProver* and
-*Verifier* for each existing **policy**.
+If needed, the system scales by deploying a separate `Prover`/`Verifier` pair
+for each policy, sharing a single `CommitmentStore`.
