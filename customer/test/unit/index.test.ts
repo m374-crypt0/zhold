@@ -1,7 +1,3 @@
-import {
-  type PrivateInputs,
-  type PublicInputs
-} from "src/types";
 
 import customer from "src";
 
@@ -13,22 +9,23 @@ import { poseidon2HashAsync } from "@zkpassport/poseidon2";
 
 import { describe, expect, it } from "bun:test";
 
-import { getValidProofAndPublicInputs, ZERO_COMMITMENT_OPTIONS, getTestingPrivateInputs, getTestingPolicy, getTestingRequest, getTestingCommitment } from "test/utility";
+import { getTestingPolicy, getTestingPrivateInputs, getTestingPublicInputs, getValidProofForTesting } from "test/utility";
 
 const should = '<unit> should'
 
 describe('Commitment creation', () => {
   it(`${should} be able to create a poseidon2 commitment from input`, async () => {
+    const [private_inputs, policy] = [getTestingPrivateInputs(), getTestingPolicy()]
     const expectedCommitment = await poseidon2HashAsync([
-      BigInt(ZERO_COMMITMENT_OPTIONS.private_inputs.customer_id),
-      BigInt(ZERO_COMMITMENT_OPTIONS.private_inputs.customer_secret),
-      BigInt(ZERO_COMMITMENT_OPTIONS.private_inputs.authorized_sender),
-      BigInt(ZERO_COMMITMENT_OPTIONS.policy.id),
-      BigInt(ZERO_COMMITMENT_OPTIONS.policy.scope.id),
-      BigInt(ZERO_COMMITMENT_OPTIONS.policy.scope.parameters.valid_until as string)
+      BigInt(private_inputs.customer_id),
+      BigInt(private_inputs.customer_secret),
+      BigInt(private_inputs.authorized_sender),
+      BigInt(policy.id),
+      BigInt(policy.scope.id),
+      BigInt(policy.scope.parameters.valid_until.toString())
     ])
 
-    const commitment = await customer.createCommitment(ZERO_COMMITMENT_OPTIONS)
+    const commitment = await customer.createCommitment({ policy, private_inputs })
 
     expect(commitment).toBe(expectedCommitment)
   })
@@ -36,23 +33,22 @@ describe('Commitment creation', () => {
 
 describe('Proof creation and local verification', () => {
   it(`${should} not be able to create a proof with invalid commitment`, async () => {
-    const privateInputs: PrivateInputs = {
-      private_inputs: { ...getTestingPrivateInputs() }
-    }
-
-    const publicInputs: PublicInputs = {
-      policy: { ...getTestingPolicy() },
-      request: { ...await getTestingRequest() }
-    }
+    const [privateInputs, publicInputs] = [getTestingPrivateInputs(), await getTestingPublicInputs()]
 
     publicInputs.request.commitment = '0'
 
-    expect(async () => await customer.generateProof({ ...privateInputs, ...publicInputs }))
+    expect(async () => await customer.generateProof({
+      private_inputs: { ...privateInputs },
+      policy: { ...publicInputs.policy },
+      request: { ...publicInputs.request }
+    }))
       .toThrowError('Circuit execution failed: Invalid commitment value')
   })
 
   it(`${should} be able to create a proof and verify it against correct inputs`, async () => {
-    const { proof, publicInputs } = await getValidProofAndPublicInputs();
+    const [privateInputs, publicInputs] = [getTestingPrivateInputs(), await getTestingPublicInputs()]
+
+    const proof = await getValidProofForTesting({ privateInputs, publicInputs });
 
     expect(await customer.verifyProofLocally({ proof, publicInputs })).toBeTrue()
   })
@@ -60,7 +56,9 @@ describe('Proof creation and local verification', () => {
 
 describe('Proof submission to mocked blockchain', () => {
   it(`${should} fail to verify a proof with wrong commitment value`, async () => {
-    const { proof, publicInputs } = await getValidProofAndPublicInputs();
+    const [privateInputs, publicInputs] = [getTestingPrivateInputs(), await getTestingPublicInputs()]
+    const proof = await getValidProofForTesting({ privateInputs, publicInputs });
+
     expect(await customer.verifyProofLocally({ proof, publicInputs })).toBeTrue()
 
     publicInputs.request.commitment = '42'
@@ -74,7 +72,9 @@ describe('Proof submission to mocked blockchain', () => {
   })
 
   it(`${should} fail to verify a proof with correct commitment but with wrong input`, async () => {
-    const { proof, publicInputs } = await getValidProofAndPublicInputs();
+    const [privateInputs, publicInputs] = [getTestingPrivateInputs(), await getTestingPublicInputs()]
+    const proof = await getValidProofForTesting({ privateInputs, publicInputs });
+
     expect(await customer.verifyProofLocally({ proof, publicInputs })).toBeTrue()
 
     publicInputs.request.sender = '0x1bc0252a41ef0cd6ae425189084252707862aae9'
@@ -88,7 +88,9 @@ describe('Proof submission to mocked blockchain', () => {
   })
 
   it(`${should} succeed to verify a proof with correct public inputs`, async () => {
-    const { proof, publicInputs } = await getValidProofAndPublicInputs();
+    const [privateInputs, publicInputs] = [getTestingPrivateInputs(), await getTestingPublicInputs()]
+    const proof = await getValidProofForTesting({ privateInputs, publicInputs });
+
     expect(await customer.verifyProofLocally({ proof, publicInputs })).toBeTrue()
 
     const onChainProver: OnChainProver = new MockedOnChainProver()

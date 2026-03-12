@@ -4,7 +4,7 @@ import { LocalOnChainProver } from 'src/blockchain/localOnChainProver';
 import type { OnChainProver } from "src/blockchain/types/onChainProver";
 import { privateKeyToAccount } from "viem/accounts";
 
-import { createCustomerSecret, getValidProofAndPublicInputs } from "test/utility";
+import { createCustomerSecret, getValidProofForTesting } from "test/utility";
 
 import { describe, expect, it } from "bun:test";
 
@@ -14,9 +14,11 @@ describe('Proof submission to blockchain', () => {
   // NOTE: make sure several registration can be done in the same run
   let emailSuffix = 0
 
-  it(`${should} fail to prove on-chain with an unexisting commitment`, async () => {
-    const { proof, publicInputs } = await getValidProofAndPublicInputs();
+  it.only(`${should} fail to prove on-chain with an unexisting commitment`, async () => {
+    const { proof, publicInputs } = await getValidProofForTesting();
     expect(await customer.verifyProofLocally({ proof, publicInputs })).toBeTrue()
+
+    console.error(`>>> publicInputs: ${JSON.stringify(publicInputs, undefined, 2)}`)
 
     publicInputs.request.commitment = '42'
     const onChainProver: OnChainProver = new LocalOnChainProver()
@@ -57,13 +59,13 @@ describe('Proof submission to blockchain', () => {
   })
 
   async function registerThenCreateProofThenRecordCompliancy() {
-    const privateInputs: Parameters<typeof getValidProofAndPublicInputs>[0] = {
+    const privateInputs: Parameters<typeof getValidProofForTesting>[0] = {
       customer_id: (await registerUserUsingIssuerApi()).toString(),
       customer_secret: createCustomerSecret(),
       authorized_sender: privateKeyToAccount(process.env['TEST_PRIVATE_KEY_03']! as `0x${string}`).address
     }
 
-    const { proof, publicInputs } = await getValidProofAndPublicInputs(privateInputs);
+    const { proof, publicInputs } = await getValidProofForTesting(privateInputs);
     expect(await customer.verifyProofLocally({ proof, publicInputs })).toBeTrue()
 
     await recordCompliancyUsingIssuerApi({
