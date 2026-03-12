@@ -11,8 +11,6 @@ struct PublicInputs {
   bytes32 policyId;
   bytes32 policyScopeId;
   bytes32 validUntil;
-  bytes32 _unused1;
-  bytes32 _unused2;
   bytes32 commitment;
 }
 
@@ -36,11 +34,11 @@ contract Prover {
     require(block.timestamp <= uint256(publicInputs_.validUntil), ValidityExpired());
     require(store.commitments(commitment), InvalidCommitment());
 
-    bytes32[] memory verifierInputs = new bytes32[](6);
+    bytes32[] memory verifierInputs = new bytes32[](4);
     verifierInputs[0] = publicInputs_.policyId;
     verifierInputs[1] = publicInputs_.policyScopeId;
     verifierInputs[2] = publicInputs_.validUntil;
-    verifierInputs[5] = publicInputs_.commitment;
+    verifierInputs[3] = publicInputs_.commitment;
 
     try verifier.verify(zkp_, verifierInputs) returns (bool result) {
       require(result, InvalidProof());
