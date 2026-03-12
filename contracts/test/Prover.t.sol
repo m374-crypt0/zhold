@@ -31,8 +31,7 @@ contract ProverTests is Test {
 
     publicInputsStub.policyId = 0;
     publicInputsStub.policyScopeId = 0;
-    publicInputsStub.policyScopeParameters = new bytes32[](1);
-    publicInputsStub.policyScopeParameters[0] = 0;
+    publicInputsStub.validUntil = bytes32(vm.getBlockTimestamp());
     publicInputsStub.commitment = bytes32(COMMITMENT);
 
     pfop = new PrimeFieldOrderProvider();
@@ -43,6 +42,18 @@ contract ProverTests is Test {
 
   function test_prove_fails_ifCommitmentIsNotInTheStore() public {
     vm.expectRevert(Prover.InvalidCommitment.selector);
+    prover.prove(zkpStub, publicInputsStub);
+  }
+
+  function test_prove_fails_ifValidityIsExpired() public {
+    vm.startPrank(issuer);
+    store.commit(COMMITMENT);
+    vm.stopPrank();
+
+    // NOTE: publicInputsStub has set validUntil to current block timestamp
+    skip(1);
+
+    vm.expectRevert(Prover.ValidityExpired.selector);
     prover.prove(zkpStub, publicInputsStub);
   }
 

@@ -5,10 +5,12 @@ import { IVerifier } from "./interfaces/IVerifier.sol";
 
 import { CommitmentStore } from "./CommitmentStore.sol";
 
+// TODO: Tie this prover to a specific policy scope, only parameters vary,
+// do the same for circuits (packages)
 struct PublicInputs {
   bytes32 policyId;
   bytes32 policyScopeId;
-  bytes32[] policyScopeParameters;
+  bytes32 validUntil;
   bytes32 _unused1;
   bytes32 _unused2;
   bytes32 commitment;
@@ -17,6 +19,7 @@ struct PublicInputs {
 contract Prover {
   error InvalidCommitment();
   error InvalidProof();
+  error ValidityExpired();
 
   CommitmentStore store;
   IVerifier verifier;
@@ -30,12 +33,13 @@ contract Prover {
     // NOTE: see ../../circuits/src/main.nr, function main arguments
     uint256 commitment = uint256(publicInputs_.commitment);
 
+    require(block.timestamp <= uint256(publicInputs_.validUntil), ValidityExpired());
     require(store.commitments(commitment), InvalidCommitment());
 
     bytes32[] memory verifierInputs = new bytes32[](6);
     verifierInputs[0] = publicInputs_.policyId;
     verifierInputs[1] = publicInputs_.policyScopeId;
-    verifierInputs[2] = publicInputs_.policyScopeParameters[0];
+    verifierInputs[2] = publicInputs_.validUntil;
     verifierInputs[5] = publicInputs_.commitment;
 
     try verifier.verify(zkp_, verifierInputs) returns (bool result) {
