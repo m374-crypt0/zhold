@@ -1,4 +1,4 @@
-export type PrivateInputsForBackend = {
+export type PrivateInputs = {
   private_inputs: {
     customer_id: string,
     customer_secret: string
@@ -6,7 +6,7 @@ export type PrivateInputsForBackend = {
   }
 }
 
-export type PolicyInputsForBackend = {
+export type PolicyInputs = {
   policy: {
     id: string,
     scope: {
@@ -16,16 +16,15 @@ export type PolicyInputsForBackend = {
   }
 }
 
-export type CommitmentInputForBackend = PrivateInputsForBackend & PolicyInputsForBackend
+export type CommitmentInputs = PrivateInputs & PolicyInputs
 
 type RequestInputs = {
   request: {
     sender: string,
-    current_timestamp: string,
     commitment: string
   }
 }
 
-export type PublicInputsForBackend = PolicyInputsForBackend & RequestInputs;
+export type PublicInputs = PolicyInputs & RequestInputs;
 
-export type InputsForBackend = PrivateInputsForBackend & PublicInputsForBackend
+export type Inputs = PrivateInputs & PublicInputs

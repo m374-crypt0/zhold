@@ -1,6 +1,6 @@
 import {
-  type PrivateInputsForBackend,
-  type PublicInputsForBackend
+  type PrivateInputs,
+  type PublicInputs
 } from "src/types";
 
 import customer from "src";
@@ -13,7 +13,7 @@ import { poseidon2HashAsync } from "@zkpassport/poseidon2";
 
 import { describe, expect, it } from "bun:test";
 
-import { getValidProofAndPublicInputs, ZERO_COMMITMENT_OPTIONS } from "test/utility";
+import { getValidProofAndPublicInputs, ZERO_COMMITMENT_OPTIONS, getTestingPrivateInputs, getTestingPolicy, getTestingRequest, getTestingCommitment } from "test/utility";
 
 const should = '<unit> should'
 
@@ -35,23 +35,17 @@ describe('Commitment creation', () => {
 })
 
 describe('Proof creation and local verification', () => {
-  it(`${should} not be able to create a proof with wrong inputs`, async () => {
-    const privateInputs: PrivateInputsForBackend = {
-      private_inputs: {
-        customer_id: ZERO_COMMITMENT_OPTIONS.private_inputs.customer_id,
-        authorized_sender: ZERO_COMMITMENT_OPTIONS.private_inputs.authorized_sender,
-        customer_secret: ZERO_COMMITMENT_OPTIONS.private_inputs.customer_secret
-      }
+  it(`${should} not be able to create a proof with invalid commitment`, async () => {
+    const privateInputs: PrivateInputs = {
+      private_inputs: { ...getTestingPrivateInputs() }
     }
 
-    const publicInputs: PublicInputsForBackend = {
-      policy: { ...ZERO_COMMITMENT_OPTIONS.policy },
-      request: {
-        sender: 0n.toString(),
-        current_timestamp: 0n.toString(),
-        commitment: 1n.toString()
-      }
+    const publicInputs: PublicInputs = {
+      policy: { ...getTestingPolicy() },
+      request: { ...await getTestingRequest() }
     }
+
+    publicInputs.request.commitment = '0'
 
     expect(async () => await customer.generateProof({ ...privateInputs, ...publicInputs }))
       .toThrowError('Circuit execution failed: Invalid commitment value')
@@ -64,7 +58,7 @@ describe('Proof creation and local verification', () => {
   })
 })
 
-describe('Proof submission to blockchain', () => {
+describe('Proof submission to mocked blockchain', () => {
   it(`${should} fail to verify a proof with wrong commitment value`, async () => {
     const { proof, publicInputs } = await getValidProofAndPublicInputs();
     expect(await customer.verifyProofLocally({ proof, publicInputs })).toBeTrue()

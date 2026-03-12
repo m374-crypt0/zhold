@@ -6,14 +6,14 @@ import { Barretenberg, UltraHonkBackend } from "@aztec/bb.js"
 
 import { cpus } from "node:os"
 
-import type { CommitmentInputForBackend, InputsForBackend, PublicInputsForBackend } from "./types"
+import type { CommitmentInputs, Inputs, PublicInputs } from "./types"
 
 import circuit from "circuits/target/rwa_eligibility_v1.json"
 
 import { type OnChainProver } from "./blockchain/types/onChainProver"
 
 export default {
-  async createCommitment(options: CommitmentInputForBackend) {
+  async createCommitment(options: CommitmentInputs) {
     const hash = await poseidon2HashAsync([
       BigInt(options.private_inputs.customer_id),
       BigInt(options.private_inputs.customer_secret),
@@ -25,7 +25,7 @@ export default {
 
     return hash
   },
-  async generateProof(inputs: InputsForBackend) {
+  async generateProof(inputs: Inputs) {
     const noir = new Noir(circuit as CompiledCircuit)
     await noir.init()
 
@@ -41,7 +41,7 @@ export default {
   },
   async verifyProofLocally(options: {
     proof: Uint8Array<ArrayBufferLike>,
-    publicInputs: PublicInputsForBackend
+    publicInputs: PublicInputs
   }) {
     const bb = await Barretenberg.new({ threads: cpus().length })
     const backend = new UltraHonkBackend(circuit.bytecode, bb)
@@ -51,7 +51,6 @@ export default {
       options.publicInputs.policy.scope.id,
       options.publicInputs.policy.scope.parameters.valid_until as string,
       options.publicInputs.request.sender,
-      options.publicInputs.request.current_timestamp,
       options.publicInputs.request.commitment,
     ]
 
@@ -64,14 +63,13 @@ export default {
   async verifyProofOnChain(options: {
     onChainProver: OnChainProver,
     proof: Uint8Array<ArrayBufferLike>,
-    publicInputs: PublicInputsForBackend
+    publicInputs: PublicInputs
   }) {
     const backendInputs = [
       options.publicInputs.policy.id,
       options.publicInputs.policy.scope.id,
       options.publicInputs.policy.scope.parameters.valid_until as string,
       options.publicInputs.request.sender,
-      options.publicInputs.request.current_timestamp,
       options.publicInputs.request.commitment,
     ]
 

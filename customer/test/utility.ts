@@ -3,15 +3,15 @@ import { randomBytes } from "crypto";
 import { BN254_FR_MODULUS } from "@aztec/bb.js";
 
 import type {
-  CommitmentInputForBackend,
-  PolicyInputsForBackend,
-  PrivateInputsForBackend,
-  PublicInputsForBackend
+  CommitmentInputs,
+  PolicyInputs,
+  PrivateInputs,
+  PublicInputs
 } from "src/types";
 
 import customer from "src";
 
-export const ZERO_COMMITMENT_OPTIONS: CommitmentInputForBackend = {
+export const ZERO_COMMITMENT_OPTIONS: CommitmentInputs = {
   private_inputs: {
     customer_id: 0n.toString(),
     authorized_sender: 0n.toString(),
@@ -32,40 +32,18 @@ export async function getValidProofAndPublicInputs(privateInputs: {
   customer_id: string,
   customer_secret: string,
   authorized_sender: string
-} = {
-    customer_id: ZERO_COMMITMENT_OPTIONS.private_inputs.customer_id,
-    authorized_sender: 0x1B77B138c7706407ad86438b75D8bA9F9c838A49n.toString(),
-    customer_secret: createCustomerSecret()
-  }) {
+} = getTestingPrivateInputs()) {
 
-  const private_inputs: PrivateInputsForBackend = {
+  const private_inputs: PrivateInputs = {
     private_inputs: { ...privateInputs }
   }
 
-  const policy: PolicyInputsForBackend = {
-    policy: {
-      id: 0n.toString(),
-      scope: {
-        id: 0n.toString(),
-        parameters: {
-          valid_until: Math.floor(Date.now() / 1000 + 3600)
-        }
-      }
-    }
-  }
+  const policy: PolicyInputs = { policy: { ...getTestingPolicy() } }
 
-  const commitment = await customer.createCommitment({
-    ...private_inputs,
-    ...policy
-  })
-
-  const publicInputs: PublicInputsForBackend = {
+  // TODO: rename to PublicInputsForVerifier
+  const publicInputs: PublicInputs = {
     ...policy,
-    request: {
-      sender: privateInputs.authorized_sender,
-      current_timestamp: (BigInt(policy.policy.scope.parameters.valid_until as string) - 1n).toString(),
-      commitment: commitment.toString()
-    }
+    request: { ...await getTestingRequest() }
   }
 
   const proof = await customer.generateProof({ ...private_inputs, ...publicInputs })
@@ -78,4 +56,50 @@ export function createCustomerSecret() {
   const customerSecret = BigInt(`0x${randomBytes(32).toString('hex')}`) % BN254_FR_MODULUS
 
   return customerSecret.toString()
+}
+
+export function getTestingCustomerId() {
+  return '0';
+}
+
+export function getTestingSender() {
+  return '0x0000000000000000000000000000000000000001'
+}
+
+export function getTestingPolicy() {
+  return {
+    id: '0',
+    scope: {
+      id: '0',
+      parameters: {
+        valid_until: 1
+      }
+    }
+  }
+}
+
+export function getTestingPrivateInputs() {
+  return {
+    customer_id: getTestingCustomerId(),
+    authorized_sender: getTestingSender(),
+    customer_secret: getTestingCustomerSecret()
+  }
+}
+
+export async function getTestingCommitment() {
+  return `0x${(await customer.createCommitment({
+    private_inputs: { ...getTestingPrivateInputs() },
+    policy: { ...getTestingPolicy() }
+  })).toString(16)}`
+}
+
+export async function getTestingRequest() {
+  return {
+    sender: getTestingSender(),
+    commitment: await getTestingCommitment()
+  }
+}
+
+export function getTestingCustomerSecret() {
+  return '2'
 }
