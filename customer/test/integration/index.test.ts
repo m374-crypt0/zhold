@@ -5,40 +5,43 @@ import type { OnChainProver } from "src/blockchain/types/onChainProver";
 
 import { privateKeyToAccount } from "viem/accounts";
 
-import { createCustomerSecret, getTestingCustomerId, getTestingCustomerSecret, getTestingPolicy, getTestingPrivateInputs, getTestingSender, getValidProofForTesting } from "test/utility";
+import { createCustomerSecret, getTestingCustomerId, getTestingPolicy, getValidProofForTesting } from "test/utility";
 
 import { beforeAll, describe, expect, it } from "bun:test";
-import type { PrivateInputs, PublicInputs } from "src/types";
+import type { PolicyInputs, PrivateInputs, PublicInputs } from "src/types";
 
 const should = '<integration> should'
 
 describe('Proof submission to blockchain', () => {
+  const createCommitment = async (policy: PolicyInputs) =>
+    `0x${(await customer.createCommitment({ policy, private_inputs: privateInputs })).toString(16)}`
+
   // NOTE: make sure several registration can be done in the same run
   let emailSuffix = 0
 
   let sender: `0x${string}`
+  let privateInputs: PrivateInputs
 
-  beforeAll(() => sender = privateKeyToAccount(process.env['TEST_PRIVATE_KEY_03'] as `0x${string}`).address)
-
-  it.only(`${should} fail to prove on-chain with an unexisting commitment`, async () => {
-    const privateInputs: PrivateInputs = {
+  beforeAll(() => {
+    sender = privateKeyToAccount(process.env['TEST_PRIVATE_KEY_03'] as `0x${string}`).address
+    privateInputs = {
       authorized_sender: sender,
       customer_id: getTestingCustomerId(),
       customer_secret: createCustomerSecret()
     }
+  })
 
-    // NOTE: ensures this policy is always valid
+  it.only(`${should} fail to prove on-chain with an expired policy`, async () => {
+    // NOTE: testing policy parameter is set to 0, definitely expired
     const policy = getTestingPolicy()
-    policy.scope.parameters.valid_until = Number.MAX_SAFE_INTEGER
 
     // NOTE: the commitment is correct but not stored on-chain
-    const commitment = `0x${(await customer.createCommitment({ policy, private_inputs: privateInputs })).toString(16)}`
+    const commitment = await createCommitment(policy)
 
     const publicInputs: PublicInputs = {
       policy,
       request: {
         sender,
-        // NOTE: a commitment must be computed regarding the policy validity timestamp
         commitment
       }
     }
@@ -47,7 +50,35 @@ describe('Proof submission to blockchain', () => {
 
     expect(await customer.verifyProofLocally({ proof, publicInputs })).toBeTrue()
 
-    // publicInputs.request.commitment = '42'
+    const onChainProver: OnChainProver = new LocalOnChainProver()
+
+    expect(async () => customer.verifyProofOnChain({
+      onChainProver,
+      proof,
+      publicInputs
+    })).toThrow('ValidityExpired')
+  })
+
+  it.only(`${should} fail to prove on-chain with an unexisting commitment`, async () => {
+    // NOTE: ensures this policy parameter is high enough to not fail in the Prover smart contract
+    const policy = getTestingPolicy()
+    policy.scope.parameters.valid_until = Number.MAX_SAFE_INTEGER
+
+    // NOTE: the commitment is correct but not stored on-chain
+    const commitment = await createCommitment(policy)
+
+    const publicInputs: PublicInputs = {
+      policy,
+      request: {
+        sender,
+        commitment
+      }
+    }
+
+    const proof = await getValidProofForTesting({ privateInputs, publicInputs });
+
+    expect(await customer.verifyProofLocally({ proof, publicInputs })).toBeTrue()
+
     const onChainProver: OnChainProver = new LocalOnChainProver()
 
     expect(async () => customer.verifyProofOnChain({
