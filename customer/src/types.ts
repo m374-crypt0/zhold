@@ -1,30 +1,32 @@
 export type PrivateInputs = {
-  private_inputs: {
-    customer_id: string,
-    customer_secret: string
-    authorized_sender: string,
-  }
+  customer_id: string,
+  customer_secret: string
+  authorized_sender: string,
 }
 
 export type PolicyInputs = {
-  policy: {
+  id: string,
+  scope: {
     id: string,
-    scope: {
-      id: string,
-      parameters: Record<string, string | number | boolean>
-    }
+    parameters: Record<string, string | number | boolean>
   }
 }
 
-export type CommitmentInputs = PrivateInputs & PolicyInputs
+export type CommitmentInputs = {
+  private_inputs: PrivateInputs,
+  policy: PolicyInputs
+}
 
 type RequestInputs = {
-  request: {
-    sender: string,
-    commitment: string
-  }
+  sender: string,
+  commitment: string
 }
 
-export type PublicInputs = PolicyInputs & RequestInputs;
+export type PublicInputs = {
+  policy: PolicyInputs,
+  request: RequestInputs
+};
 
-export type Inputs = PrivateInputs & PublicInputs
+export type Inputs = {
+  private_inputs: PrivateInputs,
+} & PublicInputs

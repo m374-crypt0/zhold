@@ -38,9 +38,8 @@ describe('Proof creation and local verification', () => {
     publicInputs.request.commitment = '0'
 
     expect(async () => await customer.generateProof({
-      private_inputs: { ...privateInputs },
-      policy: { ...publicInputs.policy },
-      request: { ...publicInputs.request }
+      private_inputs: privateInputs,
+      ...publicInputs
     }))
       .toThrowError('Circuit execution failed: Invalid commitment value')
   })

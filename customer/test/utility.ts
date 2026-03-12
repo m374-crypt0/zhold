@@ -2,10 +2,6 @@ import { randomBytes } from "crypto";
 
 import { BN254_FR_MODULUS } from "@aztec/bb.js";
 
-import type {
-  PrivateInputs,
-  PublicInputs
-} from "src/types";
 
 import customer from "src";
 
@@ -30,13 +26,10 @@ export async function getValidProofForTesting(options: {
   }
 }) {
 
-  const private_inputs: PrivateInputs = {
-    private_inputs: { ...options.privateInputs }
-  }
+  const private_inputs = options.privateInputs
+  const public_inputs = options.publicInputs
 
-  const public_inputs: PublicInputs = { ...options.publicInputs }
-
-  return await customer.generateProof({ ...private_inputs, ...public_inputs })
+  return await customer.generateProof({ private_inputs, ...public_inputs })
 }
 
 export async function getTestingPublicInputs() {
@@ -73,18 +66,22 @@ export function createCustomerSecret() {
   return customerSecret.toString()
 }
 
-function getTestingCustomerId() {
+export function getTestingCustomerId() {
   return '0';
 }
 
-function getTestingSender() {
+export function getTestingCustomerSecret() {
+  return '2'
+}
+
+export function getTestingSender() {
   return '0x0000000000000000000000000000000000000001'
 }
 
 async function getTestingCommitment() {
   return `0x${(await customer.createCommitment({
-    private_inputs: { ...getTestingPrivateInputs() },
-    policy: { ...getTestingPolicy() }
+    private_inputs: getTestingPrivateInputs(),
+    policy: getTestingPolicy()
   })).toString(16)}`
 }
 
@@ -93,8 +90,4 @@ async function getTestingRequest() {
     sender: getTestingSender(),
     commitment: await getTestingCommitment()
   }
-}
-
-function getTestingCustomerSecret() {
-  return '2'
 }

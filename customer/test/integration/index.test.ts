@@ -2,11 +2,13 @@ import customer from "src";
 
 import { LocalOnChainProver } from 'src/blockchain/localOnChainProver';
 import type { OnChainProver } from "src/blockchain/types/onChainProver";
+
 import { privateKeyToAccount } from "viem/accounts";
 
-import { createCustomerSecret, getValidProofForTesting } from "test/utility";
+import { createCustomerSecret, getTestingCustomerId, getTestingCustomerSecret, getTestingPolicy, getTestingPrivateInputs, getTestingSender, getValidProofForTesting } from "test/utility";
 
-import { describe, expect, it } from "bun:test";
+import { beforeAll, describe, expect, it } from "bun:test";
+import type { PrivateInputs, PublicInputs } from "src/types";
 
 const should = '<integration> should'
 
@@ -14,13 +16,38 @@ describe('Proof submission to blockchain', () => {
   // NOTE: make sure several registration can be done in the same run
   let emailSuffix = 0
 
+  let sender: `0x${string}`
+
+  beforeAll(() => sender = privateKeyToAccount(process.env['TEST_PRIVATE_KEY_03'] as `0x${string}`).address)
+
   it.only(`${should} fail to prove on-chain with an unexisting commitment`, async () => {
-    const { proof, publicInputs } = await getValidProofForTesting();
+    const privateInputs: PrivateInputs = {
+      authorized_sender: sender,
+      customer_id: getTestingCustomerId(),
+      customer_secret: createCustomerSecret()
+    }
+
+    // NOTE: ensures this policy is always valid
+    const policy = getTestingPolicy()
+    policy.scope.parameters.valid_until = Number.MAX_SAFE_INTEGER
+
+    // NOTE: the commitment is correct but not stored on-chain
+    const commitment = `0x${(await customer.createCommitment({ policy, private_inputs: privateInputs })).toString(16)}`
+
+    const publicInputs: PublicInputs = {
+      policy,
+      request: {
+        sender,
+        // NOTE: a commitment must be computed regarding the policy validity timestamp
+        commitment
+      }
+    }
+
+    const proof = await getValidProofForTesting({ privateInputs, publicInputs });
+
     expect(await customer.verifyProofLocally({ proof, publicInputs })).toBeTrue()
 
-    console.error(`>>> publicInputs: ${JSON.stringify(publicInputs, undefined, 2)}`)
-
-    publicInputs.request.commitment = '42'
+    // publicInputs.request.commitment = '42'
     const onChainProver: OnChainProver = new LocalOnChainProver()
 
     expect(async () => customer.verifyProofOnChain({
