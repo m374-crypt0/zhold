@@ -35,7 +35,7 @@ describe('Customer compliancy recording', () => {
           scope: {
             id: 0,
             parameters: {
-              validUntil: await wrongLocalChainSigner.timestamp() - 1
+              validUntil: await wrongLocalChainSigner.timestamp() + 1
             }
           }
         },
