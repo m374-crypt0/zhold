@@ -24,7 +24,11 @@ start_issuer_api() {
 }
 
 run_integration_tests() {
-  make -C "${ZHOLD_ROOT_DIR}" customer pattern=integration test
+  if [ "$COVERAGE" = 'true' ]; then
+    make -C "${ZHOLD_ROOT_DIR}" customer pattern=integration coverage
+  else
+    make -C "${ZHOLD_ROOT_DIR}" customer pattern=integration test
+  fi
 }
 
 main() {

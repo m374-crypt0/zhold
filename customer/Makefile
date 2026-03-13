@@ -26,3 +26,8 @@ test: build_contracts install
 watch: pattern='<unit>'
 watch: build_contracts install
 	@bun --watch test --test-name-pattern=${pattern}
+
+.PHONY: coverage
+coverage: pattern='<unit>'
+coverage: build_contracts install
+	@bun test --coverage --test-name-pattern=${pattern}

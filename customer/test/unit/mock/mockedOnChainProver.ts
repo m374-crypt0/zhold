@@ -6,14 +6,10 @@ export class MockedOnChainProver implements OnChainProver {
   }
 
   public prove(_proof: Uint8Array<ArrayBufferLike>, _publicInputs: ProverInputs) {
-    if (this.failWith)
+    if (typeof this.failWith === 'string')
       return Promise.reject(new Error(this.failWith))
 
     return Promise.resolve(true)
-  }
-
-  public async timestamp() {
-    return 0
   }
 
   private failWith: string | undefined
