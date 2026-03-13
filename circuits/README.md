@@ -42,14 +42,19 @@
 
 ### Public inputs
 
-| Input | Description |
-|---|---|
-| `policy.id` | Identifier of the policy being proven |
-| `policy.scope.id` | Scope identifier (e.g. *holding*) |
-| `policy.scope.parameters.valid_until` | Expiry timestamp of the policy |
-| `request.sender` | EVM address submitting the proof on-chain |
-| `request.current_timestamp` | Block timestamp at proof submission |
-| `request.commitment` | Poseidon2 hash of private inputs + policy; stored on-chain by the issuer |
+| Input | Description | Supplied by |
+|---|---|---|
+| `policy.id` | Identifier of the policy being proven | customer |
+| `policy.scope.id` | Scope identifier (e.g. *holding*) | customer |
+| `policy.scope.parameters.valid_until` | Expiry timestamp of the policy | customer |
+| `request.sender` | EVM address submitting the proof on-chain | `Prover.sol` (`msg.sender`) |
+| `request.current_timestamp` | Block timestamp at proof submission | `Prover.sol` (`block.timestamp`) |
+| `request.commitment` | Poseidon2 hash of private inputs + policy; stored on-chain by the issuer | customer |
+
+> `sender` and `current_timestamp` are not part of the `Inputs` struct the
+> customer submits to `Prover.sol`. The Prover injects them from the transaction
+> context before forwarding to the Verifier. This prevents the customer from
+> claiming an arbitrary sender or timestamp.
 
 ## Interactions in the entire *zhold* system
 

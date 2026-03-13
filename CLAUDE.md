@@ -104,8 +104,8 @@ The Noir circuit proves three things:
    matches private inputs
 
 **Private inputs**: `customer_id`, `customer_secret`, `authorized_sender`
-**Public inputs**: `policy` (id, scope.id, valid_until), `request` (sender,
-               current_timestamp, commitment)
+**Public inputs**: `policy` (id, scope.id, scope.parameters.valid_until),
+               `request` (sender, current_timestamp, commitment)
 
 ### Commitment Hash
 
@@ -117,13 +117,16 @@ TypeScript (`customer/src/index.ts`) using `@zkpassport/poseidon2`.
 
 - `CommitmentStore`: Ownable; issuer calls `commit(uint256)` /
                    `revoke(uint256)`. Validates against prime field order.
-- `Prover`: Reads commitment from `publicInputs_[5]`, checks it exists in
-          `CommitmentStore`, then calls the generated `IVerifier.verify()`.
+- `Prover`: Receives an `Inputs` struct (`policyId`, `policyScopeId`,
+          `policyParameters`, `commitment`) from the customer. Checks that
+          `commitment` exists in `CommitmentStore`, then builds the 5-element
+          verifier input array — injecting `msg.sender` at index 3 and
+          `commitment` at index 4 — before calling `IVerifier.verify()`.
 
 ### Public inputs ordering (critical for `Prover.sol`)
 
-Index 0: `policy.id`, 1: `policy.scope.id`, 2: `valid_until`, 3: `sender`, 4:
-`current_timestamp`, 5: `commitment`
+Index 0: `policy.id`, 1: `policy.scope.id`, 2: `valid_until`,
+3: `msg.sender` (injected by Prover), 4: `commitment`
 
 ### Issuer API (port 3000)
 

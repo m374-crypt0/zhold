@@ -26,8 +26,12 @@
 
 ### Prover
 
-- Exposes a single `prove` function that the customer calls on-chain.
-- Verifies that the commitment in the public inputs exists in `CommitmentStore`.
+- Exposes a single `prove(bytes zkp_, Inputs inputs_)` function that the
+  customer calls on-chain.
+- The `Inputs` struct carries `policyId`, `policyScopeId`, `policyParameters`,
+  and `commitment`. It does **not** include `sender` or `current_timestamp`.
+- Verifies that `commitment` exists in `CommitmentStore`.
+- Assembles the 5-element verifier input array
 - Delegates proof verification to the `Verifier` contract.
 
 ### Verifier
