@@ -1,6 +1,6 @@
 export const contractAddresses = {
-  Prover: (await getTransactionsFromRunLatestIfAny()).transactions
-    .filter(tx => tx.contractName === 'Prover')
+  CommitmentStore: (await getTransactionsFromRunLatestIfAny()).transactions
+    .filter(tx => tx.contractName === 'CommitmentStore')
     .map(tx => tx.contractAddress)
     .at(0) as Address,
 }
