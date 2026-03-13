@@ -3,8 +3,7 @@ import { testClient } from 'hono/testing'
 import { LocalOnChainCommitmentStore, type PrivateKey } from 'src/blockchain/localOnChainCommitmentStore'
 import customers from 'src/handlers/customers'
 import { clearRepository, inMemoryCustomerRepository } from 'src/repositories/inMemoryCustomerRepository'
-import { inMemoryPolicyRepository } from 'src/repositories/inMemoryPolicyRepository'
-import { thirtyDaysLaterFromEpochInSeconds } from 'src/utility/time'
+import { inMemoryPolicyRepository, MAX_VALIDITY_TIME } from 'src/repositories/inMemoryPolicyRepository'
 
 const should = '<integration> should'
 
@@ -36,7 +35,7 @@ describe('Customer compliancy recording', () => {
           scope: {
             id: 0,
             parameters: {
-              validUntil: thirtyDaysLaterFromEpochInSeconds() - 1
+              validUntil: await wrongLocalChainSigner.timestamp() - 1
             }
           }
         },
@@ -51,7 +50,13 @@ describe('Customer compliancy recording', () => {
   })
 
   it(`${should} succeed to store on-chain commitment with the signer is the issuer`, async () => {
-    const client = testClient(customers, {})
+    const correctLocalChainSigner = new LocalOnChainCommitmentStore(process.env['TEST_PRIVATE_KEY_01'] as PrivateKey)
+    const client = testClient(customers, {
+      customerRepository: inMemoryCustomerRepository,
+      policyRepository: inMemoryPolicyRepository,
+      onChainSigner: correctLocalChainSigner,
+      isTesting: true
+    })
 
     createTestCustomerInRepository()
 
@@ -63,7 +68,7 @@ describe('Customer compliancy recording', () => {
           scope: {
             id: 0,
             parameters: {
-              validUntil: thirtyDaysLaterFromEpochInSeconds() - 1
+              validUntil: await correctLocalChainSigner.timestamp() + MAX_VALIDITY_TIME - 1
             }
           }
         },
@@ -78,7 +83,13 @@ describe('Customer compliancy recording', () => {
   })
 
   it(`${should} fail when attemtping to store the same commitment twice`, async () => {
-    const client = testClient(customers, {})
+    const correctLocalChainSigner = new LocalOnChainCommitmentStore(process.env['TEST_PRIVATE_KEY_01'] as PrivateKey)
+    const client = testClient(customers, {
+      customerRepository: inMemoryCustomerRepository,
+      policyRepository: inMemoryPolicyRepository,
+      onChainSigner: correctLocalChainSigner,
+      isTesting: true
+    })
 
     createTestCustomerInRepository()
 
@@ -92,7 +103,7 @@ describe('Customer compliancy recording', () => {
           scope: {
             id: 0,
             parameters: {
-              validUntil: thirtyDaysLaterFromEpochInSeconds() - 1
+              validUntil: await correctLocalChainSigner.timestamp() + MAX_VALIDITY_TIME - 1
             }
           }
         },
@@ -108,7 +119,7 @@ describe('Customer compliancy recording', () => {
           scope: {
             id: 0,
             parameters: {
-              validUntil: thirtyDaysLaterFromEpochInSeconds() - 1
+              validUntil: await correctLocalChainSigner.timestamp() + MAX_VALIDITY_TIME - 1
             }
           }
         },

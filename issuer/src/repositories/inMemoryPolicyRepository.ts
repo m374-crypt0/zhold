@@ -1,5 +1,7 @@
 import { type PolicyRepository, type Policy } from './types/policyRepository'
 
+export const MAX_VALIDITY_TIME = 60 * 60 * 24
+
 export const inMemoryPolicyRepository: PolicyRepository = {
   listIdentifiers() {
     return repository.map(policy => policy.id)
@@ -31,6 +33,6 @@ const repository: Array<Policy> = [{
 
     const v = parameters['validUntil']
 
-    return v > timestamp() && v < timestamp() + 60 * 60 * 24
+    return v > timestamp() && v <= timestamp() + MAX_VALIDITY_TIME
   }
 }]

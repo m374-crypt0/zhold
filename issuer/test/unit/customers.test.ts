@@ -2,15 +2,14 @@ import { beforeEach, describe, expect, it, spyOn } from 'bun:test'
 import { testClient } from 'hono/testing'
 import customers from 'src/handlers/customers'
 import { clearRepository, inMemoryCustomerRepository } from 'src/repositories/inMemoryCustomerRepository'
-import { inMemoryPolicyRepository } from 'src/repositories/inMemoryPolicyRepository'
-import { nowFromEpochInSeconds, thirtyDaysLaterFromEpochInSeconds } from 'src/utility/time'
+import { inMemoryPolicyRepository, MAX_VALIDITY_TIME } from 'src/repositories/inMemoryPolicyRepository'
 import { MockedOnChainCommitmentStore } from './mock/mockedOnChainCommitmentStore'
 
 const should = '<unit> should'
 
 const ZERO_COMMITMENT = '0x0000000000000000000000000000000000000000000000000000000000000000'
 
-describe('Customers compliancy recording', () => {
+describe('Customers compliancy recording', async () => {
   const succeedingOnChainSigner = new MockedOnChainCommitmentStore(true)
 
   const client = testClient(customers, {
@@ -83,8 +82,8 @@ describe('Customers compliancy recording', () => {
     ['validUntil', 0],
     ['validUntil', null],
     ['validUntil', -3],
-    ['validUntil', thirtyDaysLaterFromEpochInSeconds()],
-    ['validUntil', nowFromEpochInSeconds()],
+    ['validUntil', (await succeedingOnChainSigner.timestamp()) + MAX_VALIDITY_TIME + 1],
+    ['validUntil', await succeedingOnChainSigner.timestamp()],
   ]))
     (`${should} respond false for invalid policy parameter value`, async (body) => {
       createTestCustomerInRepository()
@@ -98,8 +97,8 @@ describe('Customers compliancy recording', () => {
     })
 
   it.each(createExistingPolicyParameters([
-    ['validUntil', nowFromEpochInSeconds() + 1],
-    ['validUntil', thirtyDaysLaterFromEpochInSeconds() - 1],
+    ['validUntil', (await succeedingOnChainSigner.timestamp()) + 1],
+    ['validUntil', (await succeedingOnChainSigner.timestamp()) + MAX_VALIDITY_TIME],
   ]))
     (`${should} respond true for valid policy parameter value`, async (body) => {
       createTestCustomerInRepository()
@@ -124,7 +123,7 @@ describe('Customers compliancy recording', () => {
 
     createTestCustomerInRepository()
 
-    const body = createExistingPolicyParameters([['validUntil', nowFromEpochInSeconds() + 3600]])[0]!
+    const body = createExistingPolicyParameters([['validUntil', (await failingOnChainSigner.timestamp()) + MAX_VALIDITY_TIME]])[0]!
 
     const spy = spyOn(failingOnChainSigner, 'storeCommitment')
 

@@ -19,5 +19,9 @@ export class MockedOnChainCommitmentStore implements OnChainCommitmentStore {
     return Promise.reject(new Error('Cannot store commitment'))
   }
 
+  async timestamp() {
+    return Promise.resolve(0)
+  }
+
   private mustSucceed: boolean
 }
