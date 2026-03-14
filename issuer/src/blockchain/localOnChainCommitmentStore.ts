@@ -5,13 +5,12 @@ import {
   ContractFunctionRevertedError,
   createPublicClient,
   createWalletClient,
-  defineChain,
   http,
   type PublicClient,
   type WalletClient
 } from "viem";
-import { waitForTransactionReceipt } from "viem/actions"
 import { privateKeyToAccount, type PrivateKeyAccount } from "viem/accounts";
+import { waitForTransactionReceipt } from "viem/actions";
 import { anvil } from "viem/chains";
 import type { OnChainCommitmentStore } from "./types/onChainCommitmentStore";
 
@@ -21,10 +20,7 @@ type Hash = `0x${string}`
 export class LocalOnChainCommitmentStore implements OnChainCommitmentStore {
   constructor(privateKey: PrivateKey) {
     const clientConfig = {
-      chain: defineChain({
-        ...anvil,
-        id: 1
-      }),
+      chain: anvil,
       transport: http(`http://${process.env['ANVIL_HOST']}:${process.env['ANVIL_PORT']}`)
     }
 

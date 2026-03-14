@@ -4,6 +4,9 @@ include $(ZK_ASSETS_ROOT_DIR)contracts/.env
 
 export
 
+$(ZK_ASSETS_ROOT_DIR)contracts/.env:
+	@${MAKE} -C "${ZK_ASSETS_ROOT_DIR}" contracts .env
+
 .PHONY: blockchain
 blockchain: COVERAGE=false
 blockchain:

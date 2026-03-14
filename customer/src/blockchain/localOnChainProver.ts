@@ -6,7 +6,6 @@ import {
   ContractFunctionExecutionError,
   ContractFunctionRevertedError,
   createPublicClient,
-  defineChain,
   fromBytes,
   http,
   type Address,
@@ -18,10 +17,7 @@ import { anvil } from "viem/chains";
 export class LocalOnChainProver implements OnChainProver {
   constructor(options: { sender: Address }) {
     const clientConfig: Parameters<typeof createPublicClient>[0] = {
-      chain: defineChain({
-        ...anvil,
-        id: 1
-      }),
+      chain: anvil,
       transport: http(`http://${process.env['ANVIL_HOST']}:${process.env['ANVIL_PORT']}`)
     }
 

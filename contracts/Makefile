@@ -102,8 +102,6 @@ kill_local_blockchain:
 		&& anvil \
 		  --accounts 10 \
 		  --mnemonic ${TEST_MNEMONIC} \
-			--fork-url mainnet \
-			--fork-block-number "${MAINNET_FORK_BLOCK}" \
 			--host "${ANVIL_HOST}" --port "${ANVIL_PORT}" \
 			--hardfork "${ANVIL_EVM_VERSION}" \
 			> .anvil.out \
