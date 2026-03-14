@@ -1,11 +1,20 @@
-# circuits — Where zero-knowledge magic operates
+# rwa_1/hold — Eligibility circuit for `rwa_1` asset and `hold` policy scope
+
+> This is one member of the [`circuits` workspace](../../README.md). It defines
+> eligibility rules for the **`rwa_1`** asset under the **`hold`** policy scope.
+> Additional circuits can be added to the workspace when the issuer introduces
+> new assets or policy scopes — see the workspace README for instructions.
+
+Package: **`zk_assets_rwa_1_hold_v1`**
+
+---
 
 > **circuits** defines the eligibility rules as a zero-knowledge circuit. It
 > allows a customer to prove compliance with an issuer's policy using only
 > public inputs — no private data is ever disclosed.
 
 <!--toc:start-->
-- [circuits — Where zero-knowledge magic operates](#circuits-where-zero-knowledge-magic-operates)
+- [rwa_1/hold — Eligibility circuit for `rwa_1` asset and `hold` policy scope](#rwa1hold-eligibility-circuit-for-rwa1-asset-and-hold-policy-scope)
   - [Responsibilities](#responsibilities)
   - [Trust boundaries](#trust-boundaries)
   - [Circuit inputs](#circuit-inputs)

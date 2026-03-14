@@ -3,7 +3,7 @@
 > A zero-knowledge eligibility proof system for Real-World Asset (RWA) protocols.
 
 <!--toc:start-->
-- [zk-assets — Prove you can hold any RWA. Privately](#zk-assets-prove-you-can-hold-any-rwa-privately)
+- [zk-assets — Prove you are eligible to any RWA policy. Privately](#zk-assets-prove-you-are-eligible-to-any-rwa-policy-privately)
   - [The compliance problem](#the-compliance-problem)
     - [The challenge](#the-challenge)
     - [The insight](#the-insight)
@@ -18,8 +18,8 @@
   - [Running the demo](#running-the-demo)
     - [Prerequisites](#prerequisites)
     - [Setup](#setup)
-    - [Step 1 — Compile the circuit and generate the Solidity verifier](#step-1-compile-the-circuit-and-generate-the-solidity-verifier)
-    - [Step 2 — Run contract tests](#step-2-run-contract-tests)
+    - [Step 1 — Compile the circuits and generate the Solidity verifiers](#step-1-compile-the-circuits-and-generate-the-solidity-verifiers)
+    - [Step 2 — Run circuits and contract tests](#step-2-run-circuits-and-contract-tests)
     - [Step 3 — Run the issuer integration tests](#step-3-run-the-issuer-integration-tests)
     - [Step 4 — Run the customer integration test suite](#step-4-run-the-customer-integration-test-suite)
 <!--toc:end-->
@@ -135,7 +135,7 @@ The following are explicitly **out of scope**:
 
 | Component | Role |
 |---|---|
-| [`circuits/`](circuits/README.md) | Noir ZK circuit — defines eligibility rules; compiled to bytecode for local proof generation; generates the Solidity verifier |
+| [`circuits/`](circuits/README.md) | Noir workspace — one circuit per asset/policy-scope combination; each circuit defines eligibility rules, compiles to ACIR bytecode, and generates a Solidity verifier |
 | [`contracts/`](contracts/README.md) | Three Solidity contracts: `CommitmentStore` (issuer writes commitments), `Prover` (verifies proofs on-chain), and the generated ZK `Verifier` |
 | [`customer/`](customer/README.md) | Local TypeScript scripts — computes commitments, generates ZK proofs using Barretenberg, submits proofs on-chain |
 | [`issuer/`](issuer/README.md) | REST API — manages prospect registration, exposes policies, records customer commitments on-chain |
@@ -187,10 +187,16 @@ autonomous: proof generation is local, and verification happens on-chain.
 
 ### Extensibility
 
-The system is asset-agnostic. Policies carry any parameters the issuer defines.
-Multiple `Prover`/`Verifier` pairs can be deployed — one per policy — without
-modifying the circuit. Revocation is built in: each policy carries a validity
-window, and the issuer can manually revoke any commitment.
+The system is asset-agnostic. The `circuits/` workspace is the primary
+extension point: each new asset or policy scope the issuer introduces requires
+a new Noir circuit added to the workspace. Compiling the workspace produces a
+new ACIR artifact and Solidity verifier for each circuit.
+
+On-chain, a separate `Prover`/`Verifier` pair is deployed for each
+asset/scope combination. All pairs share the same `CommitmentStore` — no
+changes to the commitment layer are required. Policies carry any parameters the
+issuer defines. Revocation is built in: each policy carries a validity window,
+and the issuer can manually revoke any commitment at any time.
 
 ---
 
@@ -217,32 +223,34 @@ Edit `contracts/.env` and set `MAINNET_URL` (an Ethereum RPC endpoint) and
 `MAINNET_FORK_BLOCK` (a recent stable block number). All other values are
 pre-filled for local development.
 
-### Step 1 — Compile the circuit and generate the Solidity verifier
+### Step 1 — Compile the circuits and generate the Solidity verifiers
 
 ```bash
-make circuits generate_solidity_verifier
+make circuits generate_solidity_verifiers
 ```
 
-This compiles the Noir circuit to ACIR bytecode and writes
-`contracts/src/Verifier.sol` using the Barretenberg backend. Using the same
-toolchain for both verifier generation and proving is critical — it ensures the
-on-chain verifier accepts proofs generated locally.
+This compiles all circuits in the Noir workspace to ACIR bytecode and writes
+one `Verifier.sol` per circuit into `contracts/src/` using the Barretenberg
+backend (`bb.js`). Using the same toolchain for both verifier generation and
+proving is critical — it ensures every on-chain verifier accepts proofs
+generated locally.
 
-### Step 2 — Run contract tests
+### Step 2 — Run circuits and contract tests
 
 ```bash
+make circuits test
 make contracts test        # unit tests with gas report
 make contracts testv       # verbose output
 make contracts coverage    # coverage report
 ```
 
-Tests run against a forked mainnet. Foundry launches and manages Anvil
-automatically.
+Tests run against a forked mainnet. Foundry and Makefiles launches and manages
+Anvil automatically.
 
 ### Step 3 — Run the issuer integration tests
 
 ```bash
-make ./run/integration/tests/between/issuer/and/local/ blockchain
+make run/integration/tests/between/issuer/and/local/ blockchain
 ```
 
 This spins up a local Anvil blockchain, deploys all contracts, and runs the
@@ -256,7 +264,7 @@ issuer integration suite. It exercises:
 ### Step 4 — Run the customer integration test suite
 
 ```bash
-make ./run/integration/tests/between/customer/and/local/ blockchain
+make run/integration/tests/between/customer/and/local/ blockchain
 ```
 
 This runs the complete eligibility proof cycle:
