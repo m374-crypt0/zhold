@@ -12,25 +12,26 @@ type CustomerEnv = {
   Bindings: {
     customerRepository: CustomerRepository,
     policyRepository: PolicyRepository,
-    onChainSigner: OnChainCommitmentStore,
+    onChainCommitmentStore: OnChainCommitmentStore,
     isTesting: boolean | undefined
   }
 }
 
-const injectRepositories = createMiddleware<CustomerEnv>(async (c, next) => {
+const injectDependencies = createMiddleware<CustomerEnv>(async (c, next) => {
   // NOTE: 'test' env set up a testing env (see in customers.test.ts)
   // As a result those lines won't be covered
   if (!c.env.isTesting) {
     c.env.customerRepository = inMemoryCustomerRepository
     c.env.policyRepository = inMemoryPolicyRepository
-    c.env.onChainSigner = new LocalOnChainCommitmentStore(process.env['TEST_PRIVATE_KEY_01'] as PrivateKey)
+    // NOTE: TEST_PRIVATE_KEY_01 is the owner of the on-chain CommitmentStore
+    c.env.onChainCommitmentStore = new LocalOnChainCommitmentStore(process.env['TEST_PRIVATE_KEY_01'] as PrivateKey)
   }
 
   await next()
 })
 
 export default new OpenAPIHono<CustomerEnv>()
-  .openapi(routes['/recordCompliancy'](injectRepositories),
+  .openapi(routes['/recordCompliancy'](injectDependencies),
     async (c) => {
       const params = c.req.valid('json')
 
@@ -45,7 +46,7 @@ export default new OpenAPIHono<CustomerEnv>()
       if (!policy.validateParameters(params.policy.scope.parameters))
         return c.json({ error: 'Bad policy parameters' }, 400)
 
-      const now = await c.env.onChainSigner.timestamp()
+      const now = await c.env.onChainCommitmentStore.timestamp()
 
       if (!policy.validateParameterValues(params.policy.scope.parameters, () => now))
         return c.json({ error: 'Bad policy parameter values' }, 400)
@@ -53,7 +54,7 @@ export default new OpenAPIHono<CustomerEnv>()
       let result: string
 
       try {
-        result = await c.env.onChainSigner.storeCommitment(params.commitment)
+        result = await c.env.onChainCommitmentStore.storeCommitment(params.commitment)
       } catch (error) {
         const e = error as Error
         return c.json({ error: e.message }, 500)

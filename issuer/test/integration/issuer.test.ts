@@ -7,9 +7,9 @@ const should = '<integration> should'
 
 describe('Issuer manual revocation', () => {
   it(`${should} fail if the signer is not the issuer`, async () => {
-    const wrongLocalChainSigner = new LocalOnChainCommitmentStore(process.env['TEST_PRIVATE_KEY_02'] as PrivateKey)
+    const wrongLocalChainCommitmentStore = new LocalOnChainCommitmentStore(process.env['TEST_PRIVATE_KEY_02'] as PrivateKey)
     const client = testClient(issuer, {
-      onChainSigner: wrongLocalChainSigner,
+      onChainCommitmentStore: wrongLocalChainCommitmentStore,
       isTesting: true
     })
 

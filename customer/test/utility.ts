@@ -2,7 +2,7 @@ import customer from "src";
 
 import { randomBytes } from "crypto";
 
-import { createTestClient, defineChain, http, } from "viem";
+import { createTestClient, defineChain, http, toHex, } from "viem";
 import { getBlock } from "viem/actions";
 import { anvil } from "viem/chains";
 
@@ -48,7 +48,7 @@ export function getTestingPolicy() {
     scope: {
       id: '0',
       parameters: {
-        valid_until: 1
+        valid_until: 0
       }
     }
   }
@@ -82,10 +82,10 @@ export function getTestingSender() {
 }
 
 async function getTestingCommitment() {
-  return `0x${(await customer.createCommitment({
+  return toHex(await customer.createCommitment({
     private_inputs: getTestingPrivateInputs(),
     policy: getTestingPolicy()
-  })).toString(16)}`
+  }), { size: 32 })
 }
 
 async function getTestingRequest() {
@@ -148,7 +148,7 @@ export async function recordCompliancyUsingIssuerApi(body: {
 
   return result
 }
-export function getRecordCompliancyBodyFromInputs(options: {
+export function buildRecordCompliancyBodyFromInputs(options: {
   policy: ReturnType<typeof getTestingPolicy>,
   commitment: `0x${string}`,
   customerId: string
@@ -170,10 +170,6 @@ export function getRecordCompliancyBodyFromInputs(options: {
 
 export async function forwardOnChainTimestamp(seconds: number) {
   const clientConfig: Parameters<typeof createTestClient>[0] = {
-    chain: defineChain({
-      ...anvil,
-      id: 1,
-    }),
     mode: 'anvil',
     transport: http(`http://${process.env['ANVIL_HOST']}:${process.env['ANVIL_PORT']}`)
   }

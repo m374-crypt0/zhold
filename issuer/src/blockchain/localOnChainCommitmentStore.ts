@@ -6,6 +6,7 @@ import {
   createPublicClient,
   createWalletClient,
   http,
+  type Hash,
   type PublicClient,
   type WalletClient
 } from "viem";
@@ -14,8 +15,7 @@ import { waitForTransactionReceipt } from "viem/actions";
 import { anvil } from "viem/chains";
 import type { OnChainCommitmentStore } from "./types/onChainCommitmentStore";
 
-export type PrivateKey = `0x${string}`
-type Hash = `0x${string}`
+export type PrivateKey = Hash
 
 export class LocalOnChainCommitmentStore implements OnChainCommitmentStore {
   constructor(privateKey: PrivateKey) {

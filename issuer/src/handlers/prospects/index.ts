@@ -1,7 +1,8 @@
 import { OpenAPIHono } from '@hono/zod-openapi'
-import { type KYCData, type CustomerRepository } from 'src/repositories/types/customerRepository'
-import { createRouteWithMiddleware } from './routes'
+import { createMiddleware } from 'hono/factory'
 import { inMemoryCustomerRepository } from 'src/repositories/inMemoryCustomerRepository'
+import { type CustomerRepository, type KYCData } from 'src/repositories/types/customerRepository'
+import routes from './routes'
 
 type RegisterEnv = {
   Bindings: {
@@ -9,14 +10,14 @@ type RegisterEnv = {
   }
 }
 
-const route = createRouteWithMiddleware<RegisterEnv>(async (c, next) => {
+const injectDependencies = createMiddleware<RegisterEnv>(async (c, next) => {
   c.env.customerRepository = inMemoryCustomerRepository
 
   await next()
 })
 
 export default new OpenAPIHono<RegisterEnv>()
-  .openapi(route,
+  .openapi(routes['/register'](injectDependencies),
     async (c) => {
       c.req.valid('json')
 

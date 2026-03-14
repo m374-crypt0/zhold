@@ -3,13 +3,18 @@ import customer from "src";
 
 import { type OnChainProver } from "src/blockchain/types/onChainProver";
 
-import { MockedOnChainProver } from "test/unit/mock/mockedOnChainProver";
-
 import { poseidon2HashAsync } from "@zkpassport/poseidon2";
+
+import { MockedOnChainProver } from "test/unit/mock/mockedOnChainProver";
 
 import { describe, expect, it } from "bun:test";
 
-import { getTestingPolicy, getTestingPrivateInputs, getTestingPublicInputs, getValidProofForTesting } from "test/utility";
+import {
+  getTestingPolicy,
+  getTestingPrivateInputs,
+  getTestingPublicInputs,
+  getValidProofForTesting
+} from "test/utility";
 
 const should = '<unit> should'
 

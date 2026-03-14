@@ -5,12 +5,21 @@ import type { PolicyInputs, PrivateInputs, PublicInputs } from "src/types";
 import { LocalOnChainProver } from 'src/blockchain/localOnChainProver';
 import type { OnChainProver } from "src/blockchain/types/onChainProver";
 
-import { createCustomerSecret, forwardOnChainTimestamp, getRecordCompliancyBodyFromInputs, getTestingCustomerId, getTestingPolicy, getValidProofForTesting, recordCompliancyUsingIssuerApi, registerUserUsingIssuerApi } from "test/utility";
-
-import { beforeAll, describe, expect, it } from "bun:test";
-
 import { toHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
+
+import {
+  createCustomerSecret,
+  forwardOnChainTimestamp,
+  buildRecordCompliancyBodyFromInputs,
+  getTestingCustomerId,
+  getTestingPolicy,
+  getValidProofForTesting,
+  recordCompliancyUsingIssuerApi,
+  registerUserUsingIssuerApi
+} from "test/utility";
+
+import { beforeAll, describe, expect, it } from "bun:test";
 
 const should = '<integration> should'
 
@@ -94,7 +103,7 @@ describe('Proof submission to blockchain', () => {
 
     const commitment = await createCommitment(policy)
 
-    await recordCompliancyUsingIssuerApi(getRecordCompliancyBodyFromInputs({
+    await recordCompliancyUsingIssuerApi(buildRecordCompliancyBodyFromInputs({
       policy,
       customerId: privateInputs.customer_id,
       commitment
@@ -125,7 +134,7 @@ describe('Proof submission to blockchain', () => {
 
     const commitment = await createCommitment(policy)
 
-    await recordCompliancyUsingIssuerApi(getRecordCompliancyBodyFromInputs({
+    await recordCompliancyUsingIssuerApi(buildRecordCompliancyBodyFromInputs({
       policy,
       customerId: privateInputs.customer_id,
       commitment
@@ -157,7 +166,7 @@ describe('Proof submission to blockchain', () => {
 
     const commitment = await createCommitment(policy)
 
-    await recordCompliancyUsingIssuerApi(getRecordCompliancyBodyFromInputs({
+    await recordCompliancyUsingIssuerApi(buildRecordCompliancyBodyFromInputs({
       policy,
       customerId: privateInputs.customer_id,
       commitment

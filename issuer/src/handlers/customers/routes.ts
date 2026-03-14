@@ -2,8 +2,9 @@ import { createRoute } from '@hono/zod-openapi'
 import type { createMiddleware } from 'hono/factory'
 import type { Env } from 'hono/types'
 import {
+  recordCompliancyQueryParamsSchema,
   recordCompliancyResponseErrorSchema,
-  recordCompliancyQueryParamsSchema, recordCompliancyResponseSchema
+  recordCompliancyResponseSchema
 } from './schemas'
 
 export default {

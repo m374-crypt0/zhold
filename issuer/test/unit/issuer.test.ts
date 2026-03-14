@@ -6,10 +6,10 @@ import { MockedOnChainCommitmentStore } from './mock/mockedOnChainCommitmentStor
 const should = '<unit> should'
 
 describe('Issuer manual revocation', () => {
-  const succeedingOnChainSigner = new MockedOnChainCommitmentStore(true)
+  const succeedingOnChainCommitmentStore = new MockedOnChainCommitmentStore(true)
 
   const client = testClient(issuer, {
-    onChainSigner: succeedingOnChainSigner,
+    onChainCommitmentStore: succeedingOnChainCommitmentStore,
     isTesting: true
   })
 
@@ -20,13 +20,13 @@ describe('Issuer manual revocation', () => {
   })
 
   it(`${should} fail if on-chain revocation fails`, async () => {
-    const failingOnChainSigner = new MockedOnChainCommitmentStore(false)
+    const failingOnChainCommitmentStore = new MockedOnChainCommitmentStore(false)
     const client = testClient(issuer, {
-      onChainSigner: failingOnChainSigner,
+      onChainCommitmentStore: failingOnChainCommitmentStore,
       isTesting: true
     })
 
-    const spy = spyOn(failingOnChainSigner, 'revokeCommitment')
+    const spy = spyOn(failingOnChainCommitmentStore, 'revokeCommitment')
 
     const res = await client.revokeCommitment.$post({
       json: {
@@ -42,7 +42,7 @@ describe('Issuer manual revocation', () => {
   })
 
   it(`${should} succeed if on-chain revocation succeeds`, async () => {
-    const spy = spyOn(succeedingOnChainSigner, 'revokeCommitment')
+    const spy = spyOn(succeedingOnChainCommitmentStore, 'revokeCommitment')
 
     const res = await client.revokeCommitment.$post({
       json: {

@@ -10,12 +10,12 @@ const should = '<unit> should'
 const ZERO_COMMITMENT = '0x0000000000000000000000000000000000000000000000000000000000000000'
 
 describe('Customers compliancy recording', async () => {
-  const succeedingOnChainSigner = new MockedOnChainCommitmentStore(true)
+  const succeedingOnChainCommitmentStore = new MockedOnChainCommitmentStore(true)
 
   const client = testClient(customers, {
     customerRepository: inMemoryCustomerRepository,
     policyRepository: inMemoryPolicyRepository,
-    onChainSigner: succeedingOnChainSigner,
+    onChainCommitmentStore: succeedingOnChainCommitmentStore,
     isTesting: true
   })
 
@@ -82,8 +82,8 @@ describe('Customers compliancy recording', async () => {
     ['validUntil', 0],
     ['validUntil', null],
     ['validUntil', -3],
-    ['validUntil', (await succeedingOnChainSigner.timestamp()) + MAX_VALIDITY_TIME + 1],
-    ['validUntil', await succeedingOnChainSigner.timestamp()],
+    ['validUntil', (await succeedingOnChainCommitmentStore.timestamp()) + MAX_VALIDITY_TIME + 1],
+    ['validUntil', await succeedingOnChainCommitmentStore.timestamp()],
   ]))
     (`${should} respond false for invalid policy parameter value`, async (body) => {
       createTestCustomerInRepository()
@@ -97,8 +97,8 @@ describe('Customers compliancy recording', async () => {
     })
 
   it.each(createExistingPolicyParameters([
-    ['validUntil', (await succeedingOnChainSigner.timestamp()) + 1],
-    ['validUntil', (await succeedingOnChainSigner.timestamp()) + MAX_VALIDITY_TIME],
+    ['validUntil', (await succeedingOnChainCommitmentStore.timestamp()) + 1],
+    ['validUntil', (await succeedingOnChainCommitmentStore.timestamp()) + MAX_VALIDITY_TIME],
   ]))
     (`${should} respond true for valid policy parameter value`, async (body) => {
       createTestCustomerInRepository()
@@ -112,10 +112,10 @@ describe('Customers compliancy recording', async () => {
     })
 
   it(`${should} fail if on-chain signer fails to store the commitment`, async () => {
-    const failingOnChainSigner = new MockedOnChainCommitmentStore(false)
+    const failingOnChainCommitmentStore = new MockedOnChainCommitmentStore(false)
 
     const client = testClient(customers, {
-      onChainSigner: failingOnChainSigner,
+      onChainCommitmentStore: failingOnChainCommitmentStore,
       customerRepository: inMemoryCustomerRepository,
       policyRepository: inMemoryPolicyRepository,
       isTesting: true
@@ -123,9 +123,9 @@ describe('Customers compliancy recording', async () => {
 
     createTestCustomerInRepository()
 
-    const body = createExistingPolicyParameters([['validUntil', (await failingOnChainSigner.timestamp()) + MAX_VALIDITY_TIME]])[0]!
+    const body = createExistingPolicyParameters([['validUntil', (await failingOnChainCommitmentStore.timestamp()) + MAX_VALIDITY_TIME]])[0]!
 
-    const spy = spyOn(failingOnChainSigner, 'storeCommitment')
+    const spy = spyOn(failingOnChainCommitmentStore, 'storeCommitment')
 
     const res = await client.recordCompliancy.$post(body)
     const json = await res.json() as { error: string }

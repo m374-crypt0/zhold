@@ -12,5 +12,9 @@ export class MockedOnChainProver implements OnChainProver {
     return Promise.resolve(true)
   }
 
+  public timestamp() {
+    return Promise.resolve(0)
+  }
+
   private failWith: string | undefined
 }
