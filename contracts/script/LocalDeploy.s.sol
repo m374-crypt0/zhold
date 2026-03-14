@@ -7,9 +7,12 @@ import { IPrimeFieldOrderProvider } from "../src/interfaces/IPrimeFieldOrderProv
 import { IVerifier } from "src/interfaces/IVerifier.sol";
 
 import { CommitmentStore } from "../src/CommitmentStore.sol";
-import { PrimeFieldOrderProvider } from "./PrimeFieldOrderProvider.sol";
-import { Verifier } from "./Verifier.sol";
 import { Prover } from "src/Prover.sol";
+
+import {
+  PrimeFieldOrderProvider as ZkAssetsRwa1HoldV1PFOP
+} from "./verifiers/zk_assets_rwa_1_hold_v1/PrimeFieldOrderProvider.sol";
+import { Verifier as ZkAssetsRwa1HoldV1Verifier } from "./verifiers/zk_assets_rwa_1_hold_v1/Verifier.sol";
 
 contract LocalDeployScript is Script {
   address private sender;
@@ -30,14 +33,14 @@ contract LocalDeployScript is Script {
   function run() public {
     vm.startBroadcast(sender);
 
-    pfop = new PrimeFieldOrderProvider();
+    pfop = new ZkAssetsRwa1HoldV1PFOP();
     commitmentStore = new CommitmentStore(pfop, commitmentStoreOwner);
 
     vm.stopBroadcast();
 
     vm.startBroadcast(proverDeployer);
 
-    verifier = new Verifier();
+    verifier = new ZkAssetsRwa1HoldV1Verifier();
     prover = new Prover(verifier, commitmentStore);
 
     vm.stopBroadcast();

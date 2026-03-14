@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.34;
 
-import { IVerifier } from "../src/interfaces/IVerifier.sol";
-import { HonkVerifier } from "@circuits/target/Verifier.sol";
+import { HonkVerifier } from "@circuits/target/zk_assets_rwa_1_hold_v1_verifier.sol";
+import { IVerifier } from "src/interfaces/IVerifier.sol";
 
 contract Verifier is IVerifier {
   constructor() {
@@ -13,8 +13,8 @@ contract Verifier is IVerifier {
     return honkVerifier.verify(proof_, publicInputs_);
   }
 
+  HonkVerifier private honkVerifier;
+
   // NOTE: To mute uncovered items in coverage reports
   function test() private { }
-
-  HonkVerifier private honkVerifier;
 }
