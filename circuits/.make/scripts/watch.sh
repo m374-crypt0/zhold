@@ -10,7 +10,7 @@ run_test
 # executions
 inotifywait -mqr \
   --event modify \
-  "${CIRCUITS_ROOT_DIR}src" |
+  "${CIRCUITS_ROOT_DIR}" |
   while read -r; do
     clear && run_test
   done

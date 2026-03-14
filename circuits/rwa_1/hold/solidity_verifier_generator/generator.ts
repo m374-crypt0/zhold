@@ -1,4 +1,4 @@
-import compiledCircuit from "target/zk_assets_v1.json"
+import compiledCircuit from "target/zk_assets_rwa_1_hold_v1.json"
 
 import { Barretenberg, UltraHonkBackend } from "@aztec/bb.js"
 
@@ -7,7 +7,7 @@ import { argv, exit } from "process"
 
 async function main() {
   if (!argv[2])
-    throw new Error("Usage: generator <Verifier.sol file path>");
+    throw new Error("Usage: generator <smart contract file path>");
 
   const api = await Barretenberg.new()
 

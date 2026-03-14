@@ -5,8 +5,10 @@ Usage:
 
   - help: prints this message
   - clean: removes compiled artifacts from target directory
-  - compile: compiles this circuit
-  - generate_solidity_verifier: generate a Verifier.sol smart contract in the
-  - test: tests this circuit
-  - watch: tests continuously this circuit for each file change
+  - compile: compiles all circuits in the workspace
+  - generate_solidity_verifiers: generate a smart contract verifier for each
+    circuit in the workspace
+  - test: tests all circuits in the workspace
+  - watch: tests continuously all circuits for each file change in the
+    workspace
 EOF

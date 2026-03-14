@@ -1,11 +1,3 @@
-[package]
-name = "zk_assets_v1"
-type = "bin"
-authors = ["m374-crypt0"]
-compiler_version = "1.0.0"
-description = "evaluates RWA policy eligibility for managed assets"
-entry = "src/main.nr"
-license = "MIT"
-
-[dependencies]
-poseidon = { tag = "v0.2.6", git = "https://github.com/noir-lang/poseidon" }
+[workspace]
+members = ["rwa_1/hold"]
+default-member = "rwa_1/hold"
