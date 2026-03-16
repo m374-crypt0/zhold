@@ -1,4 +1,4 @@
-name: CI - Circuits
+name: CI - circuits
 
 on:
   workflow_dispatch:
