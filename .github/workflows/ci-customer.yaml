@@ -30,3 +30,6 @@ jobs:
 
       - name: Run customer unit tests
         run: make customer test
+
+      - name: Run customer and blockchain integration tests
+        run: make run/integration/tests/between/customer/and/local blockchain
