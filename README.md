@@ -12,6 +12,8 @@
 
 [![CI - issuer](https://github.com/m374-crypt0/zk-assets/actions/workflows/ci-issuer.yaml/badge.svg)](https://github.com/m374-crypt0/zk-assets/actions/workflows/ci-issuer.yaml)
 
+[![codecov](https://codecov.io/github/m374-crypt0/zk-assets/graph/badge.svg?token=F73NNGE7ZJ)](https://codecov.io/github/m374-crypt0/zk-assets)
+
 <!--toc:start-->
 - [zk-assets — Prove you are eligible to any RWA policy. Privately](#zk-assets-prove-you-are-eligible-to-any-rwa-policy-privately)
   - [Status](#status)
