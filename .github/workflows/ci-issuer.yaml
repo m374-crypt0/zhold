@@ -30,3 +30,6 @@ jobs:
 
       - name: Run issuer unit tests
         run: make issuer test
+
+      - name: Run issuer and blockchain integration tests
+        run: make run/integration/tests/between/issuer/and/local blockchain
