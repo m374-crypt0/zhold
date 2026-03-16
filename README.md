@@ -2,8 +2,13 @@
 
 > A zero-knowledge eligibility proof system for Real-World Asset (RWA) protocols.
 
+## Status
+
+[![CI - Circuits](https://github.com/m374-crypt0/zk-assets/actions/workflows/ci-circuits.yaml/badge.svg)](https://github.com/m374-crypt0/zk-assets/actions/workflows/ci-circuits.yaml)
+
 <!--toc:start-->
 - [zk-assets — Prove you are eligible to any RWA policy. Privately](#zk-assets-prove-you-are-eligible-to-any-rwa-policy-privately)
+  - [Status](#status)
   - [The compliance problem](#the-compliance-problem)
     - [The challenge](#the-challenge)
     - [The insight](#the-insight)

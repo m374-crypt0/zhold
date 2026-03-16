@@ -1,5 +1,7 @@
 # circuits — Zero-knowledge eligibility circuits
 
+[![CI - Circuits](https://github.com/m374-crypt0/zk-assets/actions/workflows/ci-circuits.yaml/badge.svg)](https://github.com/m374-crypt0/zk-assets/actions/workflows/ci-circuits.yaml)
+
 > **circuits** is a Noir workspace. Each member defines eligibility rules for a
 > specific combination of asset and policy scope. Circuits compile to ACIR
 > bytecode for local proof generation and produce a Solidity verifier contract
