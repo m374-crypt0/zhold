@@ -5,7 +5,11 @@
 ## Status
 
 [![CI - Circuits](https://github.com/m374-crypt0/zk-assets/actions/workflows/ci-circuits.yaml/badge.svg)](https://github.com/m374-crypt0/zk-assets/actions/workflows/ci-circuits.yaml)
+
 [![CI - contracts](https://github.com/m374-crypt0/zk-assets/actions/workflows/ci-contracts.yaml/badge.svg)](https://github.com/m374-crypt0/zk-assets/actions/workflows/ci-contracts.yaml)
+
+[![CI - customer](https://github.com/m374-crypt0/zk-assets/actions/workflows/ci-customer.yaml/badge.svg)](https://github.com/m374-crypt0/zk-assets/actions/workflows/ci-customer.yaml)
+
 <!--toc:start-->
 - [zk-assets — Prove you are eligible to any RWA policy. Privately](#zk-assets-prove-you-are-eligible-to-any-rwa-policy-privately)
   - [Status](#status)

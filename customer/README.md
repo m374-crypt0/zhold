@@ -1,5 +1,7 @@
 # customer — Prove compliance without disclosure
 
+[![CI - customer](https://github.com/m374-crypt0/zk-assets/actions/workflows/ci-customer.yaml/badge.svg)](https://github.com/m374-crypt0/zk-assets/actions/workflows/ci-customer.yaml)
+
 > The **customer** is a registered user who can prove eligibility regarding an
 > issuer's policy for a specific RWA — without disclosing any personal
 > information, on-chain or off-chain.
