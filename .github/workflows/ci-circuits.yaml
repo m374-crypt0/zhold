@@ -1,0 +1,26 @@
+name: CI - Circuits
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "circuits/**"
+  pull_request:
+    paths:
+      - "circuits/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install nargo
+        uses: noir-lang/noirup@v0.1.3
+        with:
+          toolchain: 1.0.0
+
+      - name: Run circuit tests
+        run: make circuits test
