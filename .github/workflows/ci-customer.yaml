@@ -28,8 +28,14 @@ jobs:
         with:
           version: nightly
 
-      - name: Run customer unit tests
-        run: make customer test
+      - name: Run customer unit tests + coverage
+        run: make customer coverage_ci
 
-      - name: Run customer and blockchain integration tests
-        run: make run/integration/tests/between/customer/and/local blockchain
+      - name: Run customer and blockchain integration tests + coverage
+        run: make COVERAGE_CI=true run/integration/tests/between/customer/and/local blockchain
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./customer/coverage/lcov-<unit>.info,./customer/coverage/lcov-<integration>.info

@@ -28,8 +28,14 @@ jobs:
         with:
           version: nightly
 
-      - name: Run issuer unit tests
-        run: make issuer test
+      - name: Run issuer unit tests + coverage
+        run: make issuer coverage_ci
 
-      - name: Run issuer and blockchain integration tests
-        run: make run/integration/tests/between/issuer/and/local blockchain
+      - name: Run issuer and blockchain integration tests + coverage
+        run: make COVERAGE_CI=true run/integration/tests/between/issuer/and/local blockchain
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./issuer/coverage/lcov-<unit>.info,./issuer/coverage/lcov-<integration>.info
