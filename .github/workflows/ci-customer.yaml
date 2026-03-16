@@ -18,5 +18,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install bun
+        run: |
+          curl -fsSL https://bun.com/install | bash
+          echo "$HOME/.bun/bin" >> "$GITHUB_PATH"
+
       - name: Run customer unit tests
         run: make customer test
