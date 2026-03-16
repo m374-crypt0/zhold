@@ -1,4 +1,4 @@
-name: CI - Customer
+name: CI - customer
 
 on:
   workflow_dispatch:
@@ -22,6 +22,11 @@ jobs:
         run: |
           curl -fsSL https://bun.com/install | bash
           echo "$HOME/.bun/bin" >> "$GITHUB_PATH"
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
 
       - name: Run customer unit tests
         run: make customer test
