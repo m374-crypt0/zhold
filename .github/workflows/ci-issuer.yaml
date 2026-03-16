@@ -1,0 +1,32 @@
+name: CI - issuer
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "issuer/**"
+  pull_request:
+    paths:
+      - "issuer/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install bun
+        run: |
+          curl -fsSL https://bun.com/install | bash
+          echo "$HOME/.bun/bin" >> "$GITHUB_PATH"
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Run issuer unit tests
+        run: make issuer test
